@@ -43,4 +43,9 @@ public class CameraImporter : ASensorImporter
     {
         Window.DestroyAllWindows();
     }
+
+    public override MatType getMatType()
+    {
+        return MatType.CV_8UC3;
+    }
 }
