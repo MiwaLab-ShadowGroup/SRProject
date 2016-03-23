@@ -6,5 +6,6 @@ using OpenCvSharp.CPlusPlus;
 public abstract class ASensorImporter : MonoBehaviour
 {
     public abstract Mat getCvMat();
+    public Mat srcMat;
 }
 

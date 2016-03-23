@@ -11,6 +11,7 @@ public class CameraImporter : ASensorImporter
     VideoCapture video;
     Window check;
     public bool isShowImage;
+
     // Use this for initialization
     void Start()
     {
