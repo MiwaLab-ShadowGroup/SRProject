@@ -9,7 +9,7 @@ public class BuildBatch : MonoBehaviour
         string[] scenePaths = {
       "Assets/Scenes/null.unity"
     };
-        string outputPath = Application.dataPath + "/../../out.exe";  // dataPathはAssetを指している
+        string outputPath = Application.dataPath + "/../../build/out.exe";  // dataPathはAssetを指している
         BuildTarget target = BuildTarget.StandaloneWindows64;
         BuildOptions opt = BuildOptions.None;
         string error = BuildPipeline.BuildPlayer(scenePaths, outputPath, target, opt);
