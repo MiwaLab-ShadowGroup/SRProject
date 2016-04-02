@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using OpenCvSharp.CPlusPlus;
 
-namespace LabLife.Processer.ImageProcesser
+namespace Miwalab.ShadowGroup.ImageProcesser
 {
     public class Reverse : AImageProcesser
     {

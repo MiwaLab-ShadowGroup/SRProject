@@ -6,7 +6,7 @@ using System.Threading;
 using OpenCvSharp.CPlusPlus;
 using OpenCvSharp;
 
-namespace LabLife.Processer.ImageProcesser
+namespace Miwalab.ShadowGroup.ImageProcesser
 {
     public class Zanzou : AImageProcesser
     {
@@ -41,7 +41,7 @@ namespace LabLife.Processer.ImageProcesser
         #region CAmethods
 
 
-        
+
 
 
         #endregion
@@ -52,7 +52,7 @@ namespace LabLife.Processer.ImageProcesser
             {
                 Cv2.CvtColor(src, bufimage, OpenCvSharp.ColorConversion.BgrToGray);
 
-                
+
                 unsafe
                 {
                     byte* pPixel = bufimage.DataPointer;
@@ -148,10 +148,10 @@ namespace LabLife.Processer.ImageProcesser
 
 
                 Mat tmpColorBuffer2 = new Mat(new Size(bufimage.Width, bufimage.Height), MatType.CV_8UC3, new Scalar(255, 255, 255));
-                outerColorBuffer2.SetTo(new Scalar(255, 255, 255));
+                outerColorBuffer2.SetTo(new Scalar(255, 255, 255), null);
                 Cv2.CvtColor(outerGrayBuffer2, tmpColorBuffer2, OpenCvSharp.ColorConversion.GrayToBgr);
                 Cv2.Multiply(outerColorBuffer2, tmpColorBuffer2, outerColorBuffer2, 1.0 / 255.0);
-                innerColorBuffer2.SetTo(new Scalar(255, 255, 255));
+                innerColorBuffer2.SetTo(new Scalar(255, 255, 255), null);
                 Cv2.CvtColor(innerGrayBuffer2, tmpColorBuffer2, OpenCvSharp.ColorConversion.GrayToBgr);
                 Cv2.Multiply(innerColorBuffer2, tmpColorBuffer2, innerColorBuffer2, 1.0 / 255.0);
 
@@ -161,7 +161,7 @@ namespace LabLife.Processer.ImageProcesser
                 //bufimage_pre = bufimage;
                 //bufimage_pre -= 20.0;
 
-                
+
 
 
                 //Cv2.CvtColor(bufimage, dst, OpenCvSharp.ColorConversion.GrayToBgr);
@@ -211,7 +211,7 @@ namespace LabLife.Processer.ImageProcesser
         {
             return "Zanzou";
         }
-        
+
 
     }
 }

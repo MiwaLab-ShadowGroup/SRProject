@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace LabLife.Processer.ImageProcesser
+namespace Miwalab.ShadowGroup.ImageProcesser
 {
     public enum ParameterType
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using OpenCvSharp.CPlusPlus;
 
-namespace LabLife.Processer.ImageProcesser
+namespace Miwalab.ShadowGroup.ImageProcesser
 {
     class polygon : AImageProcesser
     {
@@ -52,8 +52,9 @@ namespace LabLife.Processer.ImageProcesser
                     //Cv2.FillConvexPoly(dst, CvPoints, Scalar.Yellow,  OpenCvSharp.LineType.Link4, 0);
                 }
                 
-            }
-            Cv2.DrawContours(dst, this.List_Contours, 0, Scalar.Aqua, -1, OpenCvSharp.LineType.Link8);
+            } 
+            
+            Cv2.DrawContours(dst, this.List_Contours as IEnumerable<IEnumerable<Point>>, 0, Scalar.Aqua, -1, OpenCvSharp.LineType.Link8);
         }
 
         public override string ToString()
