@@ -23,11 +23,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         Random rand = new Random();
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
 
+        public polygon()
+        {
+
+        }
+
         private void Update(ref Mat src, ref Mat dst)
         {
             this.List_Contours.Clear();
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
-            dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3,Scalar.Black);
                           
             Point[][] contour;//= grayimage.FindContoursAsArray(OpenCvSharp.ContourRetrieval.External, OpenCvSharp.ContourChain.ApproxSimple);
             HierarchyIndex[] hierarchy;
@@ -52,9 +56,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     //Cv2.FillConvexPoly(dst, CvPoints, Scalar.Yellow,  OpenCvSharp.LineType.Link4, 0);
                 }
                 
-            } 
-            
-            Cv2.DrawContours(dst, this.List_Contours as IEnumerable<IEnumerable<Point>>, 0, Scalar.Aqua, -1, OpenCvSharp.LineType.Link8);
+            }
+            var _contour = List_Contours.ToArray();
+
+            dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3,Scalar.Black);
+            Cv2.DrawContours(dst, _contour, 0, Scalar.Aqua, -1, OpenCvSharp.LineType.Link8);
         }
 
         public override string ToString()

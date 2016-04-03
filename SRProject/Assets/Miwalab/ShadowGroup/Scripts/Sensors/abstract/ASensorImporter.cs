@@ -9,7 +9,7 @@ public abstract class ASensorImporter : MonoBehaviour
 {
     public abstract Mat getCvMat();
     public abstract MatType getMatType();
-
+    public abstract void setUpUI();
     public void AddImageProcesser(AImageProcesser ImageProcesser)
     {
         this.m_ImagerProcesserList.Add(ImageProcesser);

@@ -83,12 +83,13 @@ public class UIHost : MonoBehaviour
         this.m_currentImageProcesserSettingPanel = m_PanelDictionary[ImageProcesserType.Normal.ToString()];
         this.m_currentImportSettingPanel = m_PanelDictionary[ImportSettingType.Kinect.ToString()];
 
-
+        //UI初期化
         this.CreateUIsImageporcessingNormal(m_PanelDictionary[ImageProcesserType.Normal.ToString()]);
+        this.CreateUIsImportKinectv2(m_PanelDictionary[ImportSettingType.Kinect.ToString()]);
 
+        this.m_Sensor.setUpUI();
 
-
-        this.ImageProcesserSettingPanelSet(true);
+        this.ImageProcesserSettingPanelSet(false);
         this.ImportSettingPanelSet(false);
         this.m_Sensor.AddImageProcesser(new Normal());
     }
@@ -96,28 +97,46 @@ public class UIHost : MonoBehaviour
     public void ChangeImageProcessingOptionTo(int number)
     {
         ImageProcesserType type = (ImageProcesserType)number;
+        this.m_Sensor.RemoveAllImageProcesser();
         switch (type)
         {
             case ImageProcesserType.Normal:
                 //一回作って使いまわす
+                this.m_Sensor.AddImageProcesser(new Normal());
                 break;
             case ImageProcesserType.CellAutomaton:
                 break;
             case ImageProcesserType.Polygon:
+                this.m_Sensor.AddImageProcesser(new polygon());
                 break;
             case ImageProcesserType.DoubleAfterImage:
+                this.m_Sensor.AddImageProcesser(new Zanzou());
                 break;
         }
         
     }
 
     #region createUIMethods
+    private void CreateUIsImportKinectv2(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Kinect_x_min", 0, -5, -5);
+        AddFloatUI(parent, "Kinect_x_max", 5, 0, 5);
+        AddFloatUI(parent, "Kinect_y_min", 0, -2, -1);
+        AddFloatUI(parent, "Kinect_y_max", 5, 0, 2);
+        AddFloatUI(parent, "Kinect_z_min", 8, 0, 1);
+        AddFloatUI(parent, "Kinect_z_max", 8, 0, 8);
+    }
+    /// <summary>
+    /// normal shadow
+    /// </summary>
+    /// <param name="parent"></param>
     private void CreateUIsImageporcessingNormal(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddFloatUI(parent, "Color_R", 255, 0, 0);
-        AddFloatUI(parent, "Color_G", 255, 0, 0);
-        AddFloatUI(parent, "Color_B", 255, 0, 0);
+        //AddFloatUI(parent, "Color_R", 255, 0, 0);
+        //AddFloatUI(parent, "Color_G", 255, 0, 0);
+        //AddFloatUI(parent, "Color_B", 255, 0, 0);
         AddBooleanUI(parent, "Normal_Invert", false);
     }
     #endregion
