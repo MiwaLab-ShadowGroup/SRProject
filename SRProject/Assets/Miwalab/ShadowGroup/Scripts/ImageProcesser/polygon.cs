@@ -61,6 +61,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             return "Polygon";
         }
+
+        public override ImageProcesserType getImageProcesserType()
+        {
+            return ImageProcesserType.Polygon;
+        }
+
         public bool IsFirstFrame { get; private set; }
     }
 

@@ -16,35 +16,26 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         UInt,
         Byte,
         String,
+        Bool,
         Other
     }
     public class Parameter
     {
-        public Parameter(ParameterType Type, Object Value)
+        public Parameter(ParameterType Type, string Name ,Object Value)
         {
             this.Type = Type;
             this.Value = Value;
+            this.Name = Name;
         }
         public ParameterType Type { set; get; }
         public Object Value { set; get; }
+        public string Name { set; get; }
     }
 
     public abstract class AImageProcesser
     {
         public abstract void ImageProcess(ref Mat src, ref Mat dst);
-        protected AImageProcesser()
-        {
-            m_parameter = new List<Parameter>();
+        public abstract ImageProcesser.ImageProcesserType getImageProcesserType();
 
-        }
-        /// <summary>
-        /// UI使用するパラメータ取得
-        /// </summary>
-        /// <returns></returns>
-        public List<Parameter> getParameter()
-        {
-            return this.m_parameter;
-        }
-        private List<Parameter> m_parameter;
     }
 }

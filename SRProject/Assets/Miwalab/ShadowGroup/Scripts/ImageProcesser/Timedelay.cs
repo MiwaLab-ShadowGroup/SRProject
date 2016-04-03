@@ -9,7 +9,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 {
     public class Timedelay : AImageProcesser
     {
-        private Parameter DelayConter;
+        private int DelayCounter;
 
         int count = 0;
 
@@ -20,10 +20,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             :base()
         {
 
-            DelayConter = new Parameter(ParameterType.Int, 100);
+            DelayCounter =100;
             //データの登録
-
-            this.getParameter().Add(this.DelayConter);
 
             this.queue = new Queue<Mat>();
 
@@ -48,7 +46,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.queue.Enqueue(item);
             count++;
 
-            if (count > (int)this.DelayConter.Value) //この値で遅れ時間を調整(UIで変えられる)
+            if (count > this.DelayCounter) //この値で遅れ時間を調整(UIで変えられる)
             {
                 this.queue.Dequeue().CopyTo(dst);
                 
@@ -59,6 +57,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             return "Timedelay";
         }
+
+        public override ImageProcesserType getImageProcesserType()
+        {
+            return ImageProcesserType.TimeDelay;
+        }
+
         public bool IsFirstFrame { get; private set; }
 
     }

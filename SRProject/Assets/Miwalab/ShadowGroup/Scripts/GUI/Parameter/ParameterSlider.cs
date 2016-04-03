@@ -52,8 +52,6 @@ public class ParameterSlider : AParameterUI{
         m_slider.minValue = this.Min;
         m_slider.value = this.DefaultValue;
         this.m_valueText.text = m_slider.value.ToString("0.00");
-        UIHost.AddUI(this.Title + "_ValueChanged", this);
-
     }
     public override Rect getSize()
     {

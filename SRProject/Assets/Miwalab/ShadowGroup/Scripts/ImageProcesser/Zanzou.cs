@@ -212,6 +212,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             return "Zanzou";
         }
 
-
+        public override ImageProcesserType getImageProcesserType()
+        {
+            return ImageProcesserType.DoubleAfterImage;
+        }
     }
 }
