@@ -48,4 +48,9 @@ public class CameraImporter : ASensorImporter
     {
         return MatType.CV_8UC3;
     }
+
+    public override void setUpUI()
+    {
+
+    }
 }
