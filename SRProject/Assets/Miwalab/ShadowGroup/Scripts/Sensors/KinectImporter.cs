@@ -19,6 +19,7 @@ public class KinectImporter : ASensorImporter
     void Start()
     {
         m_sensor = KinectSensor.GetDefault();
+        this.m_ImagerProcesserList = new System.Collections.Generic.List<Miwalab.ShadowGroup.ImageProcesser.AImageProcesser>();
         if (m_sensor != null)
         {
             Debug.Log("The Kinect ID : " + m_sensor.UniqueKinectId);
@@ -67,6 +68,10 @@ public class KinectImporter : ASensorImporter
 
 
             }
+        }
+        foreach(var imageProcesser in this.m_ImagerProcesserList)
+        {
+            imageProcesser.ImageProcess(ref this.m_mat, ref this.m_mat);
         }
     }
 

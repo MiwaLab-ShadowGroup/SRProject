@@ -24,6 +24,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         DoubleAfterImage,
         /// <summary>
+        /// 時間遅れ影
+        /// </summary>
+        TimeDelay,
+        /// <summary>
         /// 個数を数えるためのもの．消したら処刑
         /// </summary>
         Count,

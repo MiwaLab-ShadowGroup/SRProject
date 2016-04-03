@@ -41,7 +41,6 @@ public class ParameterCheckbox : AParameterUI {
         m_titleText.text = this.Title;
         m_toggle.isOn = this.DefaultValue;
         this.m_valueText.text = m_toggle.isOn.ToString();
-        UIHost.AddUI(this.Title, this);
 
     }
 
