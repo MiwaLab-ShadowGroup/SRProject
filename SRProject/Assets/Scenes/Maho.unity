@@ -457,6 +457,10 @@ MonoBehaviour:
   bottomLeft: {x: 0, y: -4, z: 0}
   bottomRight: {x: 4, y: -4, z: 0}
   topRight: {x: 4, y: 0, z: 0}
+  src_topLeft: {x: 0, y: 0, z: 0}
+  src_bottomLeft: {x: 0, y: -4, z: 0}
+  src_bottomRight: {x: 4, y: -4, z: 0}
+  src_topRight: {x: 4, y: 0, z: 0}
   Row: 4
   Col: 4
 --- !u!4 &1818603669
