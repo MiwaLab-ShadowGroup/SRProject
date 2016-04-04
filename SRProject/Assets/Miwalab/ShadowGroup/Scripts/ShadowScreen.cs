@@ -9,6 +9,11 @@ public class ShadowScreen : MonoBehaviour {
     public Vector3 bottomRight;
     public Vector3 topRight;
 
+    public Vector3 src_topLeft;
+    public Vector3 src_bottomLeft;
+    public Vector3 src_bottomRight;
+    public Vector3 src_topRight;
+
     public int Row = 4;
     public int Col = 4;
 
@@ -88,8 +93,12 @@ public class ShadowScreen : MonoBehaviour {
         Vector3 downVec_R = (this.bottomRight - this.topRight) / (this.Row);
         Vector3 downVec_L = (this.bottomLeft - this.topLeft) / (this.Row);
 
-       // Debug.Log(downVec_R);
-       // Debug.Log(downVec_L);
+        Vector3 UV_downVec_R = (this.src_bottomRight - this.src_topRight) / (this.Row);
+        Vector3 UV_downVec_L = (this.src_bottomLeft -  this.src_topLeft) / (this.Row);
+
+
+        //Debug.Log(downVec_R);
+        // \Debug.Log(downVec_L);
 
         Vector3 downVec_L_e = downVec_L / downVec_L.magnitude;
 
@@ -97,6 +106,8 @@ public class ShadowScreen : MonoBehaviour {
         {
             Vector3 rightVec = ((this.topRight + downVec_R * y) - (this.topLeft + downVec_L * y)) / (this.Col);
             Vector3 rightVec_e = rightVec / rightVec.magnitude;
+
+            Vector3 UV_rightVec = ((this.src_topRight + UV_downVec_R * y) - (this.src_topLeft + UV_downVec_L * y)) / (this.Col);
 
           //  Debug.Log(rightVec);
 
@@ -109,8 +120,11 @@ public class ShadowScreen : MonoBehaviour {
                 pos = this.topLeft + downVec_L * y + rightVec * x;
                 _Vertices[index] = pos;
 
-                //  Debug.Log(index.ToString() + ":" + pos);
-                //_UV[index] = pos;// downVec_L_e * y + rightVec_e * x;
+                //Debug.Log(index.ToString() + ":" + pos);
+                //_UV[index] = downVec_L_e * y / this.Row + rightVec_e * x / this.Col; //this.topLeft + downVec_L_e * y + rightVec_e * x;
+                //_UV[index] = new Vector2(((float)x / (float)width), -((float)y / (float)height)) ;
+                _UV[index] = ( this.src_topLeft + UV_downVec_L * y / this.Row + UV_rightVec * x / this.Row ) ;
+
 
             }
         }
