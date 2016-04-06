@@ -24,8 +24,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             //データの登録
 
             this.queue = new Queue<Mat>();
+            (UIHost.GetUI("TimeDelay_DelayTime") as ParameterSlider).ValueChanged += DelayTime_ValueChanged;
 
+        }
 
+        private void DelayTime_ValueChanged(object sender, EventArgs e)
+        {
+            DelayCounter = (int)(e as ParameterSlider.ChangedValue).Value;
         }
 
         public override void ImageProcess(ref Mat src, ref Mat dst)
@@ -44,12 +49,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
 
             this.queue.Enqueue(item);
-            count++;
+            
 
-            if (count > this.DelayCounter) //この値で遅れ時間を調整(UIで変えられる)
+            if (this.queue.Count > this.DelayCounter) //この値で遅れ時間を調整(UIで変えられる)
             {
                 this.queue.Dequeue().CopyTo(dst);
                 
+            }
+
+            if(this.queue.Count > this.DelayCounter)
+            {
+                this.queue.Dequeue();
             }
 
         }

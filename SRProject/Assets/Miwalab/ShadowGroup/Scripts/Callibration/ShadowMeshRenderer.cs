@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ShadowScreen : MonoBehaviour {
+public class ShadowMeshRenderer : MonoBehaviour
+{
 
     //public
     public Vector3 topLeft;
@@ -9,8 +10,16 @@ public class ShadowScreen : MonoBehaviour {
     public Vector3 bottomRight;
     public Vector3 topRight;
 
-    public int Row = 4;
-    public int Col = 4;
+    public Camera ProjectionCamera;
+
+    public Vector3 topLeftofViewPort;
+    public Vector3 bottomLeftofViewPort;
+    public Vector3 bottomRightofViewPort;
+    public Vector3 topRightofViewPort;
+
+
+    public int Row = 10;
+    public int Col = 10;
 
     private Mesh _Mesh;
     private Vector3[] _Vertices;
@@ -20,6 +29,13 @@ public class ShadowScreen : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        Debug.Log("displays connected: " + Display.displays.Length);
+        // Display.displays[0] is the primary, default display and is always ON.
+        // Check if additional displays are available and activate each.
+        if (Display.displays.Length > 1)
+            Display.displays[1].Activate();
+        if (Display.displays.Length > 2)
+            Display.displays[2].Activate();
         //メッシュを作る
         this.CreateMesh(this.Col, this.Row);
         //this.RefreshData();
@@ -29,6 +45,12 @@ public class ShadowScreen : MonoBehaviour {
     void Update()
     {
         //頂点変更
+
+        topLeft = ProjectionCamera.ScreenToWorldPoint(topLeftofViewPort);
+        bottomLeft = ProjectionCamera.ScreenToWorldPoint(bottomLeftofViewPort);
+        bottomRight = ProjectionCamera.ScreenToWorldPoint(bottomRightofViewPort);
+        topRight = ProjectionCamera.ScreenToWorldPoint(topRightofViewPort);
+
 
         //頂点に変更があったらメッシュ再構築
         this.RefreshData();
@@ -78,6 +100,7 @@ public class ShadowScreen : MonoBehaviour {
         _Mesh.uv = _UV;
         _Mesh.triangles = _Triangles;
         _Mesh.RecalculateNormals();
+        _Mesh.RecalculateBounds();
     }
 
     private void RefreshData()
@@ -88,8 +111,8 @@ public class ShadowScreen : MonoBehaviour {
         Vector3 downVec_R = (this.bottomRight - this.topRight) / (this.Row);
         Vector3 downVec_L = (this.bottomLeft - this.topLeft) / (this.Row);
 
-       // Debug.Log(downVec_R);
-       // Debug.Log(downVec_L);
+        // Debug.Log(downVec_R);
+        // Debug.Log(downVec_L);
 
         Vector3 downVec_L_e = downVec_L / downVec_L.magnitude;
 
@@ -98,7 +121,7 @@ public class ShadowScreen : MonoBehaviour {
             Vector3 rightVec = ((this.topRight + downVec_R * y) - (this.topLeft + downVec_L * y)) / (this.Col);
             Vector3 rightVec_e = rightVec / rightVec.magnitude;
 
-          //  Debug.Log(rightVec);
+            //  Debug.Log(rightVec);
 
             for (int x = 0; x < width; x++)
             {
@@ -119,5 +142,6 @@ public class ShadowScreen : MonoBehaviour {
         _Mesh.uv = _UV;
         _Mesh.triangles = _Triangles;
         _Mesh.RecalculateNormals();
+        _Mesh.RecalculateBounds();
     }
 }

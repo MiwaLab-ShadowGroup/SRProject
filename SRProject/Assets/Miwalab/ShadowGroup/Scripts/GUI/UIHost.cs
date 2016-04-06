@@ -5,6 +5,7 @@ using System;
 using Miwalab.ShadowGroup.ImageProcesser;
 using UnityEngine.UI;
 using Miwalab.ShadowGroup.Scripts.Sensors;
+using Miwalab.ShadowGroup.Scripts.Callibration;
 
 public class UIHost : MonoBehaviour
 {
@@ -45,6 +46,7 @@ public class UIHost : MonoBehaviour
 
     public Dropdown ImageProcessingMenu;
     public Dropdown ImportSettingMenu;
+    public Dropdown CallibrationSettingMenu;
 
 
     public GameObject SettingPanel;
@@ -52,7 +54,7 @@ public class UIHost : MonoBehaviour
 
     private List<Dropdown> m_MenuList;
     private Dictionary<string, GameObject> m_PanelDictionary;
-    
+
     public void Start()
     {
         ResetUI();
@@ -67,12 +69,17 @@ public class UIHost : MonoBehaviour
         {
             this.ImportSettingMenu.options.Add(new Dropdown.OptionData(((ImportSettingType)i).ToString()));
         }
+        for (int i = 0; i < (int)CallibrationSettingType.Count; ++i)
+        {
+            this.CallibrationSettingMenu.options.Add(new Dropdown.OptionData(((CallibrationSettingType)i).ToString()));
+        }
         m_MenuList.Add(this.ImageProcessingMenu);
         m_MenuList.Add(this.ImportSettingMenu);
+        m_MenuList.Add(this.CallibrationSettingMenu);
 
-        foreach(var menu in this.m_MenuList)
+        foreach (var menu in this.m_MenuList)
         {
-            foreach(var option in menu.options)
+            foreach (var option in menu.options)
             {
                 GameObject item = Instantiate(SettingPanel);
                 item.transform.SetParent(MainCanvas.gameObject.transform, false);
@@ -82,40 +89,114 @@ public class UIHost : MonoBehaviour
         }
         this.m_currentImageProcesserSettingPanel = m_PanelDictionary[ImageProcesserType.Normal.ToString()];
         this.m_currentImportSettingPanel = m_PanelDictionary[ImportSettingType.Kinect.ToString()];
+        this.m_currentCallibrationSettingPanel = m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()];
+
 
         //UI初期化
         this.CreateUIsImageporcessingNormal(m_PanelDictionary[ImageProcesserType.Normal.ToString()]);
+        this.CreateUIsImageporcessingTimeDelay(m_PanelDictionary[ImageProcesserType.TimeDelay.ToString()]);
         this.CreateUIsImportKinectv2(m_PanelDictionary[ImportSettingType.Kinect.ToString()]);
+
+        this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()]);
+        this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport.ToString()]);
+
 
         this.m_Sensor.setUpUI();
 
         this.ImageProcesserSettingPanelSet(false);
         this.ImportSettingPanelSet(false);
+        this.CallibrationSettingPanelSet(false);
         this.m_Sensor.AddImageProcesser(new Normal());
     }
+
+    
 
     public void ChangeImageProcessingOptionTo(int number)
     {
         ImageProcesserType type = (ImageProcesserType)number;
         this.m_Sensor.RemoveAllImageProcesser();
+
         switch (type)
         {
             case ImageProcesserType.Normal:
                 //一回作って使いまわす
                 this.m_Sensor.AddImageProcesser(new Normal());
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Normal.ToString()];
                 break;
             case ImageProcesserType.CellAutomaton:
                 break;
             case ImageProcesserType.Polygon:
                 this.m_Sensor.AddImageProcesser(new polygon());
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Polygon.ToString()];
                 break;
             case ImageProcesserType.DoubleAfterImage:
                 this.m_Sensor.AddImageProcesser(new Zanzou());
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.DoubleAfterImage.ToString()];
+                break;
+            case ImageProcesserType.TimeDelay:
+                this.m_Sensor.AddImageProcesser(new Timedelay());
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.TimeDelay.ToString()];
                 break;
         }
-        
+        this.SwitchOffOtherPanelsExceptOf(this.m_currentImageProcesserSettingPanel);
+
+    }
+    public void ChangeImportSettingOptionTo(int number)
+    {
+        ImportSettingType type = (ImportSettingType)number;
+
+        switch (type)
+        {
+            case ImportSettingType.Kinect:
+                //一回作って使いまわす
+                this.m_currentImportSettingPanel = this.m_PanelDictionary[ImportSettingType.Kinect.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentImportSettingPanel);
+                break;
+            case ImportSettingType.Camera:
+                this.m_currentImportSettingPanel = this.m_PanelDictionary[ImportSettingType.Camera.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentImportSettingPanel);
+                break;
+
+        }
+
     }
 
+    public void ChangeCallibrationSettingOptionTo(int number)
+    {
+        CallibrationSettingType type = (CallibrationSettingType)number;
+
+        switch (type)
+        {
+            case CallibrationSettingType.CallibrationImport:
+                //一回作って使いまわす
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
+                break;
+            case CallibrationSettingType.CallibrationExport:
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
+                break;
+
+        }
+
+    }
+
+    private void SwitchOffOtherPanelsExceptOf(GameObject currentPanel)
+    {
+        foreach (var panel in m_PanelDictionary)
+        {
+            panel.Value.SetActive(false);
+        }
+        currentPanel.SetActive(true);
+    }
+
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
     #region createUIMethods
     private void CreateUIsImportKinectv2(GameObject parent)
     {
@@ -134,24 +215,53 @@ public class UIHost : MonoBehaviour
     private void CreateUIsImageporcessingNormal(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        //AddFloatUI(parent, "Color_R", 255, 0, 0);
-        //AddFloatUI(parent, "Color_G", 255, 0, 0);
-        //AddFloatUI(parent, "Color_B", 255, 0, 0);
         AddBooleanUI(parent, "Normal_Invert", false);
     }
+    private void CreateUIsImageporcessingTimeDelay(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "TimeDelay_DelayTime", 1000, 0, 0);
+    }
+
+    private void CreateUIsCallibrationImport(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Clb_I_TL_X", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_I_TL_Y", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_I_BL_X", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_I_BL_Y", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_I_BR_X", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_I_BR_Y", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_I_TR_X", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_I_TR_Y", 1000, 0, 0);
+    }
+
+    private void CreateUIsCallibrationExport(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Clb_E_TL_X", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_E_TL_Y", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_E_BL_X", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_E_BL_Y", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_E_BR_X", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_E_BR_Y", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_E_TR_X", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_E_TR_Y", 1000, 0, 0);
+    }
+
     #endregion
 
     #region parts
-    private void AddFloatUI(GameObject parent,string ParameterName,float max,float min, float @default)
+    private void AddFloatUI(GameObject parent, string ParameterName, float max, float min, float @default)
     {
         var slider = Instantiate<ParameterSlider>(m_slider);
-        slider.Title =ParameterName;
+        slider.Title = ParameterName;
         slider.Max = max;
         slider.Min = min;
         slider.DefaultValue = @default;
         slider.gameObject.transform.SetParent(parent.transform, false);
         var recttransform = slider.gameObject.transform as RectTransform;
-        recttransform.anchoredPosition = new Vector2(0,-m_lastUpdatedHeight);
+        recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
         AddUI(ParameterName, slider);
 
@@ -185,6 +295,11 @@ public class UIHost : MonoBehaviour
     public void ImportSettingPanelSet(bool value)
     {
         m_currentImportSettingPanel.SetActive(value);
+    }
+    private GameObject m_currentCallibrationSettingPanel;
+    public void CallibrationSettingPanelSet(bool value)
+    {
+        m_currentCallibrationSettingPanel.SetActive(value);
     }
     #endregion
 }
