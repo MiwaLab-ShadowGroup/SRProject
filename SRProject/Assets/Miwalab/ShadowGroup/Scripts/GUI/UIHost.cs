@@ -47,6 +47,7 @@ public class UIHost : MonoBehaviour
     public Dropdown ImageProcessingMenu;
     public Dropdown ImportSettingMenu;
     public Dropdown CallibrationSettingMenu;
+    public ShadowMeshRenderer m_meshrenderer;
 
 
     public GameObject SettingPanel;
@@ -54,7 +55,6 @@ public class UIHost : MonoBehaviour
 
     private List<Dropdown> m_MenuList;
     private Dictionary<string, GameObject> m_PanelDictionary;
-
     public void Start()
     {
         ResetUI();
@@ -101,12 +101,15 @@ public class UIHost : MonoBehaviour
         this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport.ToString()]);
 
 
+        this.m_meshrenderer.SetUpUIs();
         this.m_Sensor.setUpUI();
 
         this.ImageProcesserSettingPanelSet(false);
         this.ImportSettingPanelSet(false);
         this.CallibrationSettingPanelSet(false);
         this.m_Sensor.AddImageProcesser(new Normal());
+
+
     }
 
     
@@ -226,27 +229,27 @@ public class UIHost : MonoBehaviour
     private void CreateUIsCallibrationImport(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddFloatUI(parent, "Clb_I_TL_X", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_I_TL_Y", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_I_BL_X", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_I_BL_Y", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_I_BR_X", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_I_BR_Y", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_I_TR_X", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_I_TR_Y", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_I_TL_X", 1, 0, 0);
+        AddFloatUI(parent, "Clb_I_TL_Y", 1, 0, 0);
+        AddFloatUI(parent, "Clb_I_BL_X", 1, 0, 0);
+        AddFloatUI(parent, "Clb_I_BL_Y", 1, 0, 1);
+        AddFloatUI(parent, "Clb_I_BR_X", 1, 0, 1);
+        AddFloatUI(parent, "Clb_I_BR_Y", 1, 0, 1);
+        AddFloatUI(parent, "Clb_I_TR_X", 1, 0, 1);
+        AddFloatUI(parent, "Clb_I_TR_Y", 1, 0, 0);
     }
 
     private void CreateUIsCallibrationExport(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddFloatUI(parent, "Clb_E_TL_X", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_E_TL_Y", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_E_BL_X", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_E_BL_Y", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_E_BR_X", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_E_BR_Y", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_E_TR_X", 1000, 0, 0);
-        AddFloatUI(parent, "Clb_E_TR_Y", 1000, 0, 0);
+        AddFloatUI(parent, "Clb_E_TL_X", 2000, 0, 0);
+        AddFloatUI(parent, "Clb_E_TL_Y", 2000, 0, Screen.height);
+        AddFloatUI(parent, "Clb_E_BL_X", 2000, 0, 0);
+        AddFloatUI(parent, "Clb_E_BL_Y", 2000, 0, 0);
+        AddFloatUI(parent, "Clb_E_BR_X", 2000, 0, Screen.width);
+        AddFloatUI(parent, "Clb_E_BR_Y", 2000, 0, 0);
+        AddFloatUI(parent, "Clb_E_TR_X", 2000, 0, Screen.width);
+        AddFloatUI(parent, "Clb_E_TR_Y", 2000, 0, Screen.height);
     }
 
     #endregion
