@@ -95,6 +95,11 @@ public class UIHost : MonoBehaviour
         //UI初期化
         this.CreateUIsImageporcessingNormal(m_PanelDictionary[ImageProcesserType.Normal.ToString()]);
         this.CreateUIsImageporcessingTimeDelay(m_PanelDictionary[ImageProcesserType.TimeDelay.ToString()]);
+
+        this.CreateUIsImageporcessingSpike(m_PanelDictionary[ImageProcesserType.Spike.ToString()]);
+        this.CreateUIsImageporcessingPolygon(m_PanelDictionary[ImageProcesserType.Polygon.ToString()]);
+
+
         this.CreateUIsImportKinectv2(m_PanelDictionary[ImportSettingType.Kinect.ToString()]);
 
         this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()]);
@@ -139,6 +144,14 @@ public class UIHost : MonoBehaviour
             case ImageProcesserType.TimeDelay:
                 this.m_Sensor.AddImageProcesser(new Timedelay());
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.TimeDelay.ToString()];
+                break;
+            case ImageProcesserType.TamuraSkeleton:
+                this.m_Sensor.AddImageProcesser(new TamuraSkelton());
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.TamuraSkeleton.ToString()];
+                break;
+            case ImageProcesserType.Spike:
+                this.m_Sensor.AddImageProcesser(new Spike());
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Spike.ToString()];
                 break;
         }
         this.SwitchOffOtherPanelsExceptOf(this.m_currentImageProcesserSettingPanel);
@@ -201,6 +214,32 @@ public class UIHost : MonoBehaviour
         }
     }
     #region createUIMethods
+    private void CreateUIsImageporcessingPolygon(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Polygon_con_R", 255, 0, 100);
+        AddFloatUI(parent, "Polygon_con_G", 255, 0, 0);
+        AddFloatUI(parent, "Polygon_con_B", 255, 0, 0);
+        AddFloatUI(parent, "Polygon_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "Polygon_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "Polygon_bgd_B", 255, 0, 0);
+
+    }
+
+    private void CreateUIsImageporcessingSpike(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Spike_inval", 100, 1, 10);
+        AddFloatUI(parent, "Spike_lngth", 50, 1, 5);
+        AddFloatUI(parent, "Spike_rdius", 5, 1, 1);
+        AddFloatUI(parent, "Spike_con_R", 255, 0, 27);
+        AddFloatUI(parent, "Spike_con_G", 255, 0, 206);
+        AddFloatUI(parent, "Spike_con_B", 255, 0, 135);
+        AddFloatUI(parent, "Spike_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "Spike_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "Spike_bgd_B", 255, 0, 0);
+    }
+
     private void CreateUIsImportKinectv2(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
@@ -229,27 +268,29 @@ public class UIHost : MonoBehaviour
     private void CreateUIsCallibrationImport(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddFloatUI(parent, "Clb_I_TL_X", 1, 0, 0);
-        AddFloatUI(parent, "Clb_I_TL_Y", 1, 0, 0);
-        AddFloatUI(parent, "Clb_I_BL_X", 1, 0, 0);
-        AddFloatUI(parent, "Clb_I_BL_Y", 1, 0, 1);
-        AddFloatUI(parent, "Clb_I_BR_X", 1, 0, 1);
-        AddFloatUI(parent, "Clb_I_BR_Y", 1, 0, 1);
-        AddFloatUI(parent, "Clb_I_TR_X", 1, 0, 1);
-        AddFloatUI(parent, "Clb_I_TR_Y", 1, 0, 0);
+        AddFloatUI(parent, "Clb_I_TL_X", 2, -1, 0);
+        AddFloatUI(parent, "Clb_I_TL_Y", 2, -1, 0);
+        AddFloatUI(parent, "Clb_I_BL_X", 2, -1, 0);
+        AddFloatUI(parent, "Clb_I_BL_Y", 2, -1, 1);
+        AddFloatUI(parent, "Clb_I_BR_X", 2, -1, 1);
+        AddFloatUI(parent, "Clb_I_BR_Y", 2, -1, 1);
+        AddFloatUI(parent, "Clb_I_TR_X", 2, -1, 1);
+        AddFloatUI(parent, "Clb_I_TR_Y", 2, -1, 0);
     }
 
     private void CreateUIsCallibrationExport(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddFloatUI(parent, "Clb_E_TL_X", 2000, 0, 0);
-        AddFloatUI(parent, "Clb_E_TL_Y", 2000, 0, Screen.height);
-        AddFloatUI(parent, "Clb_E_BL_X", 2000, 0, 0);
-        AddFloatUI(parent, "Clb_E_BL_Y", 2000, 0, 0);
-        AddFloatUI(parent, "Clb_E_BR_X", 2000, 0, Screen.width);
-        AddFloatUI(parent, "Clb_E_BR_Y", 2000, 0, 0);
-        AddFloatUI(parent, "Clb_E_TR_X", 2000, 0, Screen.width);
-        AddFloatUI(parent, "Clb_E_TR_Y", 2000, 0, Screen.height);
+        AddFloatUI(parent, "Clb_E_TL_X", 2000, -1000, 0);
+        AddFloatUI(parent, "Clb_E_TL_Y", 2000, -1000, Screen.height);
+        AddFloatUI(parent, "Clb_E_BL_X", 2000, -1000, 0);
+        AddFloatUI(parent, "Clb_E_BL_Y", 2000, -1000, 0);
+        AddFloatUI(parent, "Clb_E_BR_X", 2000, -1000, Screen.width);
+        AddFloatUI(parent, "Clb_E_BR_Y", 2000, -1000, 0);
+        AddFloatUI(parent, "Clb_E_TR_X", 2000, -1000, Screen.width);
+        AddFloatUI(parent, "Clb_E_TR_Y", 2000, -1000, Screen.height);
+
+        AddBooleanUI(parent, "Clb_E_Vsbl", true);
     }
 
     #endregion
