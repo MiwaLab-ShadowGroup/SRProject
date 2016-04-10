@@ -26,6 +26,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private int __w;
         private int __h;
 
+        Scalar insidecolor;
+        Scalar outsidecolor;
+        
+        double innertime;
+        double outertime;
+        double parameter;
+
         public bool IsFirstFrame { get; private set; }
 
         public override void ImageProcess(ref Mat src, ref Mat dst)
@@ -45,6 +52,71 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
 
         #endregion
+
+        public Zanzou():base()
+        {
+            (UIHost.GetUI("Zanzou_ins_R") as ParameterSlider).ValueChanged += Zanzou_ins_R_ValueChanged;
+            (UIHost.GetUI("Zanzou_ins_G") as ParameterSlider).ValueChanged += Zanzou_ins_G_ValueChanged;
+            (UIHost.GetUI("Zanzou_ins_B") as ParameterSlider).ValueChanged += Zanzou_ins_B_ValueChanged;
+            (UIHost.GetUI("Zanzou_out_R") as ParameterSlider).ValueChanged += Zanzou_out_R_ValueChanged;
+            (UIHost.GetUI("Zanzou_out_G") as ParameterSlider).ValueChanged += Zanzou_out_G_ValueChanged;
+            (UIHost.GetUI("Zanzou_out_B") as ParameterSlider).ValueChanged += Zanzou_out_B_ValueChanged;
+            (UIHost.GetUI("Zanzou_in_tm") as ParameterSlider).ValueChanged += Zanzou_in_tm_ValueChanged;
+            (UIHost.GetUI("Zanzou_ou_tm") as ParameterSlider).ValueChanged += Zanzou_ou_tm_ValueChanged;
+            (UIHost.GetUI("Zanzou_param") as ParameterSlider).ValueChanged += Zanzou_param_ValueChanged;
+
+        }
+
+        private void Zanzou_param_ValueChanged(object sender, EventArgs e)
+        {
+            this.parameter = (double)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void Zanzou_ou_tm_ValueChanged(object sender, EventArgs e)
+        {
+            this.outertime = (double)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void Zanzou_in_tm_ValueChanged(object sender, EventArgs e)
+        {
+            this.innertime = (double)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void Zanzou_out_B_ValueChanged(object sender, EventArgs e)
+        {
+            this.outsidecolor.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void Zanzou_out_G_ValueChanged(object sender, EventArgs e)
+        {
+            this.outsidecolor.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void Zanzou_out_R_ValueChanged(object sender, EventArgs e)
+        {
+            this.outsidecolor.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void Zanzou_ins_B_ValueChanged(object sender, EventArgs e)
+        {
+            this.insidecolor.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void Zanzou_ins_G_ValueChanged(object sender, EventArgs e)
+        {
+            this.insidecolor.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void Zanzou_ins_R_ValueChanged(object sender, EventArgs e)
+        {
+            this.insidecolor.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
+
+        }
 
         private void Update(ref Mat src, ref Mat dst)
         {
@@ -128,12 +200,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 ////残像処理***************************************************
 
 
-                innerGrayBuffer2 -= 0.2;        //param.slider[0];
-                outerGrayBuffer2 -= 10;   //param.slider[1];
+                innerGrayBuffer2 -= innertime;        //param.slider[0];
+                outerGrayBuffer2 -= outertime;   //param.slider[1];
 
                 outerGrayBuffer2 += tmp_bufImage_next3;
 
-                innerGrayBuffer2 += tmp_bufImage_next3.Clone() - 230.0;
+                innerGrayBuffer2 += tmp_bufImage_next3.Clone() - parameter;
 
 
                 for (int i = 0; i < 3; i++)
@@ -147,16 +219,19 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 }
 
 
-                Mat tmpColorBuffer2 = new Mat(new Size(bufimage.Width, bufimage.Height), MatType.CV_8UC3, new Scalar(255, 255, 255));
-                outerColorBuffer2.SetTo(new Scalar(255, 255, 255), null);
+                Mat tmpColorBuffer2 = new Mat(new Size(bufimage.Width, bufimage.Height), MatType.CV_8UC3,new Scalar(255,255,255));
+                outerColorBuffer2.SetTo(outsidecolor, null);
                 Cv2.CvtColor(outerGrayBuffer2, tmpColorBuffer2, OpenCvSharp.ColorConversion.GrayToBgr);
                 Cv2.Multiply(outerColorBuffer2, tmpColorBuffer2, outerColorBuffer2, 1.0 / 255.0);
-                innerColorBuffer2.SetTo(new Scalar(255, 255, 255), null);
+                innerColorBuffer2.SetTo(insidecolor, null);
                 Cv2.CvtColor(innerGrayBuffer2, tmpColorBuffer2, OpenCvSharp.ColorConversion.GrayToBgr);
                 Cv2.Multiply(innerColorBuffer2, tmpColorBuffer2, innerColorBuffer2, 1.0 / 255.0);
 
                 outerColorBuffer2 -= innerColorBuffer2;
+
                 outerColorBuffer2.GaussianBlur(new Size(3, 3), 3).CopyTo(dst);
+
+                
                 ////***********************************************************
                 //bufimage_pre = bufimage;
                 //bufimage_pre -= 20.0;
