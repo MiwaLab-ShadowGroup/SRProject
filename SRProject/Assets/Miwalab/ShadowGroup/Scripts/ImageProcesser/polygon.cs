@@ -22,9 +22,53 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         // Mat dstMat = new Mat()
         Random rand = new Random();
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
+        Scalar color;
+        Scalar colorBack;
 
-        public polygon()
+
+        public polygon():base()
         {
+            (UIHost.GetUI("Polygon_con_R") as ParameterSlider).ValueChanged += Polygon_con_R_ValueChanged;
+            (UIHost.GetUI("Polygon_con_G") as ParameterSlider).ValueChanged += Polygon_con_G_ValueChanged;
+            (UIHost.GetUI("Polygon_con_B") as ParameterSlider).ValueChanged += Polygon_con_B_ValueChanged;
+            (UIHost.GetUI("Polygon_bgd_R") as ParameterSlider).ValueChanged += Polygon_bgd_R_ValueChanged;
+            (UIHost.GetUI("Polygon_bgd_G") as ParameterSlider).ValueChanged += Polygon_bgd_G_ValueChanged;
+            (UIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueChanged += Polygon_bgd_B_ValueChanged;
+        }
+
+        private void Polygon_con_R_ValueChanged(object sender, EventArgs e)
+        {
+            this.color.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void Polygon_con_G_ValueChanged(object sender, EventArgs e)
+        {
+            this.color.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void Polygon_con_B_ValueChanged(object sender, EventArgs e)
+        {
+            this.color.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
+            
+        }
+
+        private void Polygon_bgd_R_ValueChanged(object sender, EventArgs e)
+        {
+            this.colorBack.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void Polygon_bgd_G_ValueChanged(object sender, EventArgs e)
+        {
+            this.colorBack.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void Polygon_bgd_B_ValueChanged(object sender, EventArgs e)
+        {
+            this.colorBack.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
@@ -59,8 +103,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
             var _contour = List_Contours.ToArray();
 
-            dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3,Scalar.Black);
-            Cv2.DrawContours(dst, _contour, 0, Scalar.Aqua, -1, OpenCvSharp.LineType.Link8);
+            dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3,colorBack);
+            Cv2.DrawContours(dst, _contour, 0, color, -1, OpenCvSharp.LineType.Link8);
         }
 
         public override string ToString()

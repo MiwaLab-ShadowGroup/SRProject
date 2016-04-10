@@ -34,8 +34,10 @@ public class ShadowMeshRenderer : MonoBehaviour
     private int[] _Triangles;
 
 
-    public GameObject PointObject;
-    private List<GameObject> PointObjectList; 
+    public GameObject PointObjectDst;
+    public GameObject PointObjectSrc;
+    public Camera CameraSrc;
+    private List<GameObject> PointObjectList;
 
     // Use this for initialization
     public void SetUpUIs()
@@ -69,14 +71,32 @@ public class ShadowMeshRenderer : MonoBehaviour
         (UIHost.GetUI("Clb_E_TR_X") as ParameterSlider).ValueChanged += Clb_E_TR_XChanged;
         (UIHost.GetUI("Clb_E_TR_Y") as ParameterSlider).ValueChanged += Clb_E_TR_YChanged;
 
+        (UIHost.GetUI("Clb_E_Vsbl") as ParameterCheckbox).ValueChanged += Clb_E_VsblChanged;
+
 
         //pointobject
         this.PointObjectList = new List<GameObject>();
         for (int i = 0; i < 4; ++i)
         {
-            var item = Instantiate(PointObject);
+            var item = Instantiate(PointObjectDst);
             item.transform.SetParent(this.gameObject.transform);
             PointObjectList.Add(item);
+        }
+
+        for (int i = 0; i < 4; ++i)
+        {
+            var item = Instantiate(PointObjectSrc);
+            item.transform.SetParent(this.gameObject.transform);
+            PointObjectList.Add(item);
+        }
+    }
+
+    private void Clb_E_VsblChanged(object sender, EventArgs e)
+    {
+        var visible = (e as ParameterCheckbox.ChangedValue).Value;
+        for (int i = 0; i < 8; ++i)
+        {
+            this.PointObjectList[i].gameObject.SetActive(visible);
         }
     }
 
@@ -119,7 +139,7 @@ public class ShadowMeshRenderer : MonoBehaviour
 
     private void Clb_E_TL_XChanged(object sender, EventArgs e)
     {
-        this.topLeftofViewPort.x= (e as ParameterSlider.ChangedValue).Value;
+        this.topLeftofViewPort.x = (e as ParameterSlider.ChangedValue).Value;
         UpdatePos();
     }
 
@@ -194,8 +214,19 @@ public class ShadowMeshRenderer : MonoBehaviour
         this.PointObjectList[2].transform.position = bottomRight;
         this.PointObjectList[3].transform.position = topRight;
 
+        this.PointObjectList[4].transform.position = CameraSrc.ScreenToWorldPoint(this.ConvertUVPointToScreenPoint(src_topLeft));
+        this.PointObjectList[5].transform.position = CameraSrc.ScreenToWorldPoint(this.ConvertUVPointToScreenPoint(src_bottomLeft));
+        this.PointObjectList[6].transform.position = CameraSrc.ScreenToWorldPoint(this.ConvertUVPointToScreenPoint(src_bottomRight));
+        this.PointObjectList[7].transform.position = CameraSrc.ScreenToWorldPoint(this.ConvertUVPointToScreenPoint(src_topRight));
+
+
         //頂点に変更があったらメッシュ再構築
         this.RefreshData();
+    }
+
+    private Vector3 ConvertUVPointToScreenPoint(Vector3 point)
+    {
+        return new Vector3(point.x * Screen.width, point.y * Screen.height, 1);
     }
 
     void CreateMesh(int width, int height)
@@ -254,7 +285,7 @@ public class ShadowMeshRenderer : MonoBehaviour
         Vector3 downVec_L = (this.bottomLeft - this.topLeft) / (this.Row);
 
         Vector3 UV_downVec_R = (this.src_bottomRight - this.src_topRight);
-        Vector3 UV_downVec_L = (this.src_bottomLeft -  this.src_topLeft) ;
+        Vector3 UV_downVec_L = (this.src_bottomLeft - this.src_topLeft);
 
 
         //Debug.Log(downVec_R);
@@ -269,7 +300,7 @@ public class ShadowMeshRenderer : MonoBehaviour
 
             Vector3 UV_rightVec = ((this.src_topRight + UV_downVec_R * y / this.Row) - (this.src_topLeft + UV_downVec_L * y / this.Row));
 
-          //  Debug.Log(rightVec);
+            //  Debug.Log(rightVec);
 
             for (int x = 0; x < width; x++)
             {
@@ -283,7 +314,7 @@ public class ShadowMeshRenderer : MonoBehaviour
                 //Debug.Log(index.ToString() + ":" + pos);
                 //_UV[index] = downVec_L_e * y / this.Row + rightVec_e * x / this.Col; //this.topLeft + downVec_L_e * y + rightVec_e * x;
                 //_UV[index] = new Vector2(((float)x / (float)width), -((float)y / (float)height)) ;
-                _UV[index] = ( this.src_topLeft + UV_downVec_L * y / this.Col + UV_rightVec * x / this.Row ) ;
+                _UV[index] = (this.src_topLeft + UV_downVec_L * y / this.Col + UV_rightVec * x / this.Row);
 
 
             }

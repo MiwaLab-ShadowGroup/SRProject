@@ -28,6 +28,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         TimeDelay,
         /// <summary>
+        /// 田村スケルトン
+        /// </summary>
+        TamuraSkeleton,
+        /// <summary>
+        /// ハリネズミ影
+        /// </summary>
+        Spike,
+        /// <summary>
         /// 個数を数えるためのもの．消したら処刑
         /// </summary>
         Count,

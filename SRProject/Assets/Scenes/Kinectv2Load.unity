@@ -920,7 +920,9 @@ MonoBehaviour:
   topRightofViewPort: {x: 0, y: 480, z: 1}
   Row: 10
   Col: 10
-  PointObject: {fileID: 198270, guid: eafb5341e1835a94cac6407877a9c4a2, type: 2}
+  PointObjectDst: {fileID: 198270, guid: eafb5341e1835a94cac6407877a9c4a2, type: 2}
+  PointObjectSrc: {fileID: 164426, guid: a938f3282c4ab524fab0bac55c28c9b5, type: 2}
+  CameraSrc: {fileID: 687617734}
 --- !u!1 &241750976
 GameObject:
   m_ObjectHideFlags: 0
