@@ -98,6 +98,7 @@ public class UIHost : MonoBehaviour
 
         this.CreateUIsImageporcessingSpike(m_PanelDictionary[ImageProcesserType.Spike.ToString()]);
         this.CreateUIsImageporcessingPolygon(m_PanelDictionary[ImageProcesserType.Polygon.ToString()]);
+        this.CreateUIsImageporcessingZanzou(m_PanelDictionary[ImageProcesserType.DoubleAfterImage.ToString()]);
 
 
         this.CreateUIsImportKinectv2(m_PanelDictionary[ImportSettingType.Kinect.ToString()]);
@@ -219,6 +220,22 @@ public class UIHost : MonoBehaviour
         }
     }
     #region createUIMethods
+
+    private void CreateUIsImageporcessingZanzou(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Zanzou_ins_R", 255, 0, 255);
+        AddFloatUI(parent, "Zanzou_ins_G", 255, 0, 255);
+        AddFloatUI(parent, "Zanzou_ins_B", 255, 0, 255);
+        AddFloatUI(parent, "Zanzou_out_R", 255, 0, 0);
+        AddFloatUI(parent, "Zanzou_out_G", 255, 0, 255);
+        AddFloatUI(parent, "Zanzou_out_B", 255, 0, 0);
+        AddFloatUI(parent, "Zanzou_in_tm", 1, 0, 0.2f);
+        AddFloatUI(parent, "Zanzou_ou_tm", 10, 0, 10);
+        AddFloatUI(parent, "Zanzou_param", 1000, 0, 230);
+
+    }
+
     private void CreateUIsImageporcessingPolygon(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
