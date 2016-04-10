@@ -12,6 +12,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         Normal,
         /// <summary>
+        /// きれい　自影
+        /// </summary>
+        VividNormal,
+        /// <summary>
         /// CA
         /// </summary>
         CellAutomaton,
