@@ -132,6 +132,11 @@ public class UIHost : MonoBehaviour
                 this.m_Sensor.AddImageProcesser(new Normal());
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Normal.ToString()];
                 break;
+            case ImageProcesserType.VividNormal:
+                //一回作って使いまわす
+                this.m_Sensor.AddImageProcesser(new VividNormal());
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.VividNormal.ToString()];
+                break;
             case ImageProcesserType.CellAutomaton:
                 break;
             case ImageProcesserType.Polygon:
