@@ -76,7 +76,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             this.List_Contours.Clear();
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
-                          
+                      
+            dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3,colorBack);
+
             Point[][] contour;//= grayimage.FindContoursAsArray(OpenCvSharp.ContourRetrieval.External, OpenCvSharp.ContourChain.ApproxSimple);
             HierarchyIndex[] hierarchy;
 
@@ -86,9 +88,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             
             for (int i = 0; i < contour.Length; i++)
             {
-                if(Cv2.ContourArea(contour[i]) > 1000)
+
+                CvPoints.Clear();
+
+                if (Cv2.ContourArea(contour[i]) > 1000)
                 {
-                    CvPoints.Clear();
+                    
 
                     for (int j = 0; j < contour[i].Length; j += this.sharpness)
                     {
@@ -97,14 +102,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     }
 
                     this.List_Contours.Add(CvPoints);
-                    //Cv2.FillConvexPoly(dst, CvPoints, Scalar.Yellow,  OpenCvSharp.LineType.Link4, 0);
+
+                    var _contour = List_Contours.ToArray();
+
+                    Cv2.DrawContours(dst, _contour, 0, color, -1, OpenCvSharp.LineType.Link8);
                 }
                 
             }
-            var _contour = List_Contours.ToArray();
-
-            dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3,colorBack);
-            Cv2.DrawContours(dst, _contour, 0, color, -1, OpenCvSharp.LineType.Link8);
+            
         }
 
         public override string ToString()
