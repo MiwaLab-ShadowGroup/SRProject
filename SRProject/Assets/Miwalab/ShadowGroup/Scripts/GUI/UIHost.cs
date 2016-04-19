@@ -6,6 +6,7 @@ using Miwalab.ShadowGroup.ImageProcesser;
 using UnityEngine.UI;
 using Miwalab.ShadowGroup.Scripts.Sensors;
 using Miwalab.ShadowGroup.Scripts.Callibration;
+using Miwalab.ShadowGroup.AfterEffect;
 
 public class UIHost : MonoBehaviour
 {
@@ -128,12 +129,11 @@ public class UIHost : MonoBehaviour
         switch (type)
         {
             case ImageProcesserType.Normal:
-                //一回作って使いまわす
                 this.m_Sensor.AddImageProcesser(new Normal());
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Normal.ToString()];
                 break;
             case ImageProcesserType.VividNormal:
-                //一回作って使いまわす
                 this.m_Sensor.AddImageProcesser(new VividNormal());
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.VividNormal.ToString()];
                 break;
@@ -242,9 +242,9 @@ public class UIHost : MonoBehaviour
         AddFloatUI(parent, "Polygon_con_R", 255, 0, 100);
         AddFloatUI(parent, "Polygon_con_G", 255, 0, 0);
         AddFloatUI(parent, "Polygon_con_B", 255, 0, 0);
-        AddFloatUI(parent, "Polygon_bgd_R", 255, 0, 0);
-        AddFloatUI(parent, "Polygon_bgd_G", 255, 0, 0);
-        AddFloatUI(parent, "Polygon_bgd_B", 255, 0, 0);
+        AddFloatUI(parent, "Polygon_bgd_R", 255, 0, 255);
+        AddFloatUI(parent, "Polygon_bgd_G", 255, 0, 255);
+        AddFloatUI(parent, "Polygon_bgd_B", 255, 0, 255);
 
     }
 
@@ -257,7 +257,7 @@ public class UIHost : MonoBehaviour
         AddFloatUI(parent, "Spike_con_R", 255, 0, 27);
         AddFloatUI(parent, "Spike_con_G", 255, 0, 206);
         AddFloatUI(parent, "Spike_con_B", 255, 0, 135);
-        AddFloatUI(parent, "Spike_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "Spike_bgd_R", 255, 0, 255);
         AddFloatUI(parent, "Spike_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "Spike_bgd_B", 255, 0, 0);
     }

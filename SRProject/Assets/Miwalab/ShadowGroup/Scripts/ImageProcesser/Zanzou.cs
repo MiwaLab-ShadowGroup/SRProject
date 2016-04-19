@@ -8,7 +8,7 @@ using OpenCvSharp;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    public class Zanzou : AImageProcesser
+    public class Zanzou : AShadowImageProcesser
     {
         private List<List<bool>> m_Field = new List<List<bool>>();
         private bool IsInit = false;

@@ -7,7 +7,7 @@ using OpenCvSharp.CPlusPlus;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    public class Timedelay : AImageProcesser
+    public class Timedelay : AShadowImageProcesser
     {
         private int DelayCounter;
 

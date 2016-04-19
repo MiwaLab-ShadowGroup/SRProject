@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    public class VividNormal : AImageProcesser
+    public class VividNormal : AShadowImageProcesser
     {
         private bool invert;
         public VividNormal()

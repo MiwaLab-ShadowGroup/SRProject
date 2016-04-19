@@ -7,7 +7,7 @@ using OpenCvSharp.CPlusPlus;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    class polygon : AImageProcesser
+    class polygon : AShadowImageProcesser
     {
         
         public override void ImageProcess(ref Mat src, ref Mat dst)
@@ -19,12 +19,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         int sharpness = 50;
         private Mat grayimage = new Mat();
+        private Mat dstMat = new Mat();
         // Mat dstMat = new Mat()
         Random rand = new Random();
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
         Scalar color;
         Scalar colorBack;
 
+        int count = 0;
 
         public polygon():base()
         {
@@ -72,12 +74,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         }
 
+
         private void Update(ref Mat src, ref Mat dst)
         {
+
             this.List_Contours.Clear();
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
                       
-            dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3,colorBack);
+            //dstMat = new Mat(dst.Height, dst.Width, MatType.CV_8UC4,colorBack);
+            dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3 , colorBack);
 
             Point[][] contour;//= grayimage.FindContoursAsArray(OpenCvSharp.ContourRetrieval.External, OpenCvSharp.ContourChain.ApproxSimple);
             HierarchyIndex[] hierarchy;
@@ -93,7 +98,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                 if (Cv2.ContourArea(contour[i]) > 1000)
                 {
-                    
 
                     for (int j = 0; j < contour[i].Length; j += this.sharpness)
                     {
@@ -109,7 +113,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 }
                 
             }
-            
+            //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
+           
+
         }
 
         public override string ToString()

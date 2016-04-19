@@ -7,7 +7,7 @@ using OpenCvSharp.CPlusPlus;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    public class Normal : AImageProcesser
+    public class Normal : AShadowImageProcesser
     {
         private bool invert;
         public Normal()

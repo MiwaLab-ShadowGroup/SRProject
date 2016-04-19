@@ -7,7 +7,7 @@ using OpenCvSharp;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    public class TamuraSkelton : AImageProcesser
+    public class TamuraSkelton : AShadowImageProcesser
     {
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
@@ -18,9 +18,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         Mat dstMat;
         Mat resizedMat = new Mat();
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
+        Scalar colorBack;
+        int count;
 
         private void Update(ref Mat src, ref Mat dst)
         {
+            
             int imgW = 80;
             int imgH = 60;
             int srcW = src.Width;
@@ -28,7 +31,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             
             Cv2.Resize(src,this.resizedMat, new Size(imgW, imgH),0,0,Interpolation.Linear);
             int channel = src.Channels();
-            this.dstMat = new Mat(imgH, imgW, MatType.CV_8UC3, Scalar.Black);
+            this.dstMat = new Mat(imgH, imgW, MatType.CV_8UC3,colorBack);
 
             //Cv2.CvtColor(src, this.grayimage, OpenCvSharp.ColorConversion.BgrToGray);
             
@@ -182,6 +185,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             //dst = this.dstMat.Clone();
            Cv2.Resize(this.dstMat, dst, new Size(srcW, srcH), 0, 0, Interpolation.Linear);
+
+            
         }
 
         //  細線化サブ（パターンの一致検証、一致ならTrue）
@@ -215,7 +220,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         public override string ToString()
         {
-            return "Skeleton_Mahoo";
+            return "TamuraSkeleton";
         }
 
         public override ImageProcesserType getImageProcesserType()

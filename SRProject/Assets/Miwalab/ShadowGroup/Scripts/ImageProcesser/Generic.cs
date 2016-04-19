@@ -44,4 +44,5 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         Count,
     }
+
 }
