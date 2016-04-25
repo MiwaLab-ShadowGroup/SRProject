@@ -39,6 +39,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (UIHost.GetUI("Spike_bgd_R") as ParameterSlider).ValueChanged += Spike_bgd_R_Changed;
             (UIHost.GetUI("Spike_bgd_G") as ParameterSlider).ValueChanged += Spike_bgd_G_Changed;
             (UIHost.GetUI("Spike_bgd_B") as ParameterSlider).ValueChanged += Spike_bgd_B_Changed;
+            (UIHost.GetUI("Spike_inval") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_lngth") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_rdius") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_con_R") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_con_G") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_con_B") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_bgd_R") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_bgd_G") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_bgd_B") as ParameterSlider).ValueUpdate();
         }
 
         private void Spike_bgd_B_Changed(object sender, EventArgs e)

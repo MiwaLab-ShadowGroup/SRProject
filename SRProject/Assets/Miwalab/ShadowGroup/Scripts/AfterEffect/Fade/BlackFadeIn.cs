@@ -18,8 +18,10 @@ namespace Miwalab.ShadowGroup.AfterEffect.Fade
 
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
+
             dst = src * ((double)(this.m_CurrentFrame) / this.m_FinishFrame);
             this.UpdateCurrentFrame();
         }
+
     }
 }

@@ -32,6 +32,7 @@ namespace Miwalab.ShadowGroup.AfterEffect.Fade
         {
             return m_CurrentFrame;
         }
+
         public int GetFinishFrame()
         {
             return m_FinishFrame;

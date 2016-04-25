@@ -11,6 +11,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
     {
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
+            if (!IsInit)
+            {
+                this.Initialize();
+                this.IsInit = true;
+            }
+
+
             this.Update(ref src, ref dst);
         }
 
@@ -20,21 +27,46 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
         Scalar colorBack;
         int count;
+        private Mat m_element;
+        bool IsInit;
+        private bool invert;
+
+
+        void Initialize()
+        {
+            this.m_element = new Mat(3, 3, MatType.CV_8UC1, new Scalar(1));
+            this.m_element.Set<byte>(0, 0, 0);
+            this.m_element.Set<byte>(2, 0, 0);
+            this.m_element.Set<byte>(0, 2, 0);
+            this.m_element.Set<byte>(2, 2, 0);
+        }
+
+        public TamuraSkelton() : base()
+        {
+            (UIHost.GetUI("TamuraSkeleton_Invert") as ParameterCheckbox).ValueChanged += TamuraSkelton_ValueChanged; ;
+
+        }
+
+        private void TamuraSkelton_ValueChanged(object sender, EventArgs e)
+        {
+            this.invert = (e as ParameterCheckbox.ChangedValue).Value;
+        }
+
 
         private void Update(ref Mat src, ref Mat dst)
         {
-            
+
             int imgW = 80;
             int imgH = 60;
             int srcW = src.Width;
             int srcH = src.Height;
-            
-            Cv2.Resize(src,this.resizedMat, new Size(imgW, imgH),0,0,Interpolation.Linear);
+
+            Cv2.Resize(src, this.resizedMat, new Size(imgW, imgH), 0, 0, Interpolation.Linear);
             int channel = src.Channels();
-            this.dstMat = new Mat(imgH, imgW, MatType.CV_8UC3,colorBack);
+            this.dstMat = new Mat(imgH, imgW, MatType.CV_8UC3, colorBack);
 
             //Cv2.CvtColor(src, this.grayimage, OpenCvSharp.ColorConversion.BgrToGray);
-            
+
             int[,] b = new int[imgH, imgW];
 
             //細線化(田村の方法)
@@ -178,15 +210,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                         *(dstPtr + i * channel + 1) = 255;
                         *(dstPtr + i * channel + 2) = 255;
                     }
-                   
+
                 }
             }
             //Console.WriteLine("OK");
 
             //dst = this.dstMat.Clone();
-           Cv2.Resize(this.dstMat, dst, new Size(srcW, srcH), 0, 0, Interpolation.Linear);
+            Cv2.Resize(this.dstMat, dst, new Size(srcW, srcH), 0, 0, Interpolation.Linear);
 
-            
+            if (invert)
+            {
+                dst = ~dst;
+            }
+            //Cv2.Dilate(dst, dst, m_element, null, 2);
+            //Cv2.Erode(dst, dst, m_element, null, 2);
         }
 
         //  細線化サブ（パターンの一致検証、一致ならTrue）

@@ -26,7 +26,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         Scalar color;
         Scalar colorBack;
 
-        int count = 0;
 
         public polygon():base()
         {
@@ -36,6 +35,21 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (UIHost.GetUI("Polygon_bgd_R") as ParameterSlider).ValueChanged += Polygon_bgd_R_ValueChanged;
             (UIHost.GetUI("Polygon_bgd_G") as ParameterSlider).ValueChanged += Polygon_bgd_G_ValueChanged;
             (UIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueChanged += Polygon_bgd_B_ValueChanged;
+            (UIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueChanged += Polygon_Rate_ValueChanged;
+
+
+            (UIHost.GetUI("Polygon_con_R") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Polygon_con_G") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Polygon_con_B") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Polygon_bgd_R") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Polygon_bgd_G") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueUpdate();
+        }
+
+        private void Polygon_Rate_ValueChanged(object sender, EventArgs e)
+        {
+            this.sharpness = (int)(e as ParameterSlider.ChangedValue).Value;
         }
 
         private void Polygon_con_R_ValueChanged(object sender, EventArgs e)

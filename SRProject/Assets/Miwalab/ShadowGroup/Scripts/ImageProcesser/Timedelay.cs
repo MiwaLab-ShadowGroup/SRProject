@@ -26,6 +26,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.queue = new Queue<Mat>();
             (UIHost.GetUI("TimeDelay_DelayTime") as ParameterSlider).ValueChanged += DelayTime_ValueChanged;
 
+            (UIHost.GetUI("TimeDelay_DelayTime") as ParameterSlider).ValueUpdate();
+
         }
 
         private void DelayTime_ValueChanged(object sender, EventArgs e)

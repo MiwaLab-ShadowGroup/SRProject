@@ -78,11 +78,13 @@ public class KinectImporter : ASensorImporter
                 }
             }
         }
+
         foreach (var imageProcesser in this.m_ImagerProcesserList)
         {
             imageProcesser.ImageProcess(ref this.m_mat, ref this.m_mat);
 
         }
+
         for(int i = 0;  i < this.m_AfterEffectList.Count; ++i )
         {
             var afterEffect = this.m_AfterEffectList[i];
@@ -98,6 +100,12 @@ public class KinectImporter : ASensorImporter
         (UIHost.GetUI("Kinect_y_max") as ParameterSlider).ValueChanged += KinectImporter_y_max_ValueChanged;
         (UIHost.GetUI("Kinect_z_min") as ParameterSlider).ValueChanged += KinectImporter_z_min_ValueChanged;
         (UIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueChanged += KinectImporter_z_max_ValueChanged;
+        (UIHost.GetUI("Kinect_x_min") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_x_max") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_y_min") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_y_max") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_z_min") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueUpdate();
     }
 
     private void KinectImporter_x_min_ValueChanged(object sender, EventArgs e)
