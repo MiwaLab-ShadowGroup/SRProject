@@ -48,6 +48,7 @@ public class UIHost : MonoBehaviour
     public Dropdown ImageProcessingMenu;
     public Dropdown ImportSettingMenu;
     public Dropdown CallibrationSettingMenu;
+    public Dropdown AfterEffectSettingMenu;
     public ShadowMeshRenderer m_meshrenderer;
 
 
@@ -74,9 +75,14 @@ public class UIHost : MonoBehaviour
         {
             this.CallibrationSettingMenu.options.Add(new Dropdown.OptionData(((CallibrationSettingType)i).ToString()));
         }
+        for (int i = 0; i < (int)AfterEffectSettingType.Count; ++i)
+        {
+            this.AfterEffectSettingMenu.options.Add(new Dropdown.OptionData(((AfterEffectSettingType)i).ToString()));
+        }
         m_MenuList.Add(this.ImageProcessingMenu);
         m_MenuList.Add(this.ImportSettingMenu);
         m_MenuList.Add(this.CallibrationSettingMenu);
+        m_MenuList.Add(this.AfterEffectSettingMenu);
 
         foreach (var menu in this.m_MenuList)
         {
@@ -91,6 +97,7 @@ public class UIHost : MonoBehaviour
         this.m_currentImageProcesserSettingPanel = m_PanelDictionary[ImageProcesserType.Normal.ToString()];
         this.m_currentImportSettingPanel = m_PanelDictionary[ImportSettingType.Kinect.ToString()];
         this.m_currentCallibrationSettingPanel = m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()];
+        this.m_currentAfterEffectSettingPanel = m_PanelDictionary[AfterEffectSettingType.Fade.ToString()];
 
 
         //UI初期化
@@ -108,7 +115,7 @@ public class UIHost : MonoBehaviour
         this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()]);
         this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport.ToString()]);
 
-        //this.CreateUIsAffterEffectFade();
+        this.CreateUIsAffterEffectFade(m_PanelDictionary[AfterEffectSettingType.Fade.ToString()]);
 
 
         this.m_meshrenderer.SetUpUIs();
@@ -203,25 +210,21 @@ public class UIHost : MonoBehaviour
 
     }
 
-    //public void ChangeFadeSettingOptionTo(int number)
-    //{
-    //    FadeSettingType type = (FadeSettingType)number;
+    public void ChangeFadeSettingOptionTo(int number)
+    {
+        AfterEffectSettingType type = (AfterEffectSettingType)number;
 
-    //    switch (type)
-    //    {
-    //        case FadeSettingType.FadeIn:
-    //            //一回作って使いまわす
-    //            this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[FadeSettingType.FadeIn.ToString()];
-    //            this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
-    //            break;
-    //        case FadeSettingType.FadeOut:
-    //            this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[FadeSettingType.FadeOut.ToString()];
-    //            this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
-    //            break;
+        switch (type)
+        {
+            case AfterEffectSettingType.Fade:
+                //一回作って使いまわす
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[AfterEffectSettingType.Fade.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentAfterEffectSettingPanel);
+                break;
+            
+        }
 
-    //    }
-
-    //}
+    }
 
     private void SwitchOffOtherPanelsExceptOf(GameObject currentPanel)
     {
@@ -403,6 +406,11 @@ public class UIHost : MonoBehaviour
     public void CallibrationSettingPanelSet(bool value)
     {
         m_currentCallibrationSettingPanel.SetActive(value);
+    }
+    private GameObject m_currentAfterEffectSettingPanel;
+    public void AfetrEffectSettingPanelSet(bool value)
+    {
+        m_currentAfterEffectSettingPanel.SetActive(value);
     }
     #endregion
 }

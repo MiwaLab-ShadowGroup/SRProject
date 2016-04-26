@@ -20,7 +20,11 @@ namespace Miwalab.ShadowGroup.AfterEffect.Fade
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
 
-            //dst = (src + 1) * ((double)this.m_FinishFrame / (this.m_CurrentFrame + 1));
+            //Cv2.CvtColor(src, dst, OpenCvSharp.ColorConversion.BgrToGray);
+
+            //dst = dst + ((((double)this.m_FinishFrame - this.m_CurrentFrame )/ ((double)this.m_FinishFrame) * 255));
+
+            //Cv2.CvtColor(dst, dst, OpenCvSharp.ColorConversion.GrayToBgr);
 
 
             int channel = src.Channels();
@@ -42,7 +46,7 @@ namespace Miwalab.ShadowGroup.AfterEffect.Fade
 
                     else
                     {
-                        if (srcPtr[i] + (double)(this.m_FinishFrame) / (this.m_CurrentFrame + 1) > 255)
+                        if (srcPtr[i] + ((((double)this.m_FinishFrame - this.m_CurrentFrame) / ((double)this.m_FinishFrame) * 255)) > 255)
                         {
 
                             dstPtr[i] = 255;
@@ -50,10 +54,10 @@ namespace Miwalab.ShadowGroup.AfterEffect.Fade
                         }
                         else
                         {
-                            dstPtr[i] = (byte)(srcPtr[i] + (double)(this.m_FinishFrame) / (this.m_CurrentFrame + 1));
+                            dstPtr[i] = (byte)(srcPtr[i] + ((((double)this.m_FinishFrame - this.m_CurrentFrame) / ((double)this.m_FinishFrame) * 255)));
 
                         }
-                        if (srcPtr[i + 1] + (double)(this.m_FinishFrame) / (this.m_CurrentFrame + 1) > 255)
+                        if (srcPtr[i + 1] + ((((double)this.m_FinishFrame - this.m_CurrentFrame) / ((double)this.m_FinishFrame) * 255)) > 255)
                         {
 
                             dstPtr[i + 1] = 255;
@@ -61,11 +65,11 @@ namespace Miwalab.ShadowGroup.AfterEffect.Fade
                         }
                         else
                         {
-                            dstPtr[i + 1] = (byte)(srcPtr[i + 1] + (double)(this.m_FinishFrame) / (this.m_CurrentFrame + 1));
+                            dstPtr[i + 1] = (byte)(srcPtr[i + 1] + ((((double)this.m_FinishFrame - this.m_CurrentFrame) / ((double)this.m_FinishFrame) * 255)));
 
                         }
 
-                        if (srcPtr[i + 2] + (double)(this.m_FinishFrame) / (this.m_CurrentFrame + 1) > 255)
+                        if (srcPtr[i + 2] + ((((double)this.m_FinishFrame - this.m_CurrentFrame) / ((double)this.m_FinishFrame) * 255)) > 255)
                         {
 
                             dstPtr[i + 2] = 255;
@@ -73,7 +77,7 @@ namespace Miwalab.ShadowGroup.AfterEffect.Fade
                         }
                         else
                         {
-                            dstPtr[i + 2] = (byte)(srcPtr[i + 2] + (double)(this.m_FinishFrame) / (this.m_CurrentFrame + 1));
+                            dstPtr[i + 2] = (byte)(srcPtr[i + 2] + ((((double)this.m_FinishFrame - this.m_CurrentFrame) / ((double)this.m_FinishFrame) * 255)));
 
                         }
 
