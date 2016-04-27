@@ -126,10 +126,8 @@ public class UIHost : MonoBehaviour
         this.CallibrationSettingPanelSet(false);
         this.m_Sensor.AddImageProcesser(new Normal());
 
-
     }
 
-    
 
     public void ChangeImageProcessingOptionTo(int number)
     {
@@ -247,8 +245,8 @@ public class UIHost : MonoBehaviour
     private void CreateUIsAffterEffectFade(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddFloatUI(parent, "Frame_of_FadeIn", 1000, 0, 100);
-        AddFloatUI(parent, "Frame_of_FadeOut", 1000, 0, 100);
+        AddFloatUI(parent, "Frame_of_FadeIn", 1000, 1, 100);
+        AddFloatUI(parent, "Frame_of_FadeOut", 1000, 1, 100);
         AddBooleanUI(parent, "White_Fade", false);
 
     }
@@ -280,11 +278,11 @@ public class UIHost : MonoBehaviour
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "Polygon_con_R", 255, 0, 0);
         AddFloatUI(parent, "Polygon_con_G", 255, 0, 0);
-        AddFloatUI(parent, "Polygon_con_B", 255, 0, 100);
+        AddFloatUI(parent, "Polygon_con_B", 255, 0, 200);
         AddFloatUI(parent, "Polygon_bgd_R", 255, 0, 0);
         AddFloatUI(parent, "Polygon_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "Polygon_bgd_B", 255, 0, 0);
-        AddFloatUI(parent, "Polygon_Rate", 200, 0, 50);
+        AddFloatUI(parent, "Polygon_Rate", 200, 1, 50);
 
     }
 

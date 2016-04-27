@@ -68,7 +68,6 @@ namespace Miwalab.ShadowGroup.AfterEffect.Fade
                         {
                             dstPtr[i + 1] = (byte)(srcPtr[i + 1] + ((double)(this.m_CurrentFrame) * 255 / this.m_FinishFrame));
 
-
                         }
 
                         if ((srcPtr[i + 2] + ((double)(this.m_CurrentFrame) * 255 / this.m_FinishFrame)) > 255)
