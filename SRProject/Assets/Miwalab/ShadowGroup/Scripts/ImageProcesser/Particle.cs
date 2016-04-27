@@ -5,7 +5,6 @@ using System.Text;
 using OpenCvSharp.CPlusPlus;
 using OpenCvSharp;
 
-
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
     public class Particle : AShadowImageProcesser
@@ -46,7 +45,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             (UIHost.GetUI("Interval_of_Contour") as ParameterSlider).ValueChanged += Interval_of_Contour_ValueChanged;
             (UIHost.GetUI("Velocity") as ParameterSlider).ValueChanged += Velocity_ValueChanged;
-            (UIHost.GetUI("Lifetime_Frame") as ParameterSlider).ValueChanged += threthOPFsize_ValueChanged;
+            (UIHost.GetUI("Lifetime_Frame") as ParameterSlider).ValueChanged += Lifetime_Frame_ValueChanged;
             (UIHost.GetUI("threthOPFsize") as ParameterSlider).ValueChanged += threthOPFsize_ValueChanged;
             (UIHost.GetUI("Particle_bgd_R") as ParameterSlider).ValueChanged += Particle_bgd_R_ValueChanged;
             (UIHost.GetUI("Particle_bgd_G") as ParameterSlider).ValueChanged += Particle_bgd_G_ValueChanged;
@@ -61,6 +60,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (UIHost.GetUI("Particle_bgd_G") as ParameterSlider).ValueUpdate();
             (UIHost.GetUI("Particle_bgd_B") as ParameterSlider).ValueUpdate();
 
+        }
+
+        private void Lifetime_Frame_ValueChanged(object sender, EventArgs e)
+        {
+            this.lifeTimeFrame = (int)(e as ParameterSlider.ChangedValue).Value;
         }
 
         private void Particle_bgd_B_ValueChanged(object sender, EventArgs e)

@@ -7,7 +7,7 @@ using OpenCvSharp.CPlusPlus;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    class polygon : AShadowImageProcesser
+    class Polygon : AShadowImageProcesser
     {
         
         public override void ImageProcess(ref Mat src, ref Mat dst)
@@ -27,7 +27,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         Scalar colorBack;
 
 
-        public polygon():base()
+        public Polygon():base()
         {
             (UIHost.GetUI("Polygon_con_R") as ParameterSlider).ValueChanged += Polygon_con_R_ValueChanged;
             (UIHost.GetUI("Polygon_con_G") as ParameterSlider).ValueChanged += Polygon_con_G_ValueChanged;

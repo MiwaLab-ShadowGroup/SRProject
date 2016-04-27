@@ -51,7 +51,6 @@ public class UIHost : MonoBehaviour
     public Dropdown AfterEffectSettingMenu;
     public ShadowMeshRenderer m_meshrenderer;
 
-
     public GameObject SettingPanel;
     public Canvas MainCanvas;
 
@@ -146,7 +145,7 @@ public class UIHost : MonoBehaviour
             case ImageProcesserType.CellAutomaton:
                 break;
             case ImageProcesserType.Polygon:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new polygon()));
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Polygon()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Polygon.ToString()];
                 break;
             case ImageProcesserType.DoubleAfterImage:
@@ -253,27 +252,26 @@ public class UIHost : MonoBehaviour
 
         AddFloatUI(parent, "Interval_of_Contour", 100, 1, 5);
         AddFloatUI(parent, "Velocity", 100, 0, 10);
-        AddFloatUI(parent, "Lifetime_Frame", 100, 0, 30);
+        AddFloatUI(parent, "Lifetime_Frame", 100, 1, 30);
         AddFloatUI(parent, "threthOPFsize", 5000, 0, 1500);
         AddFloatUI(parent, "Particle_bgd_R", 255, 0, 255);
         AddFloatUI(parent, "Particle_bgd_G", 255, 0, 255);
         AddFloatUI(parent, "Particle_bgd_B", 255, 0, 255);
 
     }
+
     private void CreateUIsAffterEffectFade(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "Frame_of_FadeIn", 1000, 1, 100);
         AddFloatUI(parent, "Frame_of_FadeOut", 1000, 1, 100);
         AddBooleanUI(parent, "White_Fade", false);
-
     }
 
     private void CreateUIsImageporcessingTamuraSkeleton(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
         AddBooleanUI(parent, "TamuraSkeleton_Invert", false);
-
     }
 
     private void CreateUIsImageporcessingZanzou(GameObject parent)
