@@ -108,6 +108,7 @@ public class UIHost : MonoBehaviour
         this.CreateUIsImageporcessingPolygon(m_PanelDictionary[ImageProcesserType.Polygon.ToString()]);
         this.CreateUIsImageporcessingZanzou(m_PanelDictionary[ImageProcesserType.DoubleAfterImage.ToString()]);
         this.CreateUIsImageporcessingTamuraSkeleton(m_PanelDictionary[ImageProcesserType.TamuraSkeleton.ToString()]);
+        this.CreateUIsImageporcessingParticle(m_PanelDictionary[ImageProcesserType.Particle.ToString()]);
 
 
         this.CreateUIsImportKinectv2(m_PanelDictionary[ImportSettingType.Kinect.ToString()]);
@@ -163,6 +164,10 @@ public class UIHost : MonoBehaviour
             case ImageProcesserType.Spike:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(),m_Sensor, new Spike()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Spike.ToString()];
+                break;
+            case ImageProcesserType.Particle:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.Particle()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Particle.ToString()];
                 break;
         }
         this.SwitchOffOtherPanelsExceptOf(this.m_currentImageProcesserSettingPanel);
@@ -242,6 +247,19 @@ public class UIHost : MonoBehaviour
     }
     #region createUIMethods
 
+    private void CreateUIsImageporcessingParticle(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+
+        AddFloatUI(parent, "Interval_of_Contour", 100, 1, 5);
+        AddFloatUI(parent, "Velocity", 100, 0, 10);
+        AddFloatUI(parent, "Lifetime_Frame", 100, 0, 30);
+        AddFloatUI(parent, "threthOPFsize", 5000, 0, 1500);
+        AddFloatUI(parent, "Particle_bgd_R", 255, 0, 255);
+        AddFloatUI(parent, "Particle_bgd_G", 255, 0, 255);
+        AddFloatUI(parent, "Particle_bgd_B", 255, 0, 255);
+
+    }
     private void CreateUIsAffterEffectFade(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
