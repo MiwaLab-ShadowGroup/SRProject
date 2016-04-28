@@ -34,6 +34,13 @@ public class ParameterCheckbox : AParameterUI {
         this.m_valueText.text = value.ToString();
     }
 
+    public void ValueUpdate()
+    {
+        if (this.ValueChanged != null)
+        {
+            this.ValueChanged(this, new ChangedValue(m_toggle.isOn));
+        }
+    }
 
     // Use this for initialization
     void Start()

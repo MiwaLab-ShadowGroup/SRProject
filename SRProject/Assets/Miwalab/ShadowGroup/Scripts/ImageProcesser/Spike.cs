@@ -7,7 +7,7 @@ using OpenCvSharp;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    public class Spike : AImageProcesser
+    public class Spike : AShadowImageProcesser
     {
         #region
         CvGraph grapth;
@@ -22,8 +22,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         int interval = 25;
         int length = 8;
         int radius = 2;
-        Scalar color = Scalar.Black;
-        Scalar colorBack = Scalar.White;
+        Scalar color;
+        Scalar colorBack;
+
+        int count = 0;
+
         #endregion
         public Spike():base()
         {
@@ -36,6 +39,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (UIHost.GetUI("Spike_bgd_R") as ParameterSlider).ValueChanged += Spike_bgd_R_Changed;
             (UIHost.GetUI("Spike_bgd_G") as ParameterSlider).ValueChanged += Spike_bgd_G_Changed;
             (UIHost.GetUI("Spike_bgd_B") as ParameterSlider).ValueChanged += Spike_bgd_B_Changed;
+            (UIHost.GetUI("Spike_inval") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_lngth") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_rdius") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_con_R") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_con_G") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_con_B") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_bgd_R") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_bgd_G") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Spike_bgd_B") as ParameterSlider).ValueUpdate();
         }
 
         private void Spike_bgd_B_Changed(object sender, EventArgs e)
@@ -98,11 +110,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private Mat grayimage = new Mat();
         private void Update(ref Mat src, ref Mat dst)
         {
+
+
             Mat dstMat = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, this.colorBack);
 
             int imgW = src.Width;
             int imgH = src.Height;
-
             
 
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
@@ -150,6 +163,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
 
             dst = dstMat;
+            
+
         }
 
         public override string ToString()

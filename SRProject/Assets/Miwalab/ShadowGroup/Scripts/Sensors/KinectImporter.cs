@@ -9,6 +9,7 @@ public class KinectImporter : ASensorImporter
     public DepthSourceManager _depthManager;
     private KinectSensor m_sensor;
     private ushort[] m_depthData;
+    public ushort[] SaveDepth;
     private CoordinateMapper m_mapper;
     private Mat m_mat;
     public MatType m_matType = MatType.CV_8UC3;
@@ -27,7 +28,8 @@ public class KinectImporter : ASensorImporter
     void Start()
     {
         m_sensor = KinectSensor.GetDefault();
-        this.m_ImagerProcesserList = new System.Collections.Generic.List<Miwalab.ShadowGroup.ImageProcesser.AImageProcesser>();
+        this.m_ImagerProcesserList = new System.Collections.Generic.List<Miwalab.ShadowGroup.ImageProcesser.AShadowImageProcesser>();
+        this.m_AfterEffectList = new System.Collections.Generic.List<Miwalab.ShadowGroup.AfterEffect.AAfterEffect>();
         if (m_sensor != null)
         {
             Debug.Log("The Kinect ID : " + m_sensor.UniqueKinectId);
@@ -53,6 +55,7 @@ public class KinectImporter : ASensorImporter
         }
 
         m_depthData = _depthManager.GetData();
+        SaveDepth = m_depthData;
         m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
         unsafe
         {
@@ -75,9 +78,17 @@ public class KinectImporter : ASensorImporter
                 }
             }
         }
+
         foreach (var imageProcesser in this.m_ImagerProcesserList)
         {
             imageProcesser.ImageProcess(ref this.m_mat, ref this.m_mat);
+
+        }
+
+        for(int i = 0;  i < this.m_AfterEffectList.Count; ++i )
+        {
+            var afterEffect = this.m_AfterEffectList[i];
+            afterEffect.ImageProcess(ref this.m_mat, ref this.m_mat);
         }
     }
 
@@ -89,6 +100,12 @@ public class KinectImporter : ASensorImporter
         (UIHost.GetUI("Kinect_y_max") as ParameterSlider).ValueChanged += KinectImporter_y_max_ValueChanged;
         (UIHost.GetUI("Kinect_z_min") as ParameterSlider).ValueChanged += KinectImporter_z_min_ValueChanged;
         (UIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueChanged += KinectImporter_z_max_ValueChanged;
+        (UIHost.GetUI("Kinect_x_min") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_x_max") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_y_min") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_y_max") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_z_min") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueUpdate();
     }
 
     private void KinectImporter_x_min_ValueChanged(object sender, EventArgs e)

@@ -8,7 +8,7 @@ public class CameraImporter : ASensorImporter
 {
 
     public Mat mat;
-    VideoCapture video;
+    public VideoCapture video;
     Window check;
     public bool isShowImage;
     // Use this for initialization

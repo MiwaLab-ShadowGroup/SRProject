@@ -35,6 +35,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
     public abstract class AImageProcesser
     {
         public abstract void ImageProcess(ref Mat src, ref Mat dst);
+        
+    }
+    public abstract class AShadowImageProcesser : AImageProcesser
+    {
         public abstract ImageProcesser.ImageProcesserType getImageProcesserType();
 
     }

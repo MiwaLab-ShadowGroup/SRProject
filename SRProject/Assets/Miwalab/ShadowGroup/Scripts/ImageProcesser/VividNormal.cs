@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    public class VividNormal : AImageProcesser
+    public class VividNormal : AShadowImageProcesser
     {
         private bool invert;
         public VividNormal()
@@ -14,6 +14,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             //UIからパラメータ変更通知の追加
             (UIHost.GetUI("Normal_Invert") as ParameterCheckbox).ValueChanged += Normal_ValueChanged;
+            (UIHost.GetUI("Normal_Invert") as ParameterCheckbox).ValueUpdate();
         }
 
         private void Normal_ValueChanged(object sender, EventArgs e)
