@@ -40,8 +40,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         Spike,
         /// <summary>
+        /// パーティクル影
+        /// </summary>
+        Particle,
+        /// <summary>
         /// 個数を数えるためのもの．消したら処刑
         /// </summary>
         Count,
     }
+
 }

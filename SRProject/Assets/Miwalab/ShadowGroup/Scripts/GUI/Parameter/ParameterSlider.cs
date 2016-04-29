@@ -43,6 +43,13 @@ public class ParameterSlider : AParameterUI{
         this.m_valueText.text = value.ToString("0.00");
     }
 
+    public void ValueUpdate()
+    {
+        if (this.ValueChanged != null)
+        {
+            this.ValueChanged(this, new ChangedValue(m_slider.value));
+        }
+    }
 
     // Use this for initialization
     void Start()

@@ -7,7 +7,7 @@ using OpenCvSharp.CPlusPlus;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    public class Timedelay : AImageProcesser
+    public class Timedelay : AShadowImageProcesser
     {
         private int DelayCounter;
 
@@ -25,6 +25,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             this.queue = new Queue<Mat>();
             (UIHost.GetUI("TimeDelay_DelayTime") as ParameterSlider).ValueChanged += DelayTime_ValueChanged;
+
+            (UIHost.GetUI("TimeDelay_DelayTime") as ParameterSlider).ValueUpdate();
 
         }
 
