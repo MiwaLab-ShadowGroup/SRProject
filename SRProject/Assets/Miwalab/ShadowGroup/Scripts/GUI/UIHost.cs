@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using Miwalab.ShadowGroup.Scripts.Sensors;
 using Miwalab.ShadowGroup.Scripts.Callibration;
 using Miwalab.ShadowGroup.AfterEffect;
+using Miwalab.ShadowGroup.Archive;
 
 public class UIHost : MonoBehaviour
 {
@@ -42,6 +43,8 @@ public class UIHost : MonoBehaviour
 
     public ParameterSlider m_slider;
     public ParameterCheckbox m_checkbox;
+    public ParameterButton m_button;
+    public ParameterText m_text;
 
     public ASensorImporter m_Sensor;
 
@@ -49,6 +52,7 @@ public class UIHost : MonoBehaviour
     public Dropdown ImportSettingMenu;
     public Dropdown CallibrationSettingMenu;
     public Dropdown AfterEffectSettingMenu;
+    public Dropdown ArchiveSettingMenu;
     public ShadowMeshRenderer m_meshrenderer;
 
     public GameObject SettingPanel;
@@ -78,10 +82,15 @@ public class UIHost : MonoBehaviour
         {
             this.AfterEffectSettingMenu.options.Add(new Dropdown.OptionData(((AfterEffectSettingType)i).ToString()));
         }
+        for (int i = 0; i < (int)ArchiveSettingType.Count; ++i)
+        {
+            this.ArchiveSettingMenu.options.Add(new Dropdown.OptionData(((ArchiveSettingType)i).ToString()));
+        }
         m_MenuList.Add(this.ImageProcessingMenu);
         m_MenuList.Add(this.ImportSettingMenu);
         m_MenuList.Add(this.CallibrationSettingMenu);
         m_MenuList.Add(this.AfterEffectSettingMenu);
+        m_MenuList.Add(this.ArchiveSettingMenu);
 
         foreach (var menu in this.m_MenuList)
         {
@@ -97,6 +106,7 @@ public class UIHost : MonoBehaviour
         this.m_currentImportSettingPanel = m_PanelDictionary[ImportSettingType.Kinect.ToString()];
         this.m_currentCallibrationSettingPanel = m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()];
         this.m_currentAfterEffectSettingPanel = m_PanelDictionary[AfterEffectSettingType.Fade.ToString()];
+        this.m_currentArchiveSettingPanel = m_PanelDictionary[ArchiveSettingType.Save.ToString()];
 
 
         //UI初期化
@@ -116,6 +126,9 @@ public class UIHost : MonoBehaviour
         this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport.ToString()]);
 
         this.CreateUIsAffterEffectFade(m_PanelDictionary[AfterEffectSettingType.Fade.ToString()]);
+
+        this.CreateUIsArchiveSave(m_PanelDictionary[ArchiveSettingType.Save.ToString()]);
+        this.CreateUIsArchivePlay(m_PanelDictionary[ArchiveSettingType.Play.ToString()]);
 
 
         this.m_meshrenderer.SetUpUIs();
@@ -227,6 +240,26 @@ public class UIHost : MonoBehaviour
         }
 
     }
+    public void ChangeArchiveSettingOptionTo(int number)
+    {
+        ArchiveSettingType type = (ArchiveSettingType)number;
+
+        switch (type)
+        {
+            case ArchiveSettingType.Save:
+                //一回作って使いまわす
+                this.m_currentArchiveSettingPanel = this.m_PanelDictionary[ArchiveSettingType.Save.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentArchiveSettingPanel);
+                break;
+
+            case ArchiveSettingType.Play:
+                //一回作って使いまわす
+                this.m_currentArchiveSettingPanel = this.m_PanelDictionary[ArchiveSettingType.Play.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentArchiveSettingPanel);
+                break;
+        }
+
+    }
 
     private void SwitchOffOtherPanelsExceptOf(GameObject currentPanel)
     {
@@ -245,6 +278,26 @@ public class UIHost : MonoBehaviour
         }
     }
     #region createUIMethods
+
+
+    private void CreateUIsArchiveSave(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddButtonUI(parent, "ChooseFolder");
+        AddTextUI(parent, "SaveFolderPath");
+        AddTextUI(parent, "SaveFileName");
+        AddButtonUI(parent, "SaveStart");
+        AddButtonUI(parent, "SaveStop");
+
+    }
+    private void CreateUIsArchivePlay(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddButtonUI(parent, "ChooseFile");
+        AddButtonUI(parent, "PlayStart");
+        AddBooleanUI(parent, "Pause", false);
+
+    }
 
     private void CreateUIsImageporcessingParticle(GameObject parent)
     {
@@ -402,6 +455,34 @@ public class UIHost : MonoBehaviour
         m_lastUpdatedHeight += checkBox.getSize().height;
 
     }
+    private void AddButtonUI(GameObject parent, string ParameterName)
+    {
+        var button = Instantiate<ParameterButton>(m_button);
+        button.Title = ParameterName;
+        button.gameObject.transform.SetParent(parent.transform, false);
+        var recttransform = button.gameObject.transform as RectTransform;
+        recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
+
+        AddUI(ParameterName, button);
+
+        m_lastUpdatedHeight += button.getSize().height;
+
+    }
+
+    private void AddTextUI(GameObject parent, string ParameterName)
+    {
+        var Text = Instantiate<ParameterText>(m_text);
+        Text.Title = ParameterName;
+        Text.gameObject.transform.SetParent(parent.transform, false);
+        var recttransform = Text.gameObject.transform as RectTransform;
+        recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
+
+        AddUI(ParameterName, Text);
+
+        m_lastUpdatedHeight += Text.getSize().height;
+
+    }
+
     #endregion
 
     #region Panel OnOff
@@ -426,5 +507,12 @@ public class UIHost : MonoBehaviour
     {
         m_currentAfterEffectSettingPanel.SetActive(value);
     }
+    private GameObject m_currentArchiveSettingPanel;
+    public void ArchiveSettingPanelSet(bool value)
+    {
+        m_currentArchiveSettingPanel.SetActive(value);
+    }
+
+
     #endregion
 }

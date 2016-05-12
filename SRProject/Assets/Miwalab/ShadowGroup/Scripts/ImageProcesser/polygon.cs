@@ -12,20 +12,30 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
-
+            if (!IsInit)
+            {
+                this.Initialize();
+                this.IsInit = true;
+            }
             this.Update(ref src, ref dst);
-
+            
         }
 
         int sharpness = 50;
         private Mat grayimage = new Mat();
         private Mat dstMat = new Mat();
         // Mat dstMat = new Mat()
-        Random rand = new Random();
+        //Random rand = new Random();
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
         Scalar color;
         Scalar colorBack;
+        private Mat resizeMat = new Mat();
+        Mat m_element;
 
+        int resizeW = 256 / 2;
+        int resizeH = 212 / 2;
+
+        bool IsInit;
 
         public Polygon():base()
         {
@@ -46,7 +56,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (UIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueUpdate();
             (UIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueUpdate();
         }
-
+        void Initialize()
+        {
+            this.m_element = new Mat(3, 3, MatType.CV_8UC1, new Scalar(1));
+            this.m_element.Set<byte>(0, 0, 0);
+            this.m_element.Set<byte>(2, 0, 0);
+            this.m_element.Set<byte>(0, 2, 0);
+            this.m_element.Set<byte>(2, 2, 0);
+        }
         private void Polygon_Rate_ValueChanged(object sender, EventArgs e)
         {
             this.sharpness = (int)(e as ParameterSlider.ChangedValue).Value;
@@ -93,9 +110,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
 
             this.List_Contours.Clear();
-            Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
+
+            Cv2.Resize(src, resizeMat, new Size(resizeW, resizeH),0,0,OpenCvSharp.Interpolation.Linear);
+
+            Cv2.Dilate(resizeMat, resizeMat, m_element, null, 3);
+            Cv2.Erode(resizeMat, resizeMat, m_element, null, 3);
+
+
+            Cv2.CvtColor(resizeMat, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
                       
-            //dstMat = new Mat(dst.Height, dst.Width, MatType.CV_8UC4,colorBack);
+            dstMat = new Mat(resizeH, resizeW, MatType.CV_8UC3,colorBack);
             dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3 , colorBack);
 
             Point[][] contour;//= grayimage.FindContoursAsArray(OpenCvSharp.ContourRetrieval.External, OpenCvSharp.ContourChain.ApproxSimple);
@@ -110,7 +134,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                 CvPoints.Clear();
 
-                if (Cv2.ContourArea(contour[i]) > 1000)
+                if (Cv2.ContourArea(contour[i]) > 700)
                 {
 
                     for (int j = 0; j < contour[i].Length; j += this.sharpness)
@@ -123,12 +147,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                     var _contour = List_Contours.ToArray();
 
-                    Cv2.DrawContours(dst, _contour, 0, color, -1, OpenCvSharp.LineType.Link8);
+                    Cv2.DrawContours(dstMat, _contour, 0, color, -1, OpenCvSharp.LineType.Link8);
                 }
                 
             }
             //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
-           
+
+            Cv2.Resize(dstMat, dst, new Size(src.Width, src.Height),0,0,OpenCvSharp.Interpolation.Linear);
 
         }
 
