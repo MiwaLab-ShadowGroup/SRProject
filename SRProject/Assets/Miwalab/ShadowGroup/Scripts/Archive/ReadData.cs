@@ -22,8 +22,10 @@ public class ReadData : MonoBehaviour
     string time;
     int datalength;
 
-    Mat playmat;
+    public Mat playmat;
     bool PausePlay;
+
+    public bool IsRead;
 
     void Start()
     {
@@ -38,7 +40,6 @@ public class ReadData : MonoBehaviour
         this.FpsAd.Start();
 
         playmat = new Mat(new Size(512, 424), MatType.CV_16U);
-        Debug.Log("start");
     }
 
     private void Pause_ValueChanged(object sender, EventArgs e)
@@ -53,6 +54,7 @@ public class ReadData : MonoBehaviour
             this.reader = new BinaryReader(File.OpenRead(FilePath));
             this.thread = new Thread(new ThreadStart(this.ReadDepth));
             this.thread.Start();
+            this.IsRead = true;
         }
 
     }
@@ -60,7 +62,6 @@ public class ReadData : MonoBehaviour
     private void ChooseFile_Clicked(object sender, EventArgs e)
     {
         FilePath = EditorUtility.OpenFilePanel("ファイル選択", "　", "　");
-        Debug.Log("ok");
 
     }
 
@@ -98,13 +99,13 @@ public class ReadData : MonoBehaviour
 
                         }
 
-                        Cv2.ImShow("window", playmat);
+
 
                         if (reader.PeekChar() == -1)
                         {
                             Debug.Log("end");
                             reader.Close();
-
+                            this.IsRead = false;
                         }
                     }
                 }
@@ -117,7 +118,7 @@ public class ReadData : MonoBehaviour
 
         }
 
-
+        
     }
 
     void OnDestroy()
@@ -134,6 +135,10 @@ public class ReadData : MonoBehaviour
         if (reader != null)
         {
             reader.Close();
+        }
+        if(this.IsRead == true)
+        {
+            IsRead = false;
         }
     }
 

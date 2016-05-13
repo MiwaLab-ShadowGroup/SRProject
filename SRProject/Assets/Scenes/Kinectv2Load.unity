@@ -2484,6 +2484,46 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 723288313}
+--- !u!1 &742780853
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 742780855}
+  - 114: {fileID: 742780854}
+  m_Layer: 0
+  m_Name: ReadData
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &742780854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 742780853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7767620a6f3b6604fa041221d9b49c07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsRead: 0
+--- !u!4 &742780855
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 742780853}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 146.05638, y: 267.20728, z: -13.348843}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
 --- !u!1 &752932923
 GameObject:
   m_ObjectHideFlags: 0
@@ -3608,6 +3648,7 @@ GameObject:
   - 4: {fileID: 903384247}
   - 114: {fileID: 903384248}
   - 114: {fileID: 903384249}
+  - 114: {fileID: 903384250}
   m_Layer: 0
   m_Name: KinectImporter
   m_TagString: Untagged
@@ -3641,6 +3682,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _depthManager: {fileID: 283299527}
   SaveDepth: 
+  ReadData: {fileID: 0}
 --- !u!114 &903384249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3652,6 +3694,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce1afb404dfdb2445b682e73cd2f9163, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &903384250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 903384246}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7767620a6f3b6604fa041221d9b49c07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsRead: 0
 --- !u!1 &943550394
 GameObject:
   m_ObjectHideFlags: 0
