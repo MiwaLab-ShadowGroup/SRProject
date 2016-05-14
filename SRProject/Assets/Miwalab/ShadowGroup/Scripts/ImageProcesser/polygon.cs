@@ -9,7 +9,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 {
     class Polygon : AShadowImageProcesser
     {
-        
+
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
 
@@ -17,17 +17,18 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         }
 
-        int sharpness = 50;
+        int sharpness = 6;
         private Mat grayimage = new Mat();
         private Mat dstMat = new Mat();
         // Mat dstMat = new Mat()
         Random rand = new Random();
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
+        List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours_Buffer = new List<List<Point>>();
         Scalar color;
         Scalar colorBack;
 
 
-        public Polygon():base()
+        public Polygon() : base()
         {
             (UIHost.GetUI("Polygon_con_R") as ParameterSlider).ValueChanged += Polygon_con_R_ValueChanged;
             (UIHost.GetUI("Polygon_con_G") as ParameterSlider).ValueChanged += Polygon_con_G_ValueChanged;
@@ -36,6 +37,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (UIHost.GetUI("Polygon_bgd_G") as ParameterSlider).ValueChanged += Polygon_bgd_G_ValueChanged;
             (UIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueChanged += Polygon_bgd_B_ValueChanged;
             (UIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueChanged += Polygon_Rate_ValueChanged;
+            (UIHost.GetUI("Polygon_UseFade") as ParameterCheckbox).ValueChanged += Polygon_UseFade_ValueChanged; ;
 
 
             (UIHost.GetUI("Polygon_con_R") as ParameterSlider).ValueUpdate();
@@ -45,6 +47,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (UIHost.GetUI("Polygon_bgd_G") as ParameterSlider).ValueUpdate();
             (UIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueUpdate();
             (UIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Polygon_UseFade") as ParameterCheckbox).ValueUpdate();
+        }
+
+        private void Polygon_UseFade_ValueChanged(object sender, EventArgs e)
+        {
+            this.m_UseFade = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
         private void Polygon_Rate_ValueChanged(object sender, EventArgs e)
@@ -67,7 +75,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private void Polygon_con_B_ValueChanged(object sender, EventArgs e)
         {
             this.color.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
-            
+
         }
 
         private void Polygon_bgd_R_ValueChanged(object sender, EventArgs e)
@@ -88,47 +96,66 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         }
 
-
+        Mat m_buffer;
+        bool m_UseFade;
         private void Update(ref Mat src, ref Mat dst)
         {
-
             this.List_Contours.Clear();
+
+            if (m_buffer == null)
+            {
+                m_buffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
+            }
+            else
+            {
+                if (this.m_UseFade)
+                {
+                    m_buffer *= 0.9;
+                }
+                else
+                {
+                    m_buffer *= 0;
+                }
+            }
+
+
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
-                      
+            Cv2.MedianBlur(grayimage, grayimage, 21);
             //dstMat = new Mat(dst.Height, dst.Width, MatType.CV_8UC4,colorBack);
-            dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3 , colorBack);
+            dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
 
             Point[][] contour;//= grayimage.FindContoursAsArray(OpenCvSharp.ContourRetrieval.External, OpenCvSharp.ContourChain.ApproxSimple);
             HierarchyIndex[] hierarchy;
 
             Cv2.FindContours(grayimage, out contour, out hierarchy, OpenCvSharp.ContourRetrieval.External, OpenCvSharp.ContourChain.ApproxNone);
-            
+
             List<OpenCvSharp.CPlusPlus.Point> CvPoints = new List<Point>();
-            
+
             for (int i = 0; i < contour.Length; i++)
             {
 
                 CvPoints.Clear();
-
                 if (Cv2.ContourArea(contour[i]) > 1000)
                 {
 
-                    for (int j = 0; j < contour[i].Length; j += this.sharpness)
+                    for (int j = 0; j < contour[i].Length; j += contour[i].Length / this.sharpness + 1)
                     {
 
+                        //絶対五回のはず
                         CvPoints.Add(contour[i][j]);
                     }
 
-                    this.List_Contours.Add(CvPoints);
+                    this.List_Contours.Add(new List<Point>(CvPoints));
 
-                    var _contour = List_Contours.ToArray();
-
-                    Cv2.DrawContours(dst, _contour, 0, color, -1, OpenCvSharp.LineType.Link8);
                 }
-                
+
             }
+            var _contour = List_Contours.ToArray();
+
+            Cv2.DrawContours(m_buffer, _contour, -1, color, -1, OpenCvSharp.LineType.Link8);
+            dst += m_buffer;
+            this.List_Contours_Buffer = this.List_Contours;
             //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
-           
 
         }
 
@@ -145,5 +172,5 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         public bool IsFirstFrame { get; private set; }
     }
 
-  
+
 }
