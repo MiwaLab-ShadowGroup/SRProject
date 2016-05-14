@@ -23,6 +23,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         // Mat dstMat = new Mat()
         Random rand = new Random();
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
+        List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours_Buffer = new List<List<Point>>();
         Scalar color;
         Scalar colorBack;
 
@@ -91,8 +92,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void Update(ref Mat src, ref Mat dst)
         {
-
             this.List_Contours.Clear();
+
+            
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
                       
             //dstMat = new Mat(dst.Height, dst.Width, MatType.CV_8UC4,colorBack);
@@ -109,26 +111,26 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             {
 
                 CvPoints.Clear();
-
                 if (Cv2.ContourArea(contour[i]) > 1000)
                 {
 
-                    for (int j = 0; j < contour[i].Length; j += this.sharpness)
+                    for (int j = 0; j < contour[i].Length; j += contour[i].Length/5)
                     {
 
+                        //絶対五回のはず
                         CvPoints.Add(contour[i][j]);
                     }
 
-                    this.List_Contours.Add(CvPoints);
-
-                    var _contour = List_Contours.ToArray();
-
-                    Cv2.DrawContours(dst, _contour, 0, color, -1, OpenCvSharp.LineType.Link8);
+                    this.List_Contours.Add(new List<Point>(CvPoints));
+                    
                 }
                 
             }
+            var _contour = List_Contours.ToArray();
+
+            Cv2.DrawContours(dst, _contour, -1, color, -1, OpenCvSharp.LineType.Link8);
+            this.List_Contours_Buffer = this.List_Contours;
             //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
-           
 
         }
 
