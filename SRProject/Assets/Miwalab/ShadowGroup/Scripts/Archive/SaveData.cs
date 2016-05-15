@@ -93,7 +93,7 @@ public class SaveData : MonoBehaviour {
         unsafe {
             try
             {
-                this._savedDepthBuffer = this.kinect.SaveDepth;
+                this._savedDepthBuffer = this.kinect.m_SaveDepth;
                // Mat mat = new Mat(new Size(512, 424), MatType.CV_16U);
                 while (true)
                 {

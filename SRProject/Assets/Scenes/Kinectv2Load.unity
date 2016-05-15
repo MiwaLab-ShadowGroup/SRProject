@@ -3681,8 +3681,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _depthManager: {fileID: 283299527}
-  SaveDepth: 
+  m_SaveDepth: 
   ReadData: {fileID: 0}
+  RemoteEPSettings: {fileID: 4900000, guid: 2c74817ba94b3dc4495953bf07c0b706, type: 3}
 --- !u!114 &903384249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5377,7 +5378,6 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
