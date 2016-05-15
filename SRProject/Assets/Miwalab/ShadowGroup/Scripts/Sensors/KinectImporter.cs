@@ -3,13 +3,17 @@ using System.Collections;
 using Windows.Kinect;
 using OpenCvSharp.CPlusPlus;
 using System;
+using System.Collections.Generic;
+using Miwalab.ShadowGroup.Network;
+using Miwalab.ShadowGroup.Data;
+using Miwalab.ShadowGroup.Thread;
 
 public class KinectImporter : ASensorImporter
 {
     public DepthSourceManager _depthManager;
     private KinectSensor m_sensor;
     private ushort[] m_depthData;
-    public ushort[] SaveDepth;
+    public ushort[] m_SaveDepth;
     private CoordinateMapper m_mapper;
     private Mat m_mat;
     public MatType m_matType = MatType.CV_8UC3;
@@ -22,11 +26,27 @@ public class KinectImporter : ASensorImporter
     private float m_bottom = -1;
     private float m_front = 8;
     private float m_rear = 0.5f;
-    private ReadData readdata;
+    private ReadData m_readdata;
     public GameObject ReadData;
+
+
+    #region 送信用
+    private NetworkHost m_networkHost;
+    private ThreadHost m_threadHost;
+    private bool m_isGettingData;
+    private float m_gettingPlaneHeight = -1;
+    private float m_gettingHeightDiff = 0.01f;
+    private const string clientName = "Importer_Sender";
+    private HumanPoints m_HumanCenterPositions;
+    private bool m_IsUpdatedSendData;
+    public TextAsset RemoteEPSettings;
+    private RemoteManager m_remoteManager;
+    #endregion
     // Use this for initialization
     void Start()
     {
+        this.InitializeNetwork();
+
         m_sensor = KinectSensor.GetDefault();
         this.m_ImagerProcesserList = new System.Collections.Generic.List<Miwalab.ShadowGroup.ImageProcesser.AShadowImageProcesser>();
         this.m_AfterEffectList = new System.Collections.Generic.List<Miwalab.ShadowGroup.AfterEffect.AAfterEffect>();
@@ -46,6 +66,31 @@ public class KinectImporter : ASensorImporter
         //readdata = ReadData.GetComponent<ReadData>();
     }
 
+    private void InitializeNetwork()
+    {
+        m_remoteManager = new RemoteManager(this.RemoteEPSettings);
+        m_HumanCenterPositions = new HumanPoints();
+        m_networkHost = NetworkHost.GetInstance();
+        m_networkHost.AddClient(NetworkSettings.KinectImporter_PositionSendPort, clientName);
+        m_threadHost = ThreadHost.GetInstance();
+        m_threadHost.CreateNewThread(new ContinuouslyThread(SendMethod), clientName);
+        m_threadHost.ThreadStart(clientName);
+
+    }
+
+    /// <summary>
+    /// 送信用関数
+    /// </summary>
+    private void SendMethod()
+    {
+        if(m_IsUpdatedSendData == true)
+        {
+            byte[] data = this.m_HumanCenterPositions.getData();
+            m_networkHost.SendTo(clientName,data,m_remoteManager.RemoteEPs);
+            this.m_IsUpdatedSendData = false;
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -55,8 +100,13 @@ public class KinectImporter : ASensorImporter
         }
 
         m_depthData = _depthManager.GetData();
-        SaveDepth = m_depthData;
+        m_SaveDepth = m_depthData;
         m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
+
+        List<CameraSpacePoint> points = new List<CameraSpacePoint>();
+        List<int> counts = new List<int>();
+        //接続しているか否かのフラグ
+        bool _flag = false;
         unsafe
         {
             byte* data = (byte*)m_mat.Data;
@@ -69,6 +119,31 @@ public class KinectImporter : ASensorImporter
                     data[i] = 255;
                     data[i + 1] = 255;
                     data[i + 2] = 255;
+                    //断面取得
+                    #region 断面
+                    if (this.m_isGettingData)
+                    {
+                        if (point.Y > m_gettingPlaneHeight && point.Y < m_gettingPlaneHeight + m_gettingHeightDiff)
+                        {
+                            if (_flag == false)
+                            {
+                                points.Add(point);
+                                counts.Add(0);
+                            }
+                            point.X += points[points.Count - 1].X;
+                            point.Y += points[points.Count - 1].Y;
+                            point.Z += points[points.Count - 1].Z;
+                            points[points.Count - 1] = point;
+                            counts[counts.Count - 1]++;
+
+                            _flag = true;
+                        }
+                        else
+                        {
+                            _flag = false;
+                        }
+                    }
+                    #endregion
                 }
                 else
                 {
@@ -78,6 +153,11 @@ public class KinectImporter : ASensorImporter
                 }
             }
         }
+
+
+        this.m_HumanCenterPositions.setData(points);
+
+
 
         //if (readdata.IsRead)
         //{
@@ -90,7 +170,7 @@ public class KinectImporter : ASensorImporter
 
         }
 
-        for(int i = 0;  i < this.m_AfterEffectList.Count; ++i )
+        for (int i = 0; i < this.m_AfterEffectList.Count; ++i)
         {
             var afterEffect = this.m_AfterEffectList[i];
             afterEffect.ImageProcess(ref this.m_mat, ref this.m_mat);
