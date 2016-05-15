@@ -22,7 +22,7 @@ namespace Miwalab.ShadowGroup.Test
                 var point = this.m_humanPointReceiver.HumanPointList[0];
 
 
-                this.transform.position = new Vector3(point.X, point.Y, point.Z);
+                this.gameObject.transform.position = new Vector3(point.X, point.Y, point.Z);
             }
         }
     }
