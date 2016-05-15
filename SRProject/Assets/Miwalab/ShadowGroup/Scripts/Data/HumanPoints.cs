@@ -67,7 +67,7 @@ namespace Miwalab.ShadowGroup.Data
                 int counter = 0;
                 float Y = BitConverter.ToSingle(data, counter);
                 counter += sizeof(float);
-                foreach (var p in this)
+                for (int i = 0; i < (data.Length/sizeof(float)-1)/2;++i)
                 {
                     CameraSpacePoint point = new CameraSpacePoint();
                     point.X = BitConverter.ToSingle(data, counter);
