@@ -30,8 +30,12 @@ namespace Miwalab.ShadowGroup.Data
         /// <returns></returns>
         public byte[] getData()
         {
+            if (this.Count == 0)
+            {
+                return null;
+            }
             //YXZXZXZXZXZXZXZXZ....
-            byte[] data = new byte[(this.Count + 1) * sizeof(float) * 2];
+            byte[] data = new byte[(this.Count * 2 + 1) * sizeof(float)];
 
             lock (this)
             {
