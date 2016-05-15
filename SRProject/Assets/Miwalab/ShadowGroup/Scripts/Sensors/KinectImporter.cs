@@ -71,7 +71,7 @@ public class KinectImporter : ASensorImporter
         m_remoteManager = new RemoteManager(this.RemoteEPSettings);
         m_HumanCenterPositions = new HumanPoints();
         m_networkHost = NetworkHost.GetInstance();
-        m_networkHost.AddClient(15000, clientName);
+        m_networkHost.AddClient(NetworkSettings.KinectImporter_PositionSendPort, clientName);
         m_threadHost = ThreadHost.GetInstance();
         m_threadHost.CreateNewThread(new ContinuouslyThread(SendMethod), clientName);
         m_threadHost.ThreadStart(clientName);

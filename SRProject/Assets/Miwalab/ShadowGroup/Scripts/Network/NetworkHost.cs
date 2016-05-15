@@ -133,7 +133,26 @@ namespace Miwalab.ShadowGroup.Network
             }
             return this.m_clientList[tag];
         }
-        
+
+        public byte[] Receive(string tag)
+        {
+            if (!this.m_clientList.ContainsKey(tag))
+            {
+                Debug.Log("No tag as" + tag);
+                return null;
+            }
+            return this.m_clientList[tag].Receive();
+        }
+        public byte[] Receive(string tag, ref int available)
+        {
+            if (!this.m_clientList.ContainsKey(tag))
+            {
+                Debug.Log("No tag as" + tag);
+                return null;
+            }
+            return this.m_clientList[tag].Receive(ref available);
+        }
+
 
         public void Reset()
         {
