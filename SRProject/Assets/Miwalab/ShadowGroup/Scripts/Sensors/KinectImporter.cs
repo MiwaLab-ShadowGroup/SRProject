@@ -33,8 +33,8 @@ public class KinectImporter : ASensorImporter
     #region 送信用
     private NetworkHost m_networkHost;
     private ThreadHost m_threadHost;
-    private bool m_isGettingData;
-    private float m_gettingPlaneHeight = -1;
+    private bool m_isGettingData = true;
+    private float m_gettingPlaneHeight = 0;
     private float m_gettingHeightDiff = 0.01f;
     private const string clientName = "Importer_Sender";
     private HumanPoints m_HumanCenterPositions;
@@ -83,10 +83,14 @@ public class KinectImporter : ASensorImporter
     /// </summary>
     private void SendMethod()
     {
-        if(m_IsUpdatedSendData == true)
+        if (m_IsUpdatedSendData == true)
         {
             byte[] data = this.m_HumanCenterPositions.getData();
-            m_networkHost.SendTo(clientName,data,m_remoteManager.RemoteEPs);
+            if (data == null)
+            {
+                return;
+            }
+            m_networkHost.SendTo(clientName, data, m_remoteManager.RemoteEPs);
             this.m_IsUpdatedSendData = false;
         }
     }
@@ -130,9 +134,9 @@ public class KinectImporter : ASensorImporter
                                 points.Add(point);
                                 counts.Add(0);
                             }
-                            point.X += points[points.Count - 1].X;
-                            point.Y += points[points.Count - 1].Y;
-                            point.Z += points[points.Count - 1].Z;
+                            point.X = point.X * counts[counts.Count - 1] / (counts[counts.Count - 1] + 1) + points[points.Count - 1].X / (counts[counts.Count - 1] + 1);
+                            point.Y = point.Y * counts[counts.Count - 1] / (counts[counts.Count - 1] + 1) + points[points.Count - 1].Y / (counts[counts.Count - 1] + 1);
+                            point.Z = point.Z * counts[counts.Count - 1] / (counts[counts.Count - 1] + 1) + points[points.Count - 1].Z / (counts[counts.Count - 1] + 1);
                             points[points.Count - 1] = point;
                             counts[counts.Count - 1]++;
 
@@ -156,7 +160,7 @@ public class KinectImporter : ASensorImporter
 
 
         this.m_HumanCenterPositions.setData(points);
-
+        this.m_IsUpdatedSendData = true;
 
 
         //if (readdata.IsRead)
