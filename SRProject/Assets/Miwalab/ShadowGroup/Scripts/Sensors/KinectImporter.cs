@@ -23,8 +23,8 @@ public class KinectImporter : ASensorImporter
     private float m_bottom = -1;
     private float m_front = 8;
     private float m_rear = 0.5f;
-
-
+    private ReadData readdata;
+    public GameObject ReadData;
     // Use this for initialization
     void Start()
     {
@@ -44,7 +44,7 @@ public class KinectImporter : ASensorImporter
             }
             m_cameraSpacePoints = new CameraSpacePoint[m_frameDescription.Width * m_frameDescription.Height];
         }
-
+        //readdata = ReadData.GetComponent<ReadData>();
     }
 
     // Update is called once per frame
@@ -112,6 +112,11 @@ public class KinectImporter : ASensorImporter
                          + ", z " + points[i].Z / counts[i]);
         }
 
+
+        //if (readdata.IsRead)
+        //{
+        //    m_mat = readdata.playmat;
+        //}
 
         foreach (var imageProcesser in this.m_ImagerProcesserList)
         {
