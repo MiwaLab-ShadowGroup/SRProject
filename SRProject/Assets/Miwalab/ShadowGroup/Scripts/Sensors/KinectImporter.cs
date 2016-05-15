@@ -3,6 +3,7 @@ using System.Collections;
 using Windows.Kinect;
 using OpenCvSharp.CPlusPlus;
 using System;
+using System.Collections.Generic;
 
 public class KinectImporter : ASensorImporter
 {
@@ -57,6 +58,11 @@ public class KinectImporter : ASensorImporter
         m_depthData = _depthManager.GetData();
         SaveDepth = m_depthData;
         m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
+
+        List<CameraSpacePoint> points = new List<CameraSpacePoint>();
+        List<int> counts = new List<int>();
+        //接続しているか否かのフラグ
+        bool _flag = false;
         unsafe
         {
             byte* data = (byte*)m_mat.Data;
@@ -69,6 +75,26 @@ public class KinectImporter : ASensorImporter
                     data[i] = 255;
                     data[i + 1] = 255;
                     data[i + 2] = 255;
+                    //断面取得
+                    if (point.Y > 0.01f && point.Y < 0.02f)
+                    {
+                        if (_flag == false)
+                        {
+                            points.Add(point);
+                            counts.Add(0);
+                        }
+                        point.X += points[points.Count - 1].X;
+                        point.Y += points[points.Count - 1].Y;
+                        point.Z += points[points.Count - 1].Z;
+                        points[points.Count - 1] = point;
+                        counts[counts.Count - 1]++;
+
+                        _flag = true;
+                    }
+                    else
+                    {
+                        _flag = false;
+                    }
                 }
                 else
                 {
@@ -79,13 +105,21 @@ public class KinectImporter : ASensorImporter
             }
         }
 
+        for (int i = 0; i < counts.Count; ++i)
+        {
+            Debug.Log("point: x " + points[i].X / counts[i] 
+                         + ", y " + points[i].Y / counts[i]
+                         + ", z " + points[i].Z / counts[i]);
+        }
+
+
         foreach (var imageProcesser in this.m_ImagerProcesserList)
         {
             imageProcesser.ImageProcess(ref this.m_mat, ref this.m_mat);
 
         }
 
-        for(int i = 0;  i < this.m_AfterEffectList.Count; ++i )
+        for (int i = 0; i < this.m_AfterEffectList.Count; ++i)
         {
             var afterEffect = this.m_AfterEffectList[i];
             afterEffect.ImageProcess(ref this.m_mat, ref this.m_mat);
