@@ -8,7 +8,7 @@ using OpenCvSharp;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    public class Zanzou : AImageProcesser
+    public class Zanzou : AShadowImageProcesser
     {
         private List<List<bool>> m_Field = new List<List<bool>>();
         private bool IsInit = false;
@@ -32,6 +32,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         double innertime;
         double outertime;
         double parameter;
+
+        private bool invert;
 
         public bool IsFirstFrame { get; private set; }
 
@@ -64,7 +66,23 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (UIHost.GetUI("Zanzou_in_tm") as ParameterSlider).ValueChanged += Zanzou_in_tm_ValueChanged;
             (UIHost.GetUI("Zanzou_ou_tm") as ParameterSlider).ValueChanged += Zanzou_ou_tm_ValueChanged;
             (UIHost.GetUI("Zanzou_param") as ParameterSlider).ValueChanged += Zanzou_param_ValueChanged;
+            (UIHost.GetUI("Zanzou_Invert") as ParameterCheckbox).ValueChanged += Zanzou_Invert_ValueChanged;
+            (UIHost.GetUI("Zanzou_ins_R") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Zanzou_ins_G") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Zanzou_ins_B") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Zanzou_out_R") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Zanzou_out_G") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Zanzou_out_B") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Zanzou_in_tm") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Zanzou_ou_tm") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Zanzou_param") as ParameterSlider).ValueUpdate();
+            (UIHost.GetUI("Zanzou_Invert") as ParameterCheckbox).ValueUpdate();
 
+        }
+
+        private void Zanzou_Invert_ValueChanged(object sender, EventArgs e)
+        {
+            this.invert = (e as ParameterCheckbox.ChangedValue).Value;
         }
 
         private void Zanzou_param_ValueChanged(object sender, EventArgs e)
@@ -231,12 +249,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                 outerColorBuffer2.GaussianBlur(new Size(3, 3), 3).CopyTo(dst);
 
-                
+
                 ////***********************************************************
                 //bufimage_pre = bufimage;
                 //bufimage_pre -= 20.0;
 
-
+                if (invert)
+                {
+                    dst = ~dst;
+                }
 
 
                 //Cv2.CvtColor(bufimage, dst, OpenCvSharp.ColorConversion.GrayToBgr);
