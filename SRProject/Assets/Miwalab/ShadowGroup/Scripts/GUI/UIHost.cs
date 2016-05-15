@@ -351,7 +351,8 @@ public class UIHost : MonoBehaviour
         AddFloatUI(parent, "Polygon_bgd_R", 255, 0, 0);
         AddFloatUI(parent, "Polygon_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "Polygon_bgd_B", 255, 0, 0);
-        AddFloatUI(parent, "Polygon_Rate", 200, 1, 50);
+        AddFloatUI(parent, "Polygon_Rate", 40, 1, 6);
+        AddBooleanUI(parent, "Polygon_UseFade", true);
 
     }
 

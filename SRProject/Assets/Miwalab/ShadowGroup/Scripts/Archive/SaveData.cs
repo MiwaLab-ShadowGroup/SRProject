@@ -94,25 +94,29 @@ public class SaveData : MonoBehaviour {
             try
             {
                 this._savedDepthBuffer = this.kinect.SaveDepth;
-                Mat mat = new Mat(new Size(512, 424), MatType.CV_16U);
+               // Mat mat = new Mat(new Size(512, 424), MatType.CV_16U);
                 while (true)
                 {
                     this.FpsAd.Adjust();
-                    ushort* ptr = (ushort*)mat.Data;
-                    for (int i=0; i < 512*424; ++i)
-                    {
-                        ptr[i] = _savedDepthBuffer[i];
-                    }
+                    //ushort* ptr = (ushort*)mat.Data;
+                    //for (int i=0; i < 512*424; ++i)
+                    //{
+                    //    ptr[i] = _savedDepthBuffer[i];
+                    //}
 
-                    byte[] data = mat.ToBytes(".png");
+                    //byte[] data = mat.ToBytes(".png");
                     
                     datetime = DateTime.Now;
                     timestump = datetime.TimeOfDay;
                     //Debug.Log(framecount);
                     writer.Write(timestump.ToString());
-                    writer.Write(data.Length);
+                    writer.Write(_savedDepthBuffer.Length);
 
-                    writer.Write(data);
+                    for (int i = 0;i<_savedDepthBuffer.Length;i++)
+                    {
+                        writer.Write(_savedDepthBuffer[i]);
+                    }
+                    //writer.Write(data);
                     //framecount++;
                     if (this.IsSaveStop)
                     {
