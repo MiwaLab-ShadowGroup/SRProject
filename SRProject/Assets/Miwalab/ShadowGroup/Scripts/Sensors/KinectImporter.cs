@@ -41,6 +41,7 @@ public class KinectImporter : ASensorImporter
     private bool m_IsUpdatedSendData;
     public TextAsset RemoteEPSettings;
     private RemoteManager m_remoteManager;
+    private CameraSpacePoint m_kinectPosition = new CameraSpacePoint();
     #endregion
     // Use this for initialization
     void Start()
@@ -115,6 +116,8 @@ public class KinectImporter : ASensorImporter
         {
             byte* data = (byte*)m_mat.Data;
             int length = this.m_depthData.Length * 3;
+            CameraSpacePoint _point;
+            int _count;
             for (int i = 0; i < length; i += 3)
             {
                 CameraSpacePoint point = this.m_cameraSpacePoints[i / 3];
@@ -134,9 +137,11 @@ public class KinectImporter : ASensorImporter
                                 points.Add(point);
                                 counts.Add(0);
                             }
-                            point.X = point.X * counts[counts.Count - 1] / (counts[counts.Count - 1] + 1) + points[points.Count - 1].X / (counts[counts.Count - 1] + 1);
-                            point.Y = point.Y * counts[counts.Count - 1] / (counts[counts.Count - 1] + 1) + points[points.Count - 1].Y / (counts[counts.Count - 1] + 1);
-                            point.Z = point.Z * counts[counts.Count - 1] / (counts[counts.Count - 1] + 1) + points[points.Count - 1].Z / (counts[counts.Count - 1] + 1);
+                            _count = counts[counts.Count - 1];
+                            _point = points[points.Count - 1];
+                            point.X = (point.X * (_count + m_kinectPosition.X) + _point.X) / (_count + 1);
+                            point.Y = (point.Y * (_count + m_kinectPosition.Y) + _point.Y) / (_count + 1);
+                            point.Z = (point.Z * (_count + m_kinectPosition.Z) + _point.Z) / (_count + 1);
                             points[points.Count - 1] = point;
                             counts[counts.Count - 1]++;
 
@@ -189,12 +194,56 @@ public class KinectImporter : ASensorImporter
         (UIHost.GetUI("Kinect_y_max") as ParameterSlider).ValueChanged += KinectImporter_y_max_ValueChanged;
         (UIHost.GetUI("Kinect_z_min") as ParameterSlider).ValueChanged += KinectImporter_z_min_ValueChanged;
         (UIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueChanged += KinectImporter_z_max_ValueChanged;
+
+
+        (UIHost.GetUI("Kinect_pos_x") as ParameterSlider).ValueChanged += KinectImporter_pos_x_ValueChanged;
+        (UIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueChanged += KinectImporter_pos_y_ValueChanged;
+        (UIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueChanged += KinectImporter_pos_z_ValueChanged;
+
+        (UIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueChanged += KinectImporter_Cut_y_ValueChanged;
+        (UIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueChanged += KinectImporter_Cut_diff_ValueChanged;
+
+
+
+
         (UIHost.GetUI("Kinect_x_min") as ParameterSlider).ValueUpdate();
         (UIHost.GetUI("Kinect_x_max") as ParameterSlider).ValueUpdate();
         (UIHost.GetUI("Kinect_y_min") as ParameterSlider).ValueUpdate();
         (UIHost.GetUI("Kinect_y_max") as ParameterSlider).ValueUpdate();
         (UIHost.GetUI("Kinect_z_min") as ParameterSlider).ValueUpdate();
         (UIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueUpdate();
+
+        (UIHost.GetUI("Kinect_pos_x") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueUpdate();
+
+        (UIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueUpdate();
+        (UIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueUpdate();
+    }
+
+    private void KinectImporter_pos_x_ValueChanged(object sender, EventArgs e)
+    {
+        this.m_kinectPosition.X = (e as ParameterSlider.ChangedValue).Value;
+    }
+
+    private void KinectImporter_pos_y_ValueChanged(object sender, EventArgs e)
+    {
+        this.m_kinectPosition.Y = (e as ParameterSlider.ChangedValue).Value;
+    }
+
+    private void KinectImporter_pos_z_ValueChanged(object sender, EventArgs e)
+    {
+        this.m_kinectPosition.Z = (e as ParameterSlider.ChangedValue).Value;
+    }
+    
+    private void KinectImporter_Cut_diff_ValueChanged(object sender, EventArgs e)
+    {
+        this.m_gettingHeightDiff = (e as ParameterSlider.ChangedValue).Value;
+    }
+
+    private void KinectImporter_Cut_y_ValueChanged(object sender, EventArgs e)
+    {
+        this.m_gettingPlaneHeight = (e as ParameterSlider.ChangedValue).Value;
     }
 
     private void KinectImporter_x_min_ValueChanged(object sender, EventArgs e)

@@ -379,6 +379,15 @@ public class UIHost : MonoBehaviour
         AddFloatUI(parent, "Kinect_y_max", 5, 0, 2);
         AddFloatUI(parent, "Kinect_z_min", 8, 0, 1);
         AddFloatUI(parent, "Kinect_z_max", 8, 0, 8);
+        m_lastUpdatedHeight += 10;
+        AddFloatUI(parent, "Kinect_pos_x", 15, -15, 0);
+        AddFloatUI(parent, "Kinect_pos_y", 5, 0, 1);
+        AddFloatUI(parent, "Kinect_pos_z", 10, 0, 8);
+        m_lastUpdatedHeight += 10;
+        AddFloatUI(parent, "Kinect_Cut_y", 2, -2, 0);
+        AddFloatUI(parent, "Kinect_Cut_diff", 0.1f, 0.005f, 0.02f);
+
+
     }
     /// <summary>
     /// normal shadow
