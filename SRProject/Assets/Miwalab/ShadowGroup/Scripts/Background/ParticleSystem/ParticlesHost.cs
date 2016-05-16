@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Miwalab.ShadowGroup.Background;
+using Miwalab.ShadowGroup.Data;
 
 public class ParticlesHost : MonoBehaviour
 {
@@ -41,7 +42,36 @@ public class ParticlesHost : MonoBehaviour
     {
         for (int i = 0; i < num; ++i)
         {
-            var humanpoints = this.m_humanPointReceiver.HumanPointList;
+            HumanPoints humanpoints = new HumanPoints();
+            switch(Random.Range(0, 3)){
+                case 0:
+                    if (this.m_humanPointReceiver.HumanPointList1 != null)
+                    {
+                        humanpoints = this.m_humanPointReceiver.HumanPointList1;
+                    }
+                    break;
+                case 1:
+                    if (this.m_humanPointReceiver.HumanPointList2 != null)
+                    {
+                        humanpoints = this.m_humanPointReceiver.HumanPointList2;
+                    }
+                    break;
+                case 2:
+                    if (this.m_humanPointReceiver.HumanPointList3 != null)
+                    {
+                        humanpoints = this.m_humanPointReceiver.HumanPointList3;
+                    }
+                    break;
+                case 3:
+                    if (this.m_humanPointReceiver.HumanPointList4 != null)
+                    {
+                        humanpoints = this.m_humanPointReceiver.HumanPointList4;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            
             if (humanpoints.Count > 0)
             {
                 CreatePosition = new Vector3(Random.value - 1/ 2 + humanpoints[Random.Range(0,humanpoints.Count-1)].X,
