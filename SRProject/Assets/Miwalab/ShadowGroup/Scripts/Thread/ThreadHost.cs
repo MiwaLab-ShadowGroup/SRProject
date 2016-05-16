@@ -16,7 +16,7 @@ namespace Miwalab.ShadowGroup.Thread
 
         private Dictionary<string, IThread> m_theadList;
 
-        public ThreadHost()
+        private ThreadHost()
         {
             m_theadList = new Dictionary<string, IThread>();
         }
