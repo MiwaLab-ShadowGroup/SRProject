@@ -58,9 +58,9 @@ public class ShadowMediaUIHost : MonoBehaviour
     public GameObject SettingPanel;
     public Canvas MainCanvas;
 
-    private List<Dropdown> m_MenuList;
-    private Dictionary<string, GameObject> m_PanelDictionary;
-    public void Start()
+    protected List<Dropdown> m_MenuList;
+    protected Dictionary<string, GameObject> m_PanelDictionary;
+    public virtual void Start()
     {
         ResetUI();
         m_MenuList = new List<Dropdown>();
@@ -404,7 +404,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "TimeDelay_DelayTime", 1000, 0, 0);
     }
 
-    private void CreateUIsCallibrationImport(GameObject parent)
+    protected void CreateUIsCallibrationImport(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "Clb_I_TL_X", 2, -1, 0);
@@ -417,7 +417,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Clb_I_TR_Y", 2, -1, 0);
     }
 
-    private void CreateUIsCallibrationExport(GameObject parent)
+    protected void CreateUIsCallibrationExport(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "Clb_E_TL_X", 2000, -1000, 0);
@@ -507,7 +507,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_currentImportSettingPanel.SetActive(value);
     }
-    private GameObject m_currentCallibrationSettingPanel;
+    protected GameObject m_currentCallibrationSettingPanel;
     public void CallibrationSettingPanelSet(bool value)
     {
         m_currentCallibrationSettingPanel.SetActive(value);
