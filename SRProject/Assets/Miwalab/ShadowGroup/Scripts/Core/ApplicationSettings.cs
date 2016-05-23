@@ -18,6 +18,7 @@ namespace Miwalab.ShadowGroup.Core
             if (Display.displays.Length > 2)
                 Display.displays[2].Activate();
         }
+       
 
         public void Update()
         {
