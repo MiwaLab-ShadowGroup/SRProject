@@ -116,7 +116,7 @@ CGINCLUDE
 	uniform float4 _Foam;
 
 	// !!! INSERTED
-    #include "../../../../../OceanSurface/OceanSurfaceInclude.cginc"
+    #include "../../../../../Models/OceanSurface/OceanSurfaceInclude.cginc"
 	// !!! /INSERTED
 	
 	// shortcuts
