@@ -2,7 +2,7 @@
 using System.Collections;
 using System.IO;
 using System.Threading;
-using UnityEditor;
+//using UnityEditor;
 using System;
 using UnityEngine.UI;
 using OpenCvSharp.CPlusPlus;
@@ -61,7 +61,7 @@ public class ReadData : MonoBehaviour
 
     private void ChooseFile_Clicked(object sender, EventArgs e)
     {
-        FilePath = EditorUtility.OpenFilePanel("ファイル選択", "　", "　");
+        //FilePath = EditorUtility.OpenFilePanel("ファイル選択", "　", "　");
 
     }
 

@@ -23,6 +23,30 @@ namespace Miwalab.ShadowGroup.Data
                 AddRange(items);
             }
         }
+        public void setData(byte[] data)
+        {
+            lock (this)
+            {
+                this.Clear();
+                //個数　×　floatの長さ　×　（X　Z(Yは一定と仮定)）
+                int counter = 0;
+                float Y = BitConverter.ToSingle(data, counter);
+                counter += sizeof(float);
+                for (int i = 0; i < (data.Length / sizeof(float) - 1) / 2; ++i)
+                {
+                    CameraSpacePoint point = new CameraSpacePoint();
+                    point.X = BitConverter.ToSingle(data, counter);
+                    counter += sizeof(float);
+                    point.Z = BitConverter.ToSingle(data, counter);
+                    counter += sizeof(float);
+                    point.Y = Y;
+
+                    this.Add(point);
+
+                }
+            }
+            return;
+        }
 
         /// <summary>
         /// 保持された三次元位置をByte配列に変換
@@ -58,30 +82,7 @@ namespace Miwalab.ShadowGroup.Data
         }
 
 
-        public void setData(byte[] data)
-        {
-            lock (this)
-            {
-                this.Clear();
-                //個数　×　floatの長さ　×　（X　Z(Yは一定と仮定)）
-                int counter = 0;
-                float Y = BitConverter.ToSingle(data, counter);
-                counter += sizeof(float);
-                for (int i = 0; i < (data.Length/sizeof(float)-1)/2;++i)
-                {
-                    CameraSpacePoint point = new CameraSpacePoint();
-                    point.X = BitConverter.ToSingle(data, counter);
-                    counter += sizeof(float);
-                    point.Z = BitConverter.ToSingle(data, counter);
-                    counter += sizeof(float);
-                    point.Y = Y;
-
-                    this.Add(point);
-
-                }
-            }
-            return;
-        }
+        
 
     }
 }

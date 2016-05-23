@@ -17,11 +17,9 @@ namespace Miwalab.ShadowGroup.Test
 
         void Update()
         {
-            if(this.m_humanPointReceiver.HumanPointList.Count > 0)
+            if(this.m_humanPointReceiver.HumanPointList1.Count > 0)
             {
-                var point = this.m_humanPointReceiver.HumanPointList[0];
-
-
+                var point = this.m_humanPointReceiver.HumanPointList1[0];
                 this.gameObject.transform.position = new Vector3(point.X, point.Y, point.Z);
             }
         }

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.IO;
 using System.Threading;
-using UnityEditor;
+//using UnityEditor;
 using System;
 using UnityEngine.UI;
 using OpenCvSharp.CPlusPlus;
@@ -68,8 +68,9 @@ public class SaveData : MonoBehaviour {
 
     private void ChooseFolder_Clicked(object sender, EventArgs e)
     {
-        FolderPath = EditorUtility.SaveFolderPanel("フォルダ選択", " ", " ");
-
+        string folder = "";
+        OpenFileDialog.OpenFileDialog.Folder(ref folder);
+        Debug.Log( folder);
     }
 
     private void OpenFileChoose_ValueChanged(object sender, System.EventArgs e)

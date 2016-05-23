@@ -16,7 +16,7 @@ namespace Miwalab.ShadowGroup.Network
         /// <summary>
         /// singleton
         /// </summary>
-        private static NetworkHost m_data;
+        private static NetworkHost m_actual;
 
 
         /// <summary>
@@ -42,11 +42,11 @@ namespace Miwalab.ShadowGroup.Network
         /// <returns></returns>
         public static NetworkHost GetInstance()
         {
-            if (m_data == null)
+            if (m_actual == null)
             {
-                m_data = new NetworkHost();
+                m_actual = new NetworkHost();
             }
-            return m_data;
+            return m_actual;
         }
 
         public void AddClient(int port, string tag)
