@@ -21,13 +21,13 @@ namespace Miwalab.ShadowGroup.AfterEffect
         public FadeTransition(List<AAfterEffect> transitionList,ASensorImporter sensor, AShadowImageProcesser to)
         {
 
-            (UIHost.GetUI("Frame_of_FadeIn") as ParameterSlider).ValueChanged += Frame_of_FadeIn_ValueChanged;
-            (UIHost.GetUI("Frame_of_FadeOut") as ParameterSlider).ValueChanged += Frame_of_FadeOut_ValueChanged;
-            (UIHost.GetUI("White_Fade") as ParameterCheckbox).ValueChanged += White_Fade_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Frame_of_FadeIn") as ParameterSlider).ValueChanged += Frame_of_FadeIn_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Frame_of_FadeOut") as ParameterSlider).ValueChanged += Frame_of_FadeOut_ValueChanged;
+            (ShadowMediaUIHost.GetUI("White_Fade") as ParameterCheckbox).ValueChanged += White_Fade_ValueChanged;
 
-            (UIHost.GetUI("Frame_of_FadeIn") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Frame_of_FadeOut") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("White_Fade") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Frame_of_FadeIn") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Frame_of_FadeOut") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("White_Fade") as ParameterCheckbox).ValueUpdate();
 
 
             this.Parent = transitionList;

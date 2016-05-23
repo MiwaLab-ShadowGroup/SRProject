@@ -188,37 +188,37 @@ public class KinectImporter : ASensorImporter
 
     public override void setUpUI()
     {
-        (UIHost.GetUI("Kinect_x_min") as ParameterSlider).ValueChanged += KinectImporter_x_min_ValueChanged;
-        (UIHost.GetUI("Kinect_x_max") as ParameterSlider).ValueChanged += KinectImporter_x_max_ValueChanged;
-        (UIHost.GetUI("Kinect_y_min") as ParameterSlider).ValueChanged += KinectImporter_y_min_ValueChanged;
-        (UIHost.GetUI("Kinect_y_max") as ParameterSlider).ValueChanged += KinectImporter_y_max_ValueChanged;
-        (UIHost.GetUI("Kinect_z_min") as ParameterSlider).ValueChanged += KinectImporter_z_min_ValueChanged;
-        (UIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueChanged += KinectImporter_z_max_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_x_min") as ParameterSlider).ValueChanged += KinectImporter_x_min_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_x_max") as ParameterSlider).ValueChanged += KinectImporter_x_max_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_y_min") as ParameterSlider).ValueChanged += KinectImporter_y_min_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_y_max") as ParameterSlider).ValueChanged += KinectImporter_y_max_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_z_min") as ParameterSlider).ValueChanged += KinectImporter_z_min_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueChanged += KinectImporter_z_max_ValueChanged;
 
 
-        (UIHost.GetUI("Kinect_pos_x") as ParameterSlider).ValueChanged += KinectImporter_pos_x_ValueChanged;
-        (UIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueChanged += KinectImporter_pos_y_ValueChanged;
-        (UIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueChanged += KinectImporter_pos_z_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_pos_x") as ParameterSlider).ValueChanged += KinectImporter_pos_x_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueChanged += KinectImporter_pos_y_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueChanged += KinectImporter_pos_z_ValueChanged;
 
-        (UIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueChanged += KinectImporter_Cut_y_ValueChanged;
-        (UIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueChanged += KinectImporter_Cut_diff_ValueChanged;
-
-
+        (ShadowMediaUIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueChanged += KinectImporter_Cut_y_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueChanged += KinectImporter_Cut_diff_ValueChanged;
 
 
-        (UIHost.GetUI("Kinect_x_min") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Kinect_x_max") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Kinect_y_min") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Kinect_y_max") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Kinect_z_min") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueUpdate();
 
-        (UIHost.GetUI("Kinect_pos_x") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueUpdate();
 
-        (UIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Kinect_x_min") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Kinect_x_max") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Kinect_y_min") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Kinect_y_max") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Kinect_z_min") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueUpdate();
+
+        (ShadowMediaUIHost.GetUI("Kinect_pos_x") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueUpdate();
+
+        (ShadowMediaUIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueUpdate();
     }
 
     private void KinectImporter_pos_x_ValueChanged(object sender, EventArgs e)

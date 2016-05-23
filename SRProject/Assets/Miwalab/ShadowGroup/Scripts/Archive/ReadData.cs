@@ -29,10 +29,10 @@ public class ReadData : MonoBehaviour
 
     void Start()
     {
-        (UIHost.GetUI("ChooseFile") as ParameterButton).Clicked += ChooseFile_Clicked;
-        (UIHost.GetUI("PlayStart") as ParameterButton).Clicked += PlayStart_Clicked;
-        (UIHost.GetUI("Pause") as ParameterCheckbox).ValueChanged += Pause_ValueChanged;
-        (UIHost.GetUI("Pause") as ParameterCheckbox).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("ChooseFile") as ParameterButton).Clicked += ChooseFile_Clicked;
+        (ShadowMediaUIHost.GetUI("PlayStart") as ParameterButton).Clicked += PlayStart_Clicked;
+        (ShadowMediaUIHost.GetUI("Pause") as ParameterCheckbox).ValueChanged += Pause_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Pause") as ParameterCheckbox).ValueUpdate();
 
 
         this.FpsAd = new FPSAdjuster.FPSAdjuster();

@@ -6,7 +6,7 @@ public class UIEventTestScripts : MonoBehaviour {
     ParameterSlider m_Slider;
 	// Use this for initialization
 	void Start () {
-        m_Slider = UIHost.GetUI("MySlider_ValueChanged") as ParameterSlider;
+        m_Slider = ShadowMediaUIHost.GetUI("MySlider_ValueChanged") as ParameterSlider;
         m_Slider.ValueChanged += UIEventTestScripts_myevent;
     }
 

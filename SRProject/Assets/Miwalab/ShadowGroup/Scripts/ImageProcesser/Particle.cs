@@ -43,22 +43,22 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.grayMat = new Mat();
             this.List_particle = new List<MyPirticle>();
 
-            (UIHost.GetUI("Interval_of_Contour") as ParameterSlider).ValueChanged += Interval_of_Contour_ValueChanged;
-            (UIHost.GetUI("Velocity") as ParameterSlider).ValueChanged += Velocity_ValueChanged;
-            (UIHost.GetUI("Lifetime_Frame") as ParameterSlider).ValueChanged += Lifetime_Frame_ValueChanged;
-            (UIHost.GetUI("threthOPFsize") as ParameterSlider).ValueChanged += threthOPFsize_ValueChanged;
-            (UIHost.GetUI("Particle_bgd_R") as ParameterSlider).ValueChanged += Particle_bgd_R_ValueChanged;
-            (UIHost.GetUI("Particle_bgd_G") as ParameterSlider).ValueChanged += Particle_bgd_G_ValueChanged;
-            (UIHost.GetUI("Particle_bgd_B") as ParameterSlider).ValueChanged += Particle_bgd_B_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Interval_of_Contour") as ParameterSlider).ValueChanged += Interval_of_Contour_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Velocity") as ParameterSlider).ValueChanged += Velocity_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Lifetime_Frame") as ParameterSlider).ValueChanged += Lifetime_Frame_ValueChanged;
+            (ShadowMediaUIHost.GetUI("threthOPFsize") as ParameterSlider).ValueChanged += threthOPFsize_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Particle_bgd_R") as ParameterSlider).ValueChanged += Particle_bgd_R_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Particle_bgd_G") as ParameterSlider).ValueChanged += Particle_bgd_G_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Particle_bgd_B") as ParameterSlider).ValueChanged += Particle_bgd_B_ValueChanged;
 
 
-            (UIHost.GetUI("Interval_of_Contour") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Velocity") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Lifetime_Frame") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("threthOPFsize") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Particle_bgd_R") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Particle_bgd_G") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Particle_bgd_B") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Interval_of_Contour") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Velocity") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Lifetime_Frame") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("threthOPFsize") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Particle_bgd_R") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Particle_bgd_G") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Particle_bgd_B") as ParameterSlider).ValueUpdate();
 
         }
 

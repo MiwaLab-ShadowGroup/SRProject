@@ -9,7 +9,7 @@ using Miwalab.ShadowGroup.Scripts.Callibration;
 using Miwalab.ShadowGroup.AfterEffect;
 using Miwalab.ShadowGroup.Archive;
 
-public class UIHost : MonoBehaviour
+public class ShadowMediaUIHost : MonoBehaviour
 {
 
     #region singleton

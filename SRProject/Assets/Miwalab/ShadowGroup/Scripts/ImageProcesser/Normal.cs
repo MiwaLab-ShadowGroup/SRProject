@@ -14,8 +14,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             :base()
         {
             //UIからパラメータ変更通知の追加
-            (UIHost.GetUI("Normal_Invert") as ParameterCheckbox).ValueChanged += Normal_ValueChanged;
-            (UIHost.GetUI("Normal_Invert") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Normal_Invert") as ParameterCheckbox).ValueChanged += Normal_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Normal_Invert") as ParameterCheckbox).ValueUpdate();
         }
 
         private void Normal_ValueChanged(object sender, EventArgs e)

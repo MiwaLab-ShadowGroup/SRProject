@@ -53,11 +53,11 @@ public class SaveData : MonoBehaviour {
     void Start () {
         kinect = gameObject.GetComponent<KinectImporter>();
         //this.pointcloud = pointCloudShadow.GetComponent<PointCloud>();
-        (UIHost.GetUI("ChooseFolder") as ParameterButton).Clicked += ChooseFolder_Clicked;
-        this.m_SaveNameTextUI = (UIHost.GetUI("SaveFileName") as ParameterText).m_valueText;
+        (ShadowMediaUIHost.GetUI("ChooseFolder") as ParameterButton).Clicked += ChooseFolder_Clicked;
+        this.m_SaveNameTextUI = (ShadowMediaUIHost.GetUI("SaveFileName") as ParameterText).m_valueText;
 
-        (UIHost.GetUI("SaveStart") as ParameterButton).Clicked += SaveStart_Clicked;
-        (UIHost.GetUI("SaveStop") as ParameterButton).Clicked += SaveStop_Clicked;
+        (ShadowMediaUIHost.GetUI("SaveStart") as ParameterButton).Clicked += SaveStart_Clicked;
+        (ShadowMediaUIHost.GetUI("SaveStop") as ParameterButton).Clicked += SaveStop_Clicked;
 
         this.FpsAd = new FPSAdjuster.FPSAdjuster();
         this.FpsAd.Fps = 30;
