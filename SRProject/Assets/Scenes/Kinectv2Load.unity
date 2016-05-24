@@ -3687,7 +3687,6 @@ GameObject:
   - 4: {fileID: 903384247}
   - 114: {fileID: 903384248}
   - 114: {fileID: 903384249}
-  - 114: {fileID: 903384250}
   m_Layer: 0
   m_Name: KinectImporter
   m_TagString: Untagged
@@ -3734,18 +3733,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce1afb404dfdb2445b682e73cd2f9163, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &903384250
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 903384246}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7767620a6f3b6604fa041221d9b49c07, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  IsRead: 0
 --- !u!1 &943550394
 GameObject:
   m_ObjectHideFlags: 0
@@ -5417,6 +5404,7 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0

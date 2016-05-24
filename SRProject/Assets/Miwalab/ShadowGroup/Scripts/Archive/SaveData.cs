@@ -5,7 +5,8 @@ using System.Threading;
 //using UnityEditor;
 using System;
 using UnityEngine.UI;
-using OpenCvSharp.CPlusPlus;
+using OpenFileDialog;
+
 [RequireComponent(typeof(KinectImporter))]
 public class SaveData : MonoBehaviour {
 
@@ -28,7 +29,7 @@ public class SaveData : MonoBehaviour {
 
     bool IsSaveStop = false;
 
-    string filename;
+    string filename ="";
 
     DateTime datetime;
     TimeSpan timestump;
@@ -40,7 +41,7 @@ public class SaveData : MonoBehaviour {
     {
         if(FolderPath != null)
         {
-            this.writer = new BinaryWriter(File.OpenWrite(FolderPath + @"\" + this.m_SaveNameTextUI.text));
+            this.writer = new BinaryWriter(File.OpenWrite(filename));
             thread = new Thread(new ThreadStart(SaveDepth));
             thread.Start();
         }
@@ -68,9 +69,10 @@ public class SaveData : MonoBehaviour {
 
     private void ChooseFolder_Clicked(object sender, EventArgs e)
     {
-        string folder = "";
-        OpenFileDialog.OpenFileDialog.Folder(ref folder);
-        Debug.Log( folder);
+
+        OpenFileDialog.OpenFileDialog.Save(ref filename);
+        Debug.Log(filename);
+        
     }
 
     private void OpenFileChoose_ValueChanged(object sender, System.EventArgs e)

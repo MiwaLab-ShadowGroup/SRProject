@@ -61,8 +61,7 @@ public class ReadData : MonoBehaviour
 
     private void ChooseFile_Clicked(object sender, EventArgs e)
     {
-        //FilePath = EditorUtility.OpenFilePanel("ファイル選択", "　", "　");
-
+        OpenFileDialog.OpenFileDialog.Read(ref FilePath);
     }
 
     void Update()
