@@ -6,6 +6,7 @@ using System.Threading;
 using System;
 using UnityEngine.UI;
 using OpenCvSharp.CPlusPlus;
+
 [RequireComponent(typeof(KinectImporter))]
 public class SaveData : MonoBehaviour
 {
@@ -41,7 +42,7 @@ public class SaveData : MonoBehaviour
     {
         if (FolderPath != null)
         {
-            this.writer = new BinaryWriter(File.OpenWrite(FolderPath + @"\" + this.m_SaveNameTextUI.text));
+            this.writer = new BinaryWriter(File.OpenWrite(filename) /*+ @"\" + this.m_SaveNameTextUI.text)*/);
             thread = new Thread(new ThreadStart(SaveDepth));
             thread.Start();
         }
@@ -56,7 +57,7 @@ public class SaveData : MonoBehaviour
         kinect = gameObject.GetComponent<KinectImporter>();
         //this.pointcloud = pointCloudShadow.GetComponent<PointCloud>();
         (UIHost.GetUI("ChooseSaveFile") as ParameterButton).Clicked += ChooseFolder_Clicked;
-        //this.m_SaveNameTextUI = (UIHost.GetUI("SaveFileName") as ParameterText).m_valueText;
+        this.m_SaveNameTextUI = (UIHost.GetUI("SaveFileName") as ParameterText).m_valueText;
 
         (UIHost.GetUI("SaveStart") as ParameterButton).Clicked += SaveStart_Clicked;
         (UIHost.GetUI("SaveStop") as ParameterButton).Clicked += SaveStop_Clicked;

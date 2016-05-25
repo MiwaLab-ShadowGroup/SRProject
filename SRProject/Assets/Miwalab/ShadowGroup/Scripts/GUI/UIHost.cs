@@ -284,7 +284,7 @@ public class UIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddButtonUI(parent, "ChooseSaveFile");
-        //AddTextUI(parent, "SaveFolderPath");
+        AddTextUI(parent, "SaveFileName");
         
         AddButtonUI(parent, "SaveStart");
         AddButtonUI(parent, "SaveStop");
