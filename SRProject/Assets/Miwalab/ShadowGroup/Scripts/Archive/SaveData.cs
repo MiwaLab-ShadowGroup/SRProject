@@ -5,7 +5,7 @@ using System.Threading;
 //using UnityEditor;
 using System;
 using UnityEngine.UI;
-using OpenFileDialog;
+
 
 [RequireComponent(typeof(KinectImporter))]
 public class SaveData : MonoBehaviour {
@@ -19,21 +19,20 @@ public class SaveData : MonoBehaviour {
     //CameraImporter camera;
 
 
-    string FolderPath;
 
     FPSAdjuster.FPSAdjuster FpsAd;
 
     bool OpenFileChoose = false;
 
-    bool Savestart = false;
+    //bool Savestart = false;
 
     bool IsSaveStop = false;
 
-    string filename ="";
+    string filename = " ";
 
     DateTime datetime;
     TimeSpan timestump;
-    private Text m_SaveNameTextUI;
+    //private Text m_SaveNameTextUI;
 
     ushort[] _savedDepthBuffer;
 
@@ -69,7 +68,6 @@ public class SaveData : MonoBehaviour {
 
     private void ChooseFolder_Clicked(object sender, EventArgs e)
     {
-
         OpenFileDialog.OpenFileDialog.Save(ref filename);
         Debug.Log(filename);
         
@@ -150,9 +148,9 @@ public class SaveData : MonoBehaviour {
             thread.Abort();
 
         }
-        if (FolderPath != null)
+        if (filename != null)
         {
-            FolderPath = null;
+            filename = null;
         }
     }
 }
