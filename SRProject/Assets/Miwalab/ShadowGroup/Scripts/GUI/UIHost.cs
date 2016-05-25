@@ -284,8 +284,8 @@ public class UIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddButtonUI(parent, "ChooseFolder");
-        AddTextUI(parent, "SaveFolderPath");
-        AddTextUI(parent, "SaveFileName");
+        //AddTextUI(parent, "SaveFolderPath");
+        
         AddButtonUI(parent, "SaveStart");
         AddButtonUI(parent, "SaveStop");
 
@@ -386,7 +386,7 @@ public class UIHost : MonoBehaviour
         m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Kinect_Cut_y", 2, -2, 0);
         AddFloatUI(parent, "Kinect_Cut_diff", 0.1f, 0.005f, 0.02f);
-
+        AddBooleanUI(parent, "Archive",false);
 
     }
     /// <summary>

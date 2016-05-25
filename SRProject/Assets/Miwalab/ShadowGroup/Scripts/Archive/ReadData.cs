@@ -18,7 +18,7 @@ public class ReadData : MonoBehaviour
 
     FPSAdjuster.FPSAdjuster FpsAd;
 
-    byte[] ReadDepthData;
+    public ushort[] ReadDepthData;
     string time;
     int datalength;
 
@@ -72,52 +72,51 @@ public class ReadData : MonoBehaviour
 
     void ReadDepth()
     {
-        unsafe
+        //unsafe
+        //{
+        try
         {
-            try
+
+            while (true)
             {
-
-                while (true)
+                if (!PausePlay)
                 {
-                    if (!PausePlay)
+
+                    this.FpsAd.Adjust();
+
+                    //ushort* ptr = (ushort*)playmat.Data;
+
+                    this.time = reader.ReadString();
+                    this.datalength = this.reader.ReadInt32();
+
+
+
+                    for (int i = 0; i < datalength; ++i)
                     {
+                        this.ReadDepthData[i] = this.reader.ReadUInt16();
 
-                        this.FpsAd.Adjust();
-
-                        ushort* ptr = (ushort*)playmat.Data;
-
-                        this.time = reader.ReadString();
-                        this.datalength = this.reader.ReadInt32();
-
-
-                        this.ReadDepthData = this.reader.ReadBytes(datalength);
-
-                        for (int i = 0; i < datalength; ++i)
-                        {
-                            ptr[i] = ReadDepthData[i];
-
-                        }
+                    }
 
 
 
-                        if (reader.PeekChar() == -1)
-                        {
-                            Debug.Log("end");
-                            reader.Close();
-                            this.IsRead = false;
-                        }
+                    if (reader.PeekChar() == -1)
+                    {
+                        Debug.Log("end");
+                        reader.Close();
+                        this.IsRead = false;
                     }
                 }
             }
-            catch
-            {
-
-            }
-
+        }
+        catch
+        {
 
         }
 
-        
+
+        // }
+
+
     }
 
     void OnDestroy()

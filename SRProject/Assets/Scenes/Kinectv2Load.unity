@@ -2550,6 +2550,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7767620a6f3b6604fa041221d9b49c07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ReadDepthData: 
   IsRead: 0
 --- !u!4 &742780855
 Transform:
@@ -3720,7 +3721,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _depthManager: {fileID: 283299527}
   m_SaveDepth: 
-  ReadData: {fileID: 0}
+  ReadData: {fileID: 742780853}
   RemoteEPSettings: {fileID: 4900000, guid: 2c74817ba94b3dc4495953bf07c0b706, type: 3}
 --- !u!114 &903384249
 MonoBehaviour:

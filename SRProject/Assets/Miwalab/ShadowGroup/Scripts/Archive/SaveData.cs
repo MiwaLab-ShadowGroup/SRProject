@@ -39,7 +39,7 @@ public class SaveData : MonoBehaviour {
 
     private void SaveStart_Clicked(object sender, EventArgs e)
     {
-        if(FolderPath != null)
+        if(filename != null)
         {
             this.writer = new BinaryWriter(File.OpenWrite(filename));
             thread = new Thread(new ThreadStart(SaveDepth));
@@ -55,7 +55,7 @@ public class SaveData : MonoBehaviour {
         kinect = gameObject.GetComponent<KinectImporter>();
         //this.pointcloud = pointCloudShadow.GetComponent<PointCloud>();
         (UIHost.GetUI("ChooseFolder") as ParameterButton).Clicked += ChooseFolder_Clicked;
-        this.m_SaveNameTextUI = (UIHost.GetUI("SaveFileName") as ParameterText).m_valueText;
+        //this.m_SaveNameTextUI = (UIHost.GetUI("SaveFileName") as ParameterText).m_valueText;
 
         (UIHost.GetUI("SaveStart") as ParameterButton).Clicked += SaveStart_Clicked;
         (UIHost.GetUI("SaveStop") as ParameterButton).Clicked += SaveStop_Clicked;

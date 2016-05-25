@@ -8,7 +8,7 @@ namespace Helper
     internal class EventPump : UnityEngine.MonoBehaviour
     {
         private static object s_Lock = new object();
-        private Queue<Action> m_Queue = new Queue<Action>();
+        private System.Collections.Generic.Queue<Action> m_Queue = new System.Collections.Generic.Queue<Action>();
 
         public static EventPump Instance
         {

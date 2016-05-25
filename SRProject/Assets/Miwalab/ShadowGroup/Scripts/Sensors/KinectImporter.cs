@@ -28,7 +28,7 @@ public class KinectImporter : ASensorImporter
     private float m_rear = 0.5f;
     private ReadData m_readdata;
     public GameObject ReadData;
-
+    private bool IsArchive;
 
     #region 送信用
     private NetworkHost m_networkHost;
@@ -42,6 +42,7 @@ public class KinectImporter : ASensorImporter
     public TextAsset RemoteEPSettings;
     private RemoteManager m_remoteManager;
     private CameraSpacePoint m_kinectPosition = new CameraSpacePoint();
+
     #endregion
     // Use this for initialization
     void Start()
@@ -64,7 +65,7 @@ public class KinectImporter : ASensorImporter
             }
             m_cameraSpacePoints = new CameraSpacePoint[m_frameDescription.Width * m_frameDescription.Height];
         }
-        //readdata = ReadData.GetComponent<ReadData>();
+        m_readdata = ReadData.GetComponent<ReadData>();
     }
 
     private void InitializeNetwork()
@@ -106,7 +107,17 @@ public class KinectImporter : ASensorImporter
 
         m_depthData = _depthManager.GetData();
         m_SaveDepth = m_depthData;
-        m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
+
+        if (IsArchive)
+        {
+            m_mapper.MapDepthFrameToCameraSpace(m_readdata.ReadDepthData, m_cameraSpacePoints);
+
+        }
+        else
+        {
+            m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
+
+        }
 
         List<CameraSpacePoint> points = new List<CameraSpacePoint>();
         List<int> counts = new List<int>();
@@ -203,6 +214,7 @@ public class KinectImporter : ASensorImporter
         (UIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueChanged += KinectImporter_Cut_y_ValueChanged;
         (UIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueChanged += KinectImporter_Cut_diff_ValueChanged;
 
+        (UIHost.GetUI("Archive") as ParameterCheckbox).ValueChanged += Archive_ValueChanged;
 
 
 
@@ -219,6 +231,14 @@ public class KinectImporter : ASensorImporter
 
         (UIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueUpdate();
         (UIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueUpdate();
+
+        (UIHost.GetUI("Archive") as ParameterCheckbox).ValueUpdate();
+
+    }
+
+    private void Archive_ValueChanged(object sender, EventArgs e)
+    {
+        this.IsArchive = (e as ParameterCheckbox.ChangedValue).Value;
     }
 
     private void KinectImporter_pos_x_ValueChanged(object sender, EventArgs e)
