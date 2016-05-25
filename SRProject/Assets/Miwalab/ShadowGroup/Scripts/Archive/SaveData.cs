@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading;
 //using UnityEditor;
 using System;
-using UnityEngine.UI;
 
 
 [RequireComponent(typeof(KinectImporter))]
@@ -18,8 +17,6 @@ public class SaveData : MonoBehaviour {
 
     //CameraImporter camera;
 
-
-
     FPSAdjuster.FPSAdjuster FpsAd;
 
     bool OpenFileChoose = false;
@@ -28,7 +25,7 @@ public class SaveData : MonoBehaviour {
 
     bool IsSaveStop = false;
 
-    string filename = " ";
+    string Filename = "";
 
     DateTime datetime;
     TimeSpan timestump;
@@ -38,9 +35,9 @@ public class SaveData : MonoBehaviour {
 
     private void SaveStart_Clicked(object sender, EventArgs e)
     {
-        if(filename != null)
+        if(Filename != null)
         {
-            this.writer = new BinaryWriter(File.OpenWrite(filename));
+            this.writer = new BinaryWriter(File.OpenWrite(Filename));
             thread = new Thread(new ThreadStart(SaveDepth));
             thread.Start();
         }
@@ -48,12 +45,11 @@ public class SaveData : MonoBehaviour {
     }
 
     
-
     // Use this for initialization
     void Start () {
         kinect = gameObject.GetComponent<KinectImporter>();
         //this.pointcloud = pointCloudShadow.GetComponent<PointCloud>();
-        (UIHost.GetUI("ChooseFolder") as ParameterButton).Clicked += ChooseFolder_Clicked;
+        (UIHost.GetUI("ChooseSaveFile") as ParameterButton).Clicked += ChooseFile_Clicked;
         //this.m_SaveNameTextUI = (UIHost.GetUI("SaveFileName") as ParameterText).m_valueText;
 
         (UIHost.GetUI("SaveStart") as ParameterButton).Clicked += SaveStart_Clicked;
@@ -62,14 +58,14 @@ public class SaveData : MonoBehaviour {
         this.FpsAd = new FPSAdjuster.FPSAdjuster();
         this.FpsAd.Fps = 30;
         this.FpsAd.Start();
-        //Debug.Log("start1");
-
+        
     }
 
-    private void ChooseFolder_Clicked(object sender, EventArgs e)
+    private void ChooseFile_Clicked(object sender, EventArgs e)
     {
-        OpenFileDialog.OpenFileDialog.Save(ref filename);
-        Debug.Log(filename);
+
+        OpenFileDialog.OpenFileDialog.Save(ref Filename);
+        Debug.Log(Filename);
         
     }
 
@@ -148,9 +144,9 @@ public class SaveData : MonoBehaviour {
             thread.Abort();
 
         }
-        if (filename != null)
+        if (Filename != null)
         {
-            filename = null;
+            Filename = null;
         }
     }
 }

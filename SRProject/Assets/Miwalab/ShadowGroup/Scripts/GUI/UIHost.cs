@@ -283,7 +283,7 @@ public class UIHost : MonoBehaviour
     private void CreateUIsArchiveSave(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddButtonUI(parent, "ChooseFolder");
+        AddButtonUI(parent, "ChooseSaveFile");
         //AddTextUI(parent, "SaveFolderPath");
         
         AddButtonUI(parent, "SaveStart");

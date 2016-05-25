@@ -108,16 +108,16 @@ public class KinectImporter : ASensorImporter
         m_depthData = _depthManager.GetData();
         m_SaveDepth = m_depthData;
 
-        if (IsArchive)
-        {
-            m_mapper.MapDepthFrameToCameraSpace(m_readdata.ReadDepthData, m_cameraSpacePoints);
+        //if (IsArchive)
+        //{
+        //    m_mapper.MapDepthFrameToCameraSpace(m_readdata.ReadDepthData, m_cameraSpacePoints);
 
-        }
-        else
-        {
+        //}
+        //else
+        //{
             m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
 
-        }
+        //}
 
         List<CameraSpacePoint> points = new List<CameraSpacePoint>();
         List<int> counts = new List<int>();
