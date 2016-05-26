@@ -30,24 +30,24 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         public Polygon() : base()
         {
-            (UIHost.GetUI("Polygon_con_R") as ParameterSlider).ValueChanged += Polygon_con_R_ValueChanged;
-            (UIHost.GetUI("Polygon_con_G") as ParameterSlider).ValueChanged += Polygon_con_G_ValueChanged;
-            (UIHost.GetUI("Polygon_con_B") as ParameterSlider).ValueChanged += Polygon_con_B_ValueChanged;
-            (UIHost.GetUI("Polygon_bgd_R") as ParameterSlider).ValueChanged += Polygon_bgd_R_ValueChanged;
-            (UIHost.GetUI("Polygon_bgd_G") as ParameterSlider).ValueChanged += Polygon_bgd_G_ValueChanged;
-            (UIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueChanged += Polygon_bgd_B_ValueChanged;
-            (UIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueChanged += Polygon_Rate_ValueChanged;
-            (UIHost.GetUI("Polygon_UseFade") as ParameterCheckbox).ValueChanged += Polygon_UseFade_ValueChanged; ;
+            (ShadowMediaUIHost.GetUI("Polygon_con_R") as ParameterSlider).ValueChanged += Polygon_con_R_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Polygon_con_G") as ParameterSlider).ValueChanged += Polygon_con_G_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Polygon_con_B") as ParameterSlider).ValueChanged += Polygon_con_B_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Polygon_bgd_R") as ParameterSlider).ValueChanged += Polygon_bgd_R_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Polygon_bgd_G") as ParameterSlider).ValueChanged += Polygon_bgd_G_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueChanged += Polygon_bgd_B_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueChanged += Polygon_Rate_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Polygon_UseFade") as ParameterCheckbox).ValueChanged += Polygon_UseFade_ValueChanged; ;
 
 
-            (UIHost.GetUI("Polygon_con_R") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Polygon_con_G") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Polygon_con_B") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Polygon_bgd_R") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Polygon_bgd_G") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Polygon_UseFade") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Polygon_con_R") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Polygon_con_G") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Polygon_con_B") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Polygon_bgd_R") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Polygon_bgd_G") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Polygon_UseFade") as ParameterCheckbox).ValueUpdate();
         }
 
         private void Polygon_UseFade_ValueChanged(object sender, EventArgs e)

@@ -30,24 +30,24 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         #endregion
         public Spike():base()
         {
-            (UIHost.GetUI("Spike_inval") as ParameterSlider).ValueChanged += Spike_inval_Changed;
-            (UIHost.GetUI("Spike_lngth") as ParameterSlider).ValueChanged += Spike_lngth_Changed;
-            (UIHost.GetUI("Spike_rdius") as ParameterSlider).ValueChanged += Spike_rdius_Changed;
-            (UIHost.GetUI("Spike_con_R") as ParameterSlider).ValueChanged += Spike_con_R_Changed;
-            (UIHost.GetUI("Spike_con_G") as ParameterSlider).ValueChanged += Spike_con_G_Changed;
-            (UIHost.GetUI("Spike_con_B") as ParameterSlider).ValueChanged += Spike_con_B_Changed;
-            (UIHost.GetUI("Spike_bgd_R") as ParameterSlider).ValueChanged += Spike_bgd_R_Changed;
-            (UIHost.GetUI("Spike_bgd_G") as ParameterSlider).ValueChanged += Spike_bgd_G_Changed;
-            (UIHost.GetUI("Spike_bgd_B") as ParameterSlider).ValueChanged += Spike_bgd_B_Changed;
-            (UIHost.GetUI("Spike_inval") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Spike_lngth") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Spike_rdius") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Spike_con_R") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Spike_con_G") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Spike_con_B") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Spike_bgd_R") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Spike_bgd_G") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Spike_bgd_B") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Spike_inval") as ParameterSlider).ValueChanged += Spike_inval_Changed;
+            (ShadowMediaUIHost.GetUI("Spike_lngth") as ParameterSlider).ValueChanged += Spike_lngth_Changed;
+            (ShadowMediaUIHost.GetUI("Spike_rdius") as ParameterSlider).ValueChanged += Spike_rdius_Changed;
+            (ShadowMediaUIHost.GetUI("Spike_con_R") as ParameterSlider).ValueChanged += Spike_con_R_Changed;
+            (ShadowMediaUIHost.GetUI("Spike_con_G") as ParameterSlider).ValueChanged += Spike_con_G_Changed;
+            (ShadowMediaUIHost.GetUI("Spike_con_B") as ParameterSlider).ValueChanged += Spike_con_B_Changed;
+            (ShadowMediaUIHost.GetUI("Spike_bgd_R") as ParameterSlider).ValueChanged += Spike_bgd_R_Changed;
+            (ShadowMediaUIHost.GetUI("Spike_bgd_G") as ParameterSlider).ValueChanged += Spike_bgd_G_Changed;
+            (ShadowMediaUIHost.GetUI("Spike_bgd_B") as ParameterSlider).ValueChanged += Spike_bgd_B_Changed;
+            (ShadowMediaUIHost.GetUI("Spike_inval") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Spike_lngth") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Spike_rdius") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Spike_con_R") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Spike_con_G") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Spike_con_B") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Spike_bgd_R") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Spike_bgd_G") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Spike_bgd_B") as ParameterSlider).ValueUpdate();
         }
 
         private void Spike_bgd_B_Changed(object sender, EventArgs e)

@@ -24,9 +24,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             //データの登録
 
             this.queue = new Queue<Mat>();
-            (UIHost.GetUI("TimeDelay_DelayTime") as ParameterSlider).ValueChanged += DelayTime_ValueChanged;
+            (ShadowMediaUIHost.GetUI("TimeDelay_DelayTime") as ParameterSlider).ValueChanged += DelayTime_ValueChanged;
 
-            (UIHost.GetUI("TimeDelay_DelayTime") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("TimeDelay_DelayTime") as ParameterSlider).ValueUpdate();
 
         }
 

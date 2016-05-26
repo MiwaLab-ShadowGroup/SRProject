@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.IO;
+
 using System.Threading;
 //using UnityEditor;
 using System;
@@ -40,7 +41,7 @@ public class SaveData : MonoBehaviour
 
     private void SaveStart_Clicked(object sender, EventArgs e)
     {
-        if (FolderPath != null)
+        if (filename != null)
         {
             this.writer = new BinaryWriter(File.OpenWrite(filename) /*+ @"\" + this.m_SaveNameTextUI.text)*/);
             thread = new Thread(new ThreadStart(SaveDepth));
@@ -56,11 +57,11 @@ public class SaveData : MonoBehaviour
     {
         kinect = gameObject.GetComponent<KinectImporter>();
         //this.pointcloud = pointCloudShadow.GetComponent<PointCloud>();
-        (UIHost.GetUI("ChooseSaveFile") as ParameterButton).Clicked += ChooseFolder_Clicked;
-        this.m_SaveNameTextUI = (UIHost.GetUI("SaveFileName") as ParameterText).m_valueText;
+        (ShadowMediaUIHost.GetUI("ChooseSaveFile") as ParameterButton).Clicked += ChooseFolder_Clicked;
+        this.m_SaveNameTextUI = (ShadowMediaUIHost.GetUI("SaveFileName") as ParameterText).m_valueText;
 
-        (UIHost.GetUI("SaveStart") as ParameterButton).Clicked += SaveStart_Clicked;
-        (UIHost.GetUI("SaveStop") as ParameterButton).Clicked += SaveStop_Clicked;
+        (ShadowMediaUIHost.GetUI("SaveStart") as ParameterButton).Clicked += SaveStart_Clicked;
+        (ShadowMediaUIHost.GetUI("SaveStop") as ParameterButton).Clicked += SaveStop_Clicked;
 
         this.FpsAd = new FPSAdjuster.FPSAdjuster();
         this.FpsAd.Fps = 30;
