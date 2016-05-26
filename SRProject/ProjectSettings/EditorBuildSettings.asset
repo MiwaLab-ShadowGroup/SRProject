@@ -9,3 +9,5 @@ EditorBuildSettings:
     path: Assets/Scenes/Kinectv2Load.unity
   - enabled: 0
     path: Assets/Scenes/BackGround/ButterFly.unity
+  - enabled: 0
+    path: Assets/Scenes/BackGround/FIshShadow.unity
