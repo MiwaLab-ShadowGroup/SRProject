@@ -19,7 +19,7 @@ public class SaveData : MonoBehaviour
     KinectImporter kinect;
 
     //CameraImporter camera;
-
+    VideoWriter videowriter;
 
     string FolderPath;
 
@@ -67,7 +67,7 @@ public class SaveData : MonoBehaviour
         this.FpsAd.Fps = 30;
         this.FpsAd.Start();
         //Debug.Log("start1");
-
+        
     }
 
     private void ChooseFolder_Clicked(object sender, EventArgs e)

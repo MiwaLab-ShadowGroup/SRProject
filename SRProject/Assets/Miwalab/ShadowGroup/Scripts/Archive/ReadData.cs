@@ -27,6 +27,7 @@ public class ReadData : MonoBehaviour
 
     public bool IsRead;
 
+
     void Start()
     {
         (ShadowMediaUIHost.GetUI("ChooseFile") as ParameterButton).Clicked += ChooseFile_Clicked;
@@ -34,6 +35,7 @@ public class ReadData : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Pause") as ParameterCheckbox).ValueChanged += Pause_ValueChanged;
         (ShadowMediaUIHost.GetUI("Pause") as ParameterCheckbox).ValueUpdate();
 
+        this.ReadDepthData = new ushort[512 * 424];
 
         this.FpsAd = new FPSAdjuster.FPSAdjuster();
         this.FpsAd.Fps = 30;
