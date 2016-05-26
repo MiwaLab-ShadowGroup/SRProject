@@ -43,7 +43,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         public TamuraSkelton() : base()
         {
-            (UIHost.GetUI("TamuraSkeleton_Invert") as ParameterCheckbox).ValueChanged += TamuraSkelton_ValueChanged; ;
+            (ShadowMediaUIHost.GetUI("TamuraSkeleton_Invert") as ParameterCheckbox).ValueChanged += TamuraSkelton_ValueChanged; ;
 
         }
 

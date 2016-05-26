@@ -57,26 +57,26 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         public Zanzou():base()
         {
-            (UIHost.GetUI("Zanzou_ins_R") as ParameterSlider).ValueChanged += Zanzou_ins_R_ValueChanged;
-            (UIHost.GetUI("Zanzou_ins_G") as ParameterSlider).ValueChanged += Zanzou_ins_G_ValueChanged;
-            (UIHost.GetUI("Zanzou_ins_B") as ParameterSlider).ValueChanged += Zanzou_ins_B_ValueChanged;
-            (UIHost.GetUI("Zanzou_out_R") as ParameterSlider).ValueChanged += Zanzou_out_R_ValueChanged;
-            (UIHost.GetUI("Zanzou_out_G") as ParameterSlider).ValueChanged += Zanzou_out_G_ValueChanged;
-            (UIHost.GetUI("Zanzou_out_B") as ParameterSlider).ValueChanged += Zanzou_out_B_ValueChanged;
-            (UIHost.GetUI("Zanzou_in_tm") as ParameterSlider).ValueChanged += Zanzou_in_tm_ValueChanged;
-            (UIHost.GetUI("Zanzou_ou_tm") as ParameterSlider).ValueChanged += Zanzou_ou_tm_ValueChanged;
-            (UIHost.GetUI("Zanzou_param") as ParameterSlider).ValueChanged += Zanzou_param_ValueChanged;
-            (UIHost.GetUI("Zanzou_Invert") as ParameterCheckbox).ValueChanged += Zanzou_Invert_ValueChanged;
-            (UIHost.GetUI("Zanzou_ins_R") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Zanzou_ins_G") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Zanzou_ins_B") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Zanzou_out_R") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Zanzou_out_G") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Zanzou_out_B") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Zanzou_in_tm") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Zanzou_ou_tm") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Zanzou_param") as ParameterSlider).ValueUpdate();
-            (UIHost.GetUI("Zanzou_Invert") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_R") as ParameterSlider).ValueChanged += Zanzou_ins_R_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_G") as ParameterSlider).ValueChanged += Zanzou_ins_G_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_B") as ParameterSlider).ValueChanged += Zanzou_ins_B_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_R") as ParameterSlider).ValueChanged += Zanzou_out_R_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_G") as ParameterSlider).ValueChanged += Zanzou_out_G_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_B") as ParameterSlider).ValueChanged += Zanzou_out_B_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Zanzou_in_tm") as ParameterSlider).ValueChanged += Zanzou_in_tm_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Zanzou_ou_tm") as ParameterSlider).ValueChanged += Zanzou_ou_tm_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Zanzou_param") as ParameterSlider).ValueChanged += Zanzou_param_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Zanzou_Invert") as ParameterCheckbox).ValueChanged += Zanzou_Invert_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_R") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_G") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_B") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Zanzou_out_R") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Zanzou_out_G") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Zanzou_out_B") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Zanzou_in_tm") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Zanzou_ou_tm") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Zanzou_param") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Zanzou_Invert") as ParameterCheckbox).ValueUpdate();
 
         }
 

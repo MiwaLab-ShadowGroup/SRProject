@@ -47,23 +47,23 @@ public class ShadowMeshRenderer : MonoBehaviour
         this.CreateMesh(this.Col, this.Row);
         //this.RefreshData();
 
-        (UIHost.GetUI("Clb_I_TL_X") as ParameterSlider).ValueChanged += Clb_I_TL_XChanged;
-        (UIHost.GetUI("Clb_I_TL_Y") as ParameterSlider).ValueChanged += Clb_I_TL_YChanged;
-        (UIHost.GetUI("Clb_I_BL_X") as ParameterSlider).ValueChanged += Clb_I_BL_XChanged;
-        (UIHost.GetUI("Clb_I_BL_Y") as ParameterSlider).ValueChanged += Clb_I_BL_YChanged;
-        (UIHost.GetUI("Clb_I_BR_X") as ParameterSlider).ValueChanged += Clb_I_BR_XChanged;
-        (UIHost.GetUI("Clb_I_BR_Y") as ParameterSlider).ValueChanged += Clb_I_BR_YChanged;
-        (UIHost.GetUI("Clb_I_TR_X") as ParameterSlider).ValueChanged += Clb_I_TR_XChanged;
-        (UIHost.GetUI("Clb_I_TR_Y") as ParameterSlider).ValueChanged += Clb_I_TR_YChanged;
-        (UIHost.GetUI("Clb_E_TL_X") as ParameterSlider).ValueChanged += Clb_E_TL_XChanged;
-        (UIHost.GetUI("Clb_E_TL_Y") as ParameterSlider).ValueChanged += Clb_E_TL_YChanged;
-        (UIHost.GetUI("Clb_E_BL_X") as ParameterSlider).ValueChanged += Clb_E_BL_XChanged;
-        (UIHost.GetUI("Clb_E_BL_Y") as ParameterSlider).ValueChanged += Clb_E_BL_YChanged;
-        (UIHost.GetUI("Clb_E_BR_X") as ParameterSlider).ValueChanged += Clb_E_BR_XChanged;
-        (UIHost.GetUI("Clb_E_BR_Y") as ParameterSlider).ValueChanged += Clb_E_BR_YChanged;
-        (UIHost.GetUI("Clb_E_TR_X") as ParameterSlider).ValueChanged += Clb_E_TR_XChanged;
-        (UIHost.GetUI("Clb_E_TR_Y") as ParameterSlider).ValueChanged += Clb_E_TR_YChanged;
-        (UIHost.GetUI("Clb_E_Vsbl") as ParameterCheckbox).ValueChanged += Clb_E_VsblChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_TL_X") as ParameterSlider).ValueChanged += Clb_I_TL_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_TL_Y") as ParameterSlider).ValueChanged += Clb_I_TL_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_BL_X") as ParameterSlider).ValueChanged += Clb_I_BL_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_BL_Y") as ParameterSlider).ValueChanged += Clb_I_BL_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_BR_X") as ParameterSlider).ValueChanged += Clb_I_BR_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_BR_Y") as ParameterSlider).ValueChanged += Clb_I_BR_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_TR_X") as ParameterSlider).ValueChanged += Clb_I_TR_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_TR_Y") as ParameterSlider).ValueChanged += Clb_I_TR_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_TL_X") as ParameterSlider).ValueChanged += Clb_E_TL_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_TL_Y") as ParameterSlider).ValueChanged += Clb_E_TL_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_BL_X") as ParameterSlider).ValueChanged += Clb_E_BL_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_BL_Y") as ParameterSlider).ValueChanged += Clb_E_BL_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_BR_X") as ParameterSlider).ValueChanged += Clb_E_BR_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_BR_Y") as ParameterSlider).ValueChanged += Clb_E_BR_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_TR_X") as ParameterSlider).ValueChanged += Clb_E_TR_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_TR_Y") as ParameterSlider).ValueChanged += Clb_E_TR_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_Vsbl") as ParameterCheckbox).ValueChanged += Clb_E_VsblChanged;
 
         //pointobject
         this.PointObjectList = new List<GameObject>();
@@ -81,23 +81,23 @@ public class ShadowMeshRenderer : MonoBehaviour
             PointObjectList.Add(item);
         }
 
-        (UIHost.GetUI("Clb_I_TL_X") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_I_TL_Y") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_I_BL_X") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_I_BL_Y") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_I_BR_X") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_I_BR_Y") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_I_TR_X") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_I_TR_Y") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_E_TL_X") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_E_TL_Y") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_E_BL_X") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_E_BL_Y") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_E_BR_X") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_E_BR_Y") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_E_TR_X") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_E_TR_Y") as ParameterSlider).ValueUpdate();
-        (UIHost.GetUI("Clb_E_Vsbl") as ParameterCheckbox).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_TL_X") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_TL_Y") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_BL_X") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_BL_Y") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_BR_X") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_BR_Y") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_TR_X") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_TR_Y") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_TL_X") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_TL_Y") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_BL_X") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_BL_Y") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_BR_X") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_BR_Y") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_TR_X") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_TR_Y") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_Vsbl") as ParameterCheckbox).ValueUpdate();
     }
 
     private void Clb_E_VsblChanged(object sender, EventArgs e)

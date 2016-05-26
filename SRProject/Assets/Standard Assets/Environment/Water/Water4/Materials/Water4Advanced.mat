@@ -45,18 +45,18 @@ Material:
           m_Offset: {x: 0, y: 0}
       data:
         first:
-          name: _ShoreTex
-        second:
-          m_Texture: {fileID: 2800000, guid: 486b20a7163497749ad591523ffafe22, type: 3}
-          m_Scale: {x: 1, y: 1}
-          m_Offset: {x: 1, y: 1}
-      data:
-        first:
           name: _RefractionTex
         second:
           m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _ShoreTex
+        second:
+          m_Texture: {fileID: 2800000, guid: 486b20a7163497749ad591523ffafe22, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 1, y: 1}
       data:
         first:
           name: _WavesTex
@@ -162,16 +162,16 @@ Material:
         second: 313.21838
       data:
         first:
-          name: _InvFade
-        second: 0.628783
-      data:
-        first:
           name: _FresnelScale
         second: 0.6571428
       data:
         first:
           name: _GerstnerIntensity
         second: 1.6714286
+      data:
+        first:
+          name: _InvFade
+        second: 0.628783
       data:
         first:
           name: _HeightDisplacement
@@ -267,7 +267,7 @@ Material:
         second: {r: 1, g: 1, b: 0, a: 0}
       data:
         first:
-          name: _ReflectionTex_ST
+          name: _BumpMap_ST
         second: {r: 1, g: 1, b: 0, a: 0}
       data:
         first:
@@ -311,10 +311,6 @@ Material:
         second: {r: -0.030375138, g: -0.20139083, b: -0.97903997, a: 0}
       data:
         first:
-          name: _Foam
-        second: {r: 0.42666668, g: 0.48666668, b: 0, a: 0}
-      data:
-        first:
           name: _GAmplitude
         second: {r: 0.14, g: 0.76, b: 0.175, a: 0.225}
       data:
@@ -337,6 +333,18 @@ Material:
         first:
           name: _GDirectionCD
         second: {r: 0.7033888, g: -0.6799999, b: 0.7175735, a: -0.2}
+      data:
+        first:
+          name: _Displacement
+        second: {r: 6.6371665, g: 20.353983, b: -1, a: -0.681416}
+      data:
+        first:
+          name: _ShoreTiling
+        second: {r: 1, g: 1, b: 0.1, a: 0.1}
+      data:
+        first:
+          name: _Foam
+        second: {r: 0.42666668, g: 0.48666668, b: 0, a: 0}
       data:
         first:
           name: _DepthColor
