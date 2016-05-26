@@ -7,6 +7,7 @@ public abstract class AParticle : MonoBehaviour
     public enum ParticleType
     {
         Butterfly,
+        Leaf,
         Default,
         Num,
     }
