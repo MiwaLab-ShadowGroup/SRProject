@@ -14,7 +14,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     #region singleton
     private static Dictionary<string, AParameterUI> m_ParameterUI = new Dictionary<string, AParameterUI>();
-    private static float m_lastUpdatedHeight;
+    protected static float m_lastUpdatedHeight;
 
     public static Dictionary<string, AParameterUI> GetInstance()
     {
@@ -435,7 +435,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     #endregion
 
     #region parts
-    private void AddFloatUI(GameObject parent, string ParameterName, float max, float min, float @default)
+    protected void AddFloatUI(GameObject parent, string ParameterName, float max, float min, float @default)
     {
         var slider = Instantiate<ParameterSlider>(m_slider);
         slider.Title = ParameterName;
@@ -451,7 +451,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += slider.getSize().height;
 
     }
-    private void AddBooleanUI(GameObject parent, string ParameterName, bool @default)
+    protected void AddBooleanUI(GameObject parent, string ParameterName, bool @default)
     {
         var checkBox = Instantiate<ParameterCheckbox>(m_checkbox);
         checkBox.Title = ParameterName;
@@ -465,7 +465,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += checkBox.getSize().height;
 
     }
-    private void AddButtonUI(GameObject parent, string ParameterName)
+    protected void AddButtonUI(GameObject parent, string ParameterName)
     {
         var button = Instantiate<ParameterButton>(m_button);
         button.Title = ParameterName;
@@ -479,7 +479,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     }
 
-    private void AddTextUI(GameObject parent, string ParameterName)
+    protected void AddTextUI(GameObject parent, string ParameterName)
     {
         var Text = Instantiate<ParameterText>(m_text);
         Text.Title = ParameterName;
