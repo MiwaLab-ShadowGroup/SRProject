@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.IO;
+
 using System.Threading;
 //using UnityEditor;
 using System;
 using UnityEngine.UI;
 using OpenCvSharp.CPlusPlus;
+
 [RequireComponent(typeof(KinectImporter))]
-public class SaveData : MonoBehaviour {
+public class SaveData : MonoBehaviour
+{
 
     BinaryWriter writer;
 
@@ -16,7 +19,7 @@ public class SaveData : MonoBehaviour {
     KinectImporter kinect;
 
     //CameraImporter camera;
-
+    VideoWriter videowriter;
 
     string FolderPath;
 
@@ -38,22 +41,23 @@ public class SaveData : MonoBehaviour {
 
     private void SaveStart_Clicked(object sender, EventArgs e)
     {
-        if(FolderPath != null)
+        if (filename != null)
         {
-            this.writer = new BinaryWriter(File.OpenWrite(FolderPath + @"\" + this.m_SaveNameTextUI.text));
+            this.writer = new BinaryWriter(File.OpenWrite(filename) /*+ @"\" + this.m_SaveNameTextUI.text)*/);
             thread = new Thread(new ThreadStart(SaveDepth));
             thread.Start();
         }
-       
+
     }
 
-    
+
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         kinect = gameObject.GetComponent<KinectImporter>();
         //this.pointcloud = pointCloudShadow.GetComponent<PointCloud>();
-        (ShadowMediaUIHost.GetUI("ChooseFolder") as ParameterButton).Clicked += ChooseFolder_Clicked;
+        (ShadowMediaUIHost.GetUI("ChooseSaveFile") as ParameterButton).Clicked += ChooseFolder_Clicked;
         this.m_SaveNameTextUI = (ShadowMediaUIHost.GetUI("SaveFileName") as ParameterText).m_valueText;
 
         (ShadowMediaUIHost.GetUI("SaveStart") as ParameterButton).Clicked += SaveStart_Clicked;
@@ -63,14 +67,14 @@ public class SaveData : MonoBehaviour {
         this.FpsAd.Fps = 30;
         this.FpsAd.Start();
         //Debug.Log("start1");
-
+        
     }
 
     private void ChooseFolder_Clicked(object sender, EventArgs e)
     {
-        string folder = "";
-        OpenFileDialog.OpenFileDialog.Folder(ref folder);
-        Debug.Log( folder);
+        filename = "";
+        OpenFileDialog.OpenFileDialog.Save(ref filename);
+        Debug.Log(filename);
     }
 
     private void OpenFileChoose_ValueChanged(object sender, System.EventArgs e)
@@ -84,18 +88,20 @@ public class SaveData : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update()
+    {
 
-        
+
     }
 
     void SaveDepth()
     {
-        unsafe {
+        unsafe
+        {
             try
             {
                 this._savedDepthBuffer = this.kinect.m_SaveDepth;
-               // Mat mat = new Mat(new Size(512, 424), MatType.CV_16U);
+                // Mat mat = new Mat(new Size(512, 424), MatType.CV_16U);
                 while (true)
                 {
                     this.FpsAd.Adjust();
@@ -106,14 +112,14 @@ public class SaveData : MonoBehaviour {
                     //}
 
                     //byte[] data = mat.ToBytes(".png");
-                    
+
                     datetime = DateTime.Now;
                     timestump = datetime.TimeOfDay;
                     //Debug.Log(framecount);
                     writer.Write(timestump.ToString());
                     writer.Write(_savedDepthBuffer.Length);
 
-                    for (int i = 0;i<_savedDepthBuffer.Length;i++)
+                    for (int i = 0; i < _savedDepthBuffer.Length; i++)
                     {
                         writer.Write(_savedDepthBuffer[i]);
                     }

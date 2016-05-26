@@ -35,6 +35,33 @@ public class ParticlesHost : MonoBehaviour
         {
             AddParticles(1);
         }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            this.color.r -= 5;
+        }
+        if (Input.GetKey(KeyCode.W))
+        {
+            this.color.r += 5;
+        }
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            this.color.g -= 5;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            this.color.g += 5;
+        }
+
+        if (Input.GetKey(KeyCode.Z))
+        {
+            this.color.b -= 5;
+        }
+        if (Input.GetKey(KeyCode.X))
+        {
+            this.color.b += 5;
+        }
+
     }
     #endregion
 
@@ -75,7 +102,7 @@ public class ParticlesHost : MonoBehaviour
             if (humanpoints.Count > 0)
             {
                 CreatePosition = new Vector3(Random.value - 1/ 2 + humanpoints[Random.Range(0,humanpoints.Count-1)].X,
-                                                Random.value - 1/ 2,
+                                                Random.value * usingBox.y - usingBox.y / 2,
                                                 Random.value - 1 / 2 + humanpoints[Random.Range(0, humanpoints.Count - 1)].Z);
             }
             else

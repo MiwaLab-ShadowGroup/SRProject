@@ -18,7 +18,7 @@ public class ReadData : MonoBehaviour
 
     FPSAdjuster.FPSAdjuster FpsAd;
 
-    byte[] ReadDepthData;
+    public ushort[] ReadDepthData;
     string time;
     int datalength;
 
@@ -27,6 +27,7 @@ public class ReadData : MonoBehaviour
 
     public bool IsRead;
 
+
     void Start()
     {
         (ShadowMediaUIHost.GetUI("ChooseFile") as ParameterButton).Clicked += ChooseFile_Clicked;
@@ -34,6 +35,7 @@ public class ReadData : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Pause") as ParameterCheckbox).ValueChanged += Pause_ValueChanged;
         (ShadowMediaUIHost.GetUI("Pause") as ParameterCheckbox).ValueUpdate();
 
+        this.ReadDepthData = new ushort[512 * 424];
 
         this.FpsAd = new FPSAdjuster.FPSAdjuster();
         this.FpsAd.Fps = 30;
@@ -61,8 +63,7 @@ public class ReadData : MonoBehaviour
 
     private void ChooseFile_Clicked(object sender, EventArgs e)
     {
-        //FilePath = EditorUtility.OpenFilePanel("ファイル選択", "　", "　");
-
+        OpenFileDialog.OpenFileDialog.Read(ref FilePath);
     }
 
     void Update()
@@ -73,52 +74,51 @@ public class ReadData : MonoBehaviour
 
     void ReadDepth()
     {
-        unsafe
+        //unsafe
+        //{
+        try
         {
-            try
+
+            while (true)
             {
-
-                while (true)
+                if (!PausePlay)
                 {
-                    if (!PausePlay)
+
+                    this.FpsAd.Adjust();
+
+                    //ushort* ptr = (ushort*)playmat.Data;
+
+                    this.time = reader.ReadString();
+                    this.datalength = this.reader.ReadInt32();
+
+
+
+                    for (int i = 0; i < datalength; ++i)
                     {
+                        this.ReadDepthData[i] = this.reader.ReadUInt16();
 
-                        this.FpsAd.Adjust();
-
-                        ushort* ptr = (ushort*)playmat.Data;
-
-                        this.time = reader.ReadString();
-                        this.datalength = this.reader.ReadInt32();
-
-
-                        this.ReadDepthData = this.reader.ReadBytes(datalength);
-
-                        for (int i = 0; i < datalength; ++i)
-                        {
-                            ptr[i] = ReadDepthData[i];
-
-                        }
+                    }
 
 
 
-                        if (reader.PeekChar() == -1)
-                        {
-                            Debug.Log("end");
-                            reader.Close();
-                            this.IsRead = false;
-                        }
+                    if (reader.PeekChar() == -1)
+                    {
+                        Debug.Log("end");
+                        reader.Close();
+                        this.IsRead = false;
                     }
                 }
             }
-            catch
-            {
-
-            }
-
+        }
+        catch
+        {
 
         }
 
-        
+
+        // }
+
+
     }
 
     void OnDestroy()
