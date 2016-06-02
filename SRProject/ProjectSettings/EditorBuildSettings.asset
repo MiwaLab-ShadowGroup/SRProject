@@ -5,9 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Kinectv2Load.unity
   - enabled: 1
     path: Assets/Scenes/BackGround/ButterFly.unity
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/BackGround/FIshShadow.unity
