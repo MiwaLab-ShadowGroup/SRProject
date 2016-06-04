@@ -14,7 +14,8 @@ public class fishMaker : MonoBehaviour {
         for (int i = 0; i < number; i++)
         {
             pos = new Vector3(0, Random.Range(levelSizeMin, levelSizeMax), 0);
-            Instantiate(fish, pos, new Quaternion(0, 0, 0, 0));
+            var item = Instantiate(fish, pos, new Quaternion(0, 0, 0, 0)) as GameObject;
+            item.transform.SetParent(this.gameObject.transform.parent);
         }
     }
 	
