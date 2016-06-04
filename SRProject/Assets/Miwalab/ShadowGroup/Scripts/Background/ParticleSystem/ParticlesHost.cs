@@ -34,7 +34,21 @@ public class ParticlesHost : MonoBehaviour
         (BackgroundMediaUIHost.GetUI("Butterfly_BG_R") as ParameterSlider).ValueChanged += Butterfly_BG_R_ValueChanged;
         (BackgroundMediaUIHost.GetUI("Butterfly_BG_G") as ParameterSlider).ValueChanged += Butterfly_BG_G_ValueChanged;
         (BackgroundMediaUIHost.GetUI("Butterfly_BG_B") as ParameterSlider).ValueChanged += Butterfly_BG_B_ValueChanged;
-        
+
+        (BackgroundMediaUIHost.GetUI("Particle_Size") as ParameterSlider).ValueChanged += Particle_Size_ValueChanged;
+        (BackgroundMediaUIHost.GetUI("Particle_Num") as ParameterSlider).ValueChanged += Particle_Num_ValueChanged;
+
+    }
+    Vector3 m_particleSize;
+    private void Particle_Size_ValueChanged(object sender, EventArgs e)
+    {
+        float size = (e as ParameterSlider.ChangedValue).Value;
+        m_particleSize = new Vector3(size, size, size);
+    }
+
+    private void Particle_Num_ValueChanged(object sender, EventArgs e)
+    {
+        ParticleNum = (int)(e as ParameterSlider.ChangedValue).Value;
     }
 
     private void Butterfly_BG_B_ValueChanged(object sender, EventArgs e)
@@ -151,6 +165,7 @@ public class ParticlesHost : MonoBehaviour
             }
             CreateQuaternion = Quaternion.Euler(90, 0, UnityEngine.Random.value * 360);
             var item = Instantiate(Paricle, CreatePosition, CreateQuaternion) as AParticle;
+            item.transform.localScale = m_particleSize;
             this.ParticleList.Add(item);
             item.ParentList = this.ParticleList;
             var _color = color;

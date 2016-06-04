@@ -110,6 +110,7 @@ namespace Miwalab.ShadowGroup.GUI
             AddFloatUI(parent, "Butterfly_BG_R", 1f, 0, 0);
             AddFloatUI(parent, "Butterfly_BG_G", 1f, 0, 0);
             AddFloatUI(parent, "Butterfly_BG_B", 1f, 0, 0);
+            AddFloatUI(parent, "Particle_Size", 1f, 0.1f, 0.5f);
             AddFloatUI(parent, "Particle_Num", 200, 1, 200);
         }
 
