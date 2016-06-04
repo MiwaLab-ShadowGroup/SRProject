@@ -101,9 +101,10 @@ public class ParticlesHost : MonoBehaviour
             
             if (humanpoints.Count > 0)
             {
-                CreatePosition = new Vector3(Random.value - 1/ 2 + humanpoints[Random.Range(0,humanpoints.Count-1)].X,
+                int index = Random.Range(0, humanpoints.Count - 1);
+                CreatePosition = new Vector3(Random.value - 1/ 2 + humanpoints[index].X,
                                                 Random.value * usingBox.y - usingBox.y / 2,
-                                                Random.value - 1 / 2 + humanpoints[Random.Range(0, humanpoints.Count - 1)].Z);
+                                                Random.value - 1 / 2 + humanpoints[index].Z);
             }
             else
             {
@@ -121,7 +122,7 @@ public class ParticlesHost : MonoBehaviour
             _color.g = color.g + value;
             _color.b = color.b + value;
             item.setColor(_color);
-
+            item.transform.SetParent(this.gameObject.transform,false);
         }
     }
 
