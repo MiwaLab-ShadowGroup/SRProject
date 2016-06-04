@@ -19,6 +19,9 @@ public class AppricationSettings : MonoBehaviour
         if (Display.displays.Length > 2)
             Display.displays[2].Activate();
 
+        if (Display.displays.Length > 3)
+            Display.displays[3].Activate();
+
     }
 
     // Update is called once per frame

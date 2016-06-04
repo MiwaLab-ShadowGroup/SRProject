@@ -11,7 +11,9 @@ namespace Miwalab.ShadowGroup.GUI
     public class BackgroundMediaUIHost : ShadowMediaUIHost
     {
         public Dropdown BackRenderCameraSettingMenu;
+        public Dropdown BackgroundTypeSettingMenu;
         private GameObject m_currentBackRenderCameraSettingPanel;
+        private GameObject m_currentBackgroundTypeSettingPanel;
         public override void Start()
         {
             ResetUI();
@@ -27,8 +29,14 @@ namespace Miwalab.ShadowGroup.GUI
                 this.BackRenderCameraSettingMenu.options.Add(new Dropdown.OptionData(((Background.BackRenderCameraSettingType)i).ToString()));
             }
 
+            for (int i = 0; i < (int)Background.BackgroundType.Count; ++i)
+            {
+                this.BackgroundTypeSettingMenu.options.Add(new Dropdown.OptionData(((Background.BackgroundType)i).ToString()));
+            }
+
             m_MenuList.Add(this.CallibrationSettingMenu);
             m_MenuList.Add(this.BackRenderCameraSettingMenu);
+            m_MenuList.Add(this.BackgroundTypeSettingMenu);
 
             foreach (var menu in this.m_MenuList)
             {
@@ -42,14 +50,45 @@ namespace Miwalab.ShadowGroup.GUI
             }
             this.m_currentCallibrationSettingPanel = m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()];
             this.m_currentBackRenderCameraSettingPanel = m_PanelDictionary[Background.BackRenderCameraSettingType.BackRenderCamera.ToString()];
+            this.m_currentBackgroundTypeSettingPanel = m_PanelDictionary[Background.BackgroundType.Fish.ToString()];
+
 
             this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()]);
             this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport.ToString()]);
             this.CreateUIsBackRenderCamera(m_PanelDictionary[Background.BackRenderCameraSettingType.BackRenderCamera.ToString()]);
+            this.CreateUIsBackgroundFish(m_PanelDictionary[Background.BackgroundType.Fish.ToString()]);
+            this.CreateUIsBackgroundButterfly(m_PanelDictionary[Background.BackgroundType.Butterfly.ToString()]);
+
 
             this.m_meshrenderer.SetUpUIs();
             this.CallibrationSettingPanelSet(false);
-            this.BackRenderCameraSettingPanelSet(true);
+            this.BackRenderCameraSettingPanelSet(false);
+            this.BackgroundTypeSettingPanelSet(true);
+        }
+
+        public GameObject ButterflySet;
+        public GameObject FishSet;
+        public void ChangeBackgroundTypeSettingOptionTo(int number)
+        {
+            Background.BackgroundType type = (Background.BackgroundType)number;
+
+            switch (type)
+            {
+                case Background.BackgroundType.Butterfly:
+                    //一回作って使いまわす
+                    this.m_currentBackgroundTypeSettingPanel = this.m_PanelDictionary[Background.BackgroundType.Butterfly.ToString()];
+                    this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
+                    FishSet.SetActive(false);
+                    ButterflySet.SetActive(true);
+                    break;
+                case Background.BackgroundType.Fish:
+                    this.m_currentBackgroundTypeSettingPanel = this.m_PanelDictionary[Background.BackgroundType.Fish.ToString()];
+                    this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
+                    FishSet.SetActive(true);
+                    ButterflySet.SetActive(false);
+                    break;
+
+            }
 
         }
 
@@ -57,6 +96,24 @@ namespace Miwalab.ShadowGroup.GUI
         {
             m_currentBackRenderCameraSettingPanel.SetActive(value);
         }
+        public void BackgroundTypeSettingPanelSet(bool value)
+        {
+            m_currentBackgroundTypeSettingPanel.SetActive(value);
+        }
+
+        private void CreateUIsBackgroundButterfly(GameObject gameObject)
+        {
+            m_lastUpdatedHeight = 0;
+
+        }
+
+        private void CreateUIsBackgroundFish(GameObject gameObject)
+        {
+            m_lastUpdatedHeight = 0;
+
+        }
+
+        
 
         private void CreateUIsBackRenderCamera(GameObject parent)
         {

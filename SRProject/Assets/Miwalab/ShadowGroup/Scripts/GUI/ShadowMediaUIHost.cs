@@ -261,7 +261,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     }
 
-    private void SwitchOffOtherPanelsExceptOf(GameObject currentPanel)
+    protected void SwitchOffOtherPanelsExceptOf(GameObject currentPanel)
     {
         foreach (var panel in m_PanelDictionary)
         {
