@@ -101,13 +101,19 @@ namespace Miwalab.ShadowGroup.GUI
             m_currentBackgroundTypeSettingPanel.SetActive(value);
         }
 
-        private void CreateUIsBackgroundButterfly(GameObject gameObject)
+        private void CreateUIsBackgroundButterfly(GameObject parent)
         {
             m_lastUpdatedHeight = 0;
-
+            AddFloatUI(parent, "Butterfly_R", 1f, 0, 1f);
+            AddFloatUI(parent, "Butterfly_G", 1f, 0, 1f);
+            AddFloatUI(parent, "Butterfly_B", 1f, 0, 1f);
+            AddFloatUI(parent, "Butterfly_BG_R", 1f, 0, 0);
+            AddFloatUI(parent, "Butterfly_BG_G", 1f, 0, 0);
+            AddFloatUI(parent, "Butterfly_BG_B", 1f, 0, 0);
+            AddFloatUI(parent, "Particle_Num", 200, 1, 200);
         }
 
-        private void CreateUIsBackgroundFish(GameObject gameObject)
+        private void CreateUIsBackgroundFish(GameObject parent)
         {
             m_lastUpdatedHeight = 0;
 

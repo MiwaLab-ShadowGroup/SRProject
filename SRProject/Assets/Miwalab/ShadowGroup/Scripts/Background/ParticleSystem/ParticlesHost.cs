@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Miwalab.ShadowGroup.Background;
 using Miwalab.ShadowGroup.Data;
+using Miwalab.ShadowGroup.GUI;
+using System;
 
 public class ParticlesHost : MonoBehaviour
 {
@@ -25,6 +27,41 @@ public class ParticlesHost : MonoBehaviour
     {
         time = 0;
         m_humanPointReceiver = HumanPointReceiver.GetInstance();
+
+        (BackgroundMediaUIHost.GetUI("Butterfly_R") as ParameterSlider).ValueChanged += Butterfly_R_ValueChanged;
+        (BackgroundMediaUIHost.GetUI("Butterfly_G") as ParameterSlider).ValueChanged += Butterfly_G_ValueChanged;
+        (BackgroundMediaUIHost.GetUI("Butterfly_B") as ParameterSlider).ValueChanged += Butterfly_B_ValueChanged;
+        (BackgroundMediaUIHost.GetUI("Butterfly_BG_R") as ParameterSlider).ValueChanged += Butterfly_BG_R_ValueChanged;
+        (BackgroundMediaUIHost.GetUI("Butterfly_BG_G") as ParameterSlider).ValueChanged += Butterfly_BG_G_ValueChanged;
+        (BackgroundMediaUIHost.GetUI("Butterfly_BG_B") as ParameterSlider).ValueChanged += Butterfly_BG_B_ValueChanged;
+        
+    }
+
+    private void Butterfly_BG_B_ValueChanged(object sender, EventArgs e)
+    {
+    }
+
+    private void Butterfly_BG_G_ValueChanged(object sender, EventArgs e)
+    {
+    }
+
+    private void Butterfly_BG_R_ValueChanged(object sender, EventArgs e)
+    {
+    }
+
+    private void Butterfly_B_ValueChanged(object sender, EventArgs e)
+    {
+        color.b = (e as ParameterSlider.ChangedValue).Value;
+    }
+
+    private void Butterfly_G_ValueChanged(object sender, EventArgs e)
+    {
+        color.g = (e as ParameterSlider.ChangedValue).Value;
+    }
+
+    private void Butterfly_R_ValueChanged(object sender, EventArgs e)
+    {
+        color.r = (e as ParameterSlider.ChangedValue).Value;
     }
 
     // Update is called once per frame
@@ -70,7 +107,7 @@ public class ParticlesHost : MonoBehaviour
         for (int i = 0; i < num; ++i)
         {
             HumanPoints humanpoints = new HumanPoints();
-            switch(Random.Range(0, 3)){
+            switch(UnityEngine.Random.Range(0, 3)){
                 case 0:
                     if (this.m_humanPointReceiver.HumanPointList1 != null)
                     {
@@ -101,18 +138,18 @@ public class ParticlesHost : MonoBehaviour
             
             if (humanpoints.Count > 0)
             {
-                int index = Random.Range(0, humanpoints.Count - 1);
-                CreatePosition = new Vector3(Random.value - 1/ 2 + humanpoints[index].X,
-                                                Random.value * usingBox.y - usingBox.y / 2,
-                                                Random.value - 1 / 2 + humanpoints[index].Z);
+                int index = UnityEngine.Random.Range(0, humanpoints.Count - 1);
+                CreatePosition = new Vector3(UnityEngine.Random.value - 1/ 2 + humanpoints[index].X,
+                                                UnityEngine.Random.value * usingBox.y - usingBox.y / 2,
+                                                UnityEngine.Random.value - 1 / 2 + humanpoints[index].Z);
             }
             else
             {
-                CreatePosition = new Vector3(Random.value * usingBox.x - usingBox.x / 2,
-                                                Random.value * usingBox.y - usingBox.y / 2,
-                                                Random.value * usingBox.z - usingBox.z / 2);
+                CreatePosition = new Vector3(UnityEngine.Random.value * usingBox.x - usingBox.x / 2,
+                                                UnityEngine.Random.value * usingBox.y - usingBox.y / 2,
+                                                UnityEngine.Random.value * usingBox.z - usingBox.z / 2);
             }
-            CreateQuaternion = Quaternion.Euler(90, 0, Random.value * 360);
+            CreateQuaternion = Quaternion.Euler(90, 0, UnityEngine.Random.value * 360);
             var item = Instantiate(Paricle, CreatePosition, CreateQuaternion) as AParticle;
             this.ParticleList.Add(item);
             item.ParentList = this.ParticleList;
