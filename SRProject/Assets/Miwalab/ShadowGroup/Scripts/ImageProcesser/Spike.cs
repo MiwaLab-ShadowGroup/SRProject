@@ -48,6 +48,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Spike_bgd_R") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Spike_bgd_G") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Spike_bgd_B") as ParameterSlider).ValueUpdate();
+            
+        }
+
+        private void Spike_CC_Blue_Clicked(object sender, EventArgs e)
+        {
+
         }
 
         private void Spike_bgd_B_Changed(object sender, EventArgs e)

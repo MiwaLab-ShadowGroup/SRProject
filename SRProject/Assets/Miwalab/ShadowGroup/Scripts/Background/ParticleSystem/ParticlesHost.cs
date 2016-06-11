@@ -38,6 +38,7 @@ public class ParticlesHost : MonoBehaviour
         (BackgroundMediaUIHost.GetUI("Particle_Size") as ParameterSlider).ValueChanged += Particle_Size_ValueChanged;
         (BackgroundMediaUIHost.GetUI("Particle_Num") as ParameterSlider).ValueChanged += Particle_Num_ValueChanged;
 
+        (BackgroundMediaUIHost.GetUI("Particle_Num") as ParameterSlider).ValueChanged += Particle_Num_ValueChanged;
     }
     Vector3 m_particleSize;
     private void Particle_Size_ValueChanged(object sender, EventArgs e)
