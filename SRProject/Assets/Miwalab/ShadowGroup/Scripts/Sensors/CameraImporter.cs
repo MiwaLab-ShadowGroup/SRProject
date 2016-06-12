@@ -25,9 +25,10 @@ public class CameraImporter : ASensorImporter
     // Update is called once per frame
     void Update()
     {
-        video.Read(mat);
         if (mat.Empty())
             return;
+        video.Read(mat);
+        
         if (this.isShowImage)
         {
             check.ShowImage(mat);

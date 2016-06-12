@@ -57,10 +57,10 @@ public class SaveData : MonoBehaviour
     {
         kinect = gameObject.GetComponent<KinectImporter>();
         //this.pointcloud = pointCloudShadow.GetComponent<PointCloud>();
-        (ShadowMediaUIHost.GetUI("ChooseSaveFile") as ParameterButton).Clicked += ChooseFolder_Clicked;
+        (ShadowMediaUIHost.GetUI("ChooseDepthSaveFile") as ParameterButton).Clicked += ChooseFolder_Clicked;
 
-        (ShadowMediaUIHost.GetUI("SaveStart") as ParameterButton).Clicked += SaveStart_Clicked;
-        (ShadowMediaUIHost.GetUI("SaveStop") as ParameterButton).Clicked += SaveStop_Clicked;
+        (ShadowMediaUIHost.GetUI("SaveDepthStart") as ParameterButton).Clicked += SaveStart_Clicked;
+        (ShadowMediaUIHost.GetUI("SaveDepthStop") as ParameterButton).Clicked += SaveStop_Clicked;
 
         this.FpsAd = new FPSAdjuster.FPSAdjuster();
         this.FpsAd.Fps = 30;
@@ -141,11 +141,7 @@ public class SaveData : MonoBehaviour
         }
     }
 
-    void SaveCamera()
-    {
-
-    }
-
+    
     void OnDestroy()
     {
         if (thread != null)

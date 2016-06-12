@@ -286,10 +286,13 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsArchiveSave(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddButtonUI(parent, "ChooseSaveFile");
-        
-        AddButtonUI(parent, "SaveStart");
-        AddButtonUI(parent, "SaveStop");
+        AddButtonUI(parent, "ChooseDepthSaveFile");
+        AddButtonUI(parent, "SaveDepthStart");
+        AddButtonUI(parent, "SaveDepthStop");
+
+        AddButtonUI(parent, "ChooseCameraSaveFile");
+        AddButtonUI(parent, "SaveCameraStart");
+        AddButtonUI(parent, "SaveCameraStop");
 
     }
     private void CreateUIsArchivePlay(GameObject parent)
