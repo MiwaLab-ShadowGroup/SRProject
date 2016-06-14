@@ -112,6 +112,11 @@ namespace Miwalab.ShadowGroup.GUI
             AddFloatUI(parent, "Butterfly_BG_B", 1f, 0, 0);
             AddFloatUI(parent, "Particle_Size", 1f, 0.1f, 0.5f);
             AddFloatUI(parent, "Particle_Num", 200, 1, 200);
+            m_lastUpdatedHeight += 10;
+            AddButtonUI(parent,"Particle_FadeWhite");
+            AddButtonUI(parent,"Particle_Reset");
+
+
         }
 
         private void CreateUIsBackgroundFish(GameObject parent)

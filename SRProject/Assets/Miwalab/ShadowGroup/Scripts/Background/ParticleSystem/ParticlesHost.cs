@@ -19,7 +19,8 @@ public class ParticlesHost : MonoBehaviour
     public float time;
 
     private HumanPointReceiver m_humanPointReceiver;
-    
+
+    public Camera renderCamera;
 
     #region UnityMethods
     // Use this for initialization
@@ -38,8 +39,14 @@ public class ParticlesHost : MonoBehaviour
         (BackgroundMediaUIHost.GetUI("Particle_Size") as ParameterSlider).ValueChanged += Particle_Size_ValueChanged;
         (BackgroundMediaUIHost.GetUI("Particle_Num") as ParameterSlider).ValueChanged += Particle_Num_ValueChanged;
 
-        (BackgroundMediaUIHost.GetUI("Particle_Num") as ParameterSlider).ValueChanged += Particle_Num_ValueChanged;
+        (BackgroundMediaUIHost.GetUI("Particle_FadeWhite") as ParameterButton).Clicked += Particle_FadeWhite_Clicked;
     }
+
+    private void Particle_FadeWhite_Clicked(object sender, EventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+
     Vector3 m_particleSize;
     private void Particle_Size_ValueChanged(object sender, EventArgs e)
     {
@@ -54,14 +61,25 @@ public class ParticlesHost : MonoBehaviour
 
     private void Butterfly_BG_B_ValueChanged(object sender, EventArgs e)
     {
+        var color = renderCamera.backgroundColor;
+        var value = (e as ParameterSlider.ChangedValue).Value;
+        renderCamera.backgroundColor = new Color(color.r, color.g, value);
     }
 
     private void Butterfly_BG_G_ValueChanged(object sender, EventArgs e)
     {
+        var color = renderCamera.backgroundColor;
+        var value = (e as ParameterSlider.ChangedValue).Value;
+        renderCamera.backgroundColor = new Color(color.r, value, color.b);
+
     }
 
     private void Butterfly_BG_R_ValueChanged(object sender, EventArgs e)
     {
+        var color = renderCamera.backgroundColor;
+        var value = (e as ParameterSlider.ChangedValue).Value;
+        renderCamera.backgroundColor = new Color(value, color.g, color.b);
+
     }
 
     private void Butterfly_B_ValueChanged(object sender, EventArgs e)
@@ -122,7 +140,8 @@ public class ParticlesHost : MonoBehaviour
         for (int i = 0; i < num; ++i)
         {
             HumanPoints humanpoints = new HumanPoints();
-            switch(UnityEngine.Random.Range(0, 3)){
+            switch (UnityEngine.Random.Range(0, 3))
+            {
                 case 0:
                     if (this.m_humanPointReceiver.HumanPointList1 != null)
                     {
@@ -150,11 +169,11 @@ public class ParticlesHost : MonoBehaviour
                 default:
                     break;
             }
-            
+
             if (humanpoints.Count > 0)
             {
                 int index = UnityEngine.Random.Range(0, humanpoints.Count - 1);
-                CreatePosition = new Vector3(UnityEngine.Random.value - 1/ 2 + humanpoints[index].X,
+                CreatePosition = new Vector3(UnityEngine.Random.value - 1 / 2 + humanpoints[index].X,
                                                 UnityEngine.Random.value * usingBox.y - usingBox.y / 2,
                                                 UnityEngine.Random.value - 1 / 2 + humanpoints[index].Z);
             }
@@ -175,7 +194,7 @@ public class ParticlesHost : MonoBehaviour
             _color.g = color.g + value;
             _color.b = color.b + value;
             item.setColor(_color);
-            item.transform.SetParent(this.gameObject.transform,false);
+            item.transform.SetParent(this.gameObject.transform, false);
         }
     }
 
