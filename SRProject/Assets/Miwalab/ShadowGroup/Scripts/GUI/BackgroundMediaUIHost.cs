@@ -100,6 +100,7 @@ namespace Miwalab.ShadowGroup.GUI
                     this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
                     FishSet.SetActive(true);
                     ButterflySet.SetActive(false);
+                    (BackgroundMediaUIHost.GetUI("Particle_FadeBlack") as ParameterButton).OnClicked();
                     break;
 
             }
