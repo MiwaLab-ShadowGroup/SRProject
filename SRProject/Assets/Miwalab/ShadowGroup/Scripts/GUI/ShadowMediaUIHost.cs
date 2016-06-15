@@ -289,7 +289,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddButtonUI(parent, "ChooseDepthSaveFile");
         AddButtonUI(parent, "SaveDepthStart");
         AddButtonUI(parent, "SaveDepthStop");
-
+        
         AddButtonUI(parent, "ChooseCameraSaveFile");
         AddButtonUI(parent, "SaveCameraStart");
         AddButtonUI(parent, "SaveCameraStop");
@@ -414,7 +414,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Kinect_pos_x", 15, -15, 0);
         AddFloatUI(parent, "Kinect_pos_y", 5, 0, 1);
-        AddFloatUI(parent, "Kinect_pos_z", 10, 0, 8);
+        AddFloatUI(parent, "Kinect_pos_z", 10, -10, -8);
         m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Kinect_Cut_y", 2, -2, 0);
         AddFloatUI(parent, "Kinect_Cut_diff", 0.1f, 0.005f, 0.02f);

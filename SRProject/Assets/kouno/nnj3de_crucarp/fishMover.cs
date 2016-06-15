@@ -14,7 +14,7 @@ public class fishMover : MonoBehaviour {
     public Camera cam;
 
 
-    private float changeTargetSqrDistance = 30f;
+    private float changeTargetSqrDistance = 0.01f;
     private float cont=0;
     private Vector3 prePos;
     private void Start()
@@ -30,7 +30,7 @@ public class fishMover : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.G))
         {
             Gone = true;
-            targetPosition = new Vector3(this.transform.position.x, this.transform.position.y, 100);
+            targetPosition = new Vector3(this.transform.position.x, this.transform.position.y, 10);
             jellyfish.SetActive(false);
         }
         //初期値に戻る
@@ -46,12 +46,12 @@ public class fishMover : MonoBehaviour {
             Gone = true;
             if(this.transform.position.x > 0)
             {
-                targetPosition = new Vector3(100, this.transform.position.y, this.transform.position.z);
+                targetPosition = new Vector3(10, this.transform.position.y, this.transform.position.z);
 
             }
             else
             {
-                targetPosition = new Vector3(-100, this.transform.position.y, this.transform.position.z);
+                targetPosition = new Vector3(-10, this.transform.position.y, this.transform.position.z);
             }
             jellyfish.SetActive(false);
 
@@ -61,7 +61,7 @@ public class fishMover : MonoBehaviour {
         {
             Gone = true;
             
-            targetPosition = new Vector3(0, this.transform.position.y, -4);
+            targetPosition = new Vector3(0, this.transform.position.y, -0.3f);
            
             jellyfish.SetActive(false);
 
@@ -79,7 +79,7 @@ public class fishMover : MonoBehaviour {
 
         if (Jump)
         {
-            this.transform.position += new Vector3(0,  Mathf.Sin(cont), 0) ;
+            this.transform.position += new Vector3(0,  Mathf.Sin(cont)*0.1f, 0) ;
             cont+= Mathf.PI/15;
             if (cont >= 2 * Mathf.PI)
             {

@@ -177,9 +177,9 @@ public class KinectImporter : ASensorImporter
                             }
                             _count = counts[counts.Count - 1];
                             _point = points[points.Count - 1];
-                            point.X = (point.X * (_count + m_kinectPosition.X) + _point.X) / (_count + 1);
-                            point.Y = (point.Y * (_count + m_kinectPosition.Y) + _point.Y) / (_count + 1);
-                            point.Z = (point.Z * (_count + m_kinectPosition.Z) + _point.Z) / (_count + 1);
+                            point.X = ((point.X + m_kinectPosition.X) + _point.X * _count) / (_count + 1);
+                            point.Y = ((point.Y + m_kinectPosition.Y) + _point.Y * _count) / (_count + 1);
+                            point.Z = ((point.Z + m_kinectPosition.Z) + _point.Z * _count) / (_count + 1);
                             points[points.Count - 1] = point;
                             counts[counts.Count - 1]++;
 

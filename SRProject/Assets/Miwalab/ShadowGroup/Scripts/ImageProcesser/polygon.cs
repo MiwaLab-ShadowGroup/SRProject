@@ -37,7 +37,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Polygon_bgd_G") as ParameterSlider).ValueChanged += Polygon_bgd_G_ValueChanged;
             (ShadowMediaUIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueChanged += Polygon_bgd_B_ValueChanged;
             (ShadowMediaUIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueChanged += Polygon_Rate_ValueChanged;
-            (ShadowMediaUIHost.GetUI("Polygon_UseFade") as ParameterCheckbox).ValueChanged += Polygon_UseFade_ValueChanged; ;
+            (ShadowMediaUIHost.GetUI("Polygon_UseFade") as ParameterCheckbox).ValueChanged += Polygon_UseFade_ValueChanged;
 
             (ShadowMediaUIHost.GetUI("Polygon_CC_Blue") as ParameterButton).Clicked += Polygon_CC_Blue_Clicked;
             (ShadowMediaUIHost.GetUI("Polygon_CC_Orange") as ParameterButton).Clicked += Polygon_CC_Orange_Clicked;
