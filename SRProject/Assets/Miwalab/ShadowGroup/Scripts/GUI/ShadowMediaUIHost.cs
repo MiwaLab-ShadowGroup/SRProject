@@ -348,6 +348,15 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Zanzou_ou_tm", 10, 0, 10);
         AddFloatUI(parent, "Zanzou_param", 1000, 0, 230);
         AddBooleanUI(parent, "Zanzou_Invert", false);
+
+        m_lastUpdatedHeight += 10;
+        //色指定
+        AddButtonUI(parent, "Zanzou_CC_Orange");
+        AddButtonUI(parent, "Zanzou_CC_Pink");
+        AddButtonUI(parent, "Zanzou_CC_Yellow");
+        AddButtonUI(parent, "Zanzou_CC_Blue");
+        AddButtonUI(parent, "Zanzou_CC_Green");
+
     }
 
     private void CreateUIsImageporcessingPolygon(GameObject parent)
@@ -361,6 +370,13 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Polygon_bgd_B", 255, 0, 0);
         AddFloatUI(parent, "Polygon_Rate", 40, 1, 6);
         AddBooleanUI(parent, "Polygon_UseFade", true);
+        m_lastUpdatedHeight += 10;
+
+        AddButtonUI(parent, "Polygon_CC_Blue");
+        AddButtonUI(parent, "Polygon_CC_Orange");
+        AddButtonUI(parent, "Polygon_CC_Yellow");
+        AddButtonUI(parent, "Polygon_CC_Pink");
+        AddButtonUI(parent, "Polygon_CC_Green");
 
     }
 
@@ -376,6 +392,14 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Spike_bgd_R", 255, 0, 0);
         AddFloatUI(parent, "Spike_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "Spike_bgd_B", 255, 0, 0);
+        m_lastUpdatedHeight += 10;
+
+        AddButtonUI(parent, "Spike_CC_Blue");
+        AddButtonUI(parent, "Spike_CC_Orange");
+        AddButtonUI(parent, "Spike_CC_Yellow");
+        AddButtonUI(parent, "Spike_CC_Pink");
+        AddButtonUI(parent, "Spike_CC_Green");
+
     }
 
     private void CreateUIsImportKinectv2(GameObject parent)
@@ -384,7 +408,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Kinect_x_min", 0, -5, -5);
         AddFloatUI(parent, "Kinect_x_max", 5, 0, 5);
         AddFloatUI(parent, "Kinect_y_min", 0, -2, -1);
-        AddFloatUI(parent, "Kinect_y_max", 5, 0, 2);
+        AddFloatUI(parent, "Kinect_y_max", 5, 0, 4);
         AddFloatUI(parent, "Kinect_z_min", 8, 0, 1);
         AddFloatUI(parent, "Kinect_z_max", 8, 0, 8);
         m_lastUpdatedHeight += 10;

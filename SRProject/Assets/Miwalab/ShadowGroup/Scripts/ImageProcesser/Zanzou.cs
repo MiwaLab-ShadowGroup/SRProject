@@ -67,6 +67,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Zanzou_ou_tm") as ParameterSlider).ValueChanged += Zanzou_ou_tm_ValueChanged;
             (ShadowMediaUIHost.GetUI("Zanzou_param") as ParameterSlider).ValueChanged += Zanzou_param_ValueChanged;
             (ShadowMediaUIHost.GetUI("Zanzou_Invert") as ParameterCheckbox).ValueChanged += Zanzou_Invert_ValueChanged;
+
+            (ShadowMediaUIHost.GetUI("Zanzou_CC_Blue") as ParameterButton).Clicked += Zanzou_CC_Blue_Clicked;
+            (ShadowMediaUIHost.GetUI("Zanzou_CC_Orange") as ParameterButton).Clicked += Zanzou_CC_Orange_Clicked;
+            (ShadowMediaUIHost.GetUI("Zanzou_CC_Yellow") as ParameterButton).Clicked += Zanzou_CC_Yellow_Clicked;
+            (ShadowMediaUIHost.GetUI("Zanzou_CC_Pink") as ParameterButton).Clicked += Zanzou_CC_Pink_Clicked;
+            (ShadowMediaUIHost.GetUI("Zanzou_CC_Green") as ParameterButton).Clicked += Zanzou_CC_Green_Clicked;
+
             (ShadowMediaUIHost.GetUI("Zanzou_ins_R") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Zanzou_ins_G") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Zanzou_ins_B") as ParameterSlider).ValueUpdate();
@@ -78,6 +85,57 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Zanzou_param") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Zanzou_Invert") as ParameterCheckbox).ValueUpdate();
 
+        }
+
+        private void Zanzou_CC_Green_Clicked(object sender, EventArgs e)
+        {
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_R") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_B") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_R") as ParameterSlider).m_slider.value = 0;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_B") as ParameterSlider).m_slider.value = 0;
+        }
+
+        private void Zanzou_CC_Pink_Clicked(object sender, EventArgs e)
+        {
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_R") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_B") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_R") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_G") as ParameterSlider).m_slider.value = 0;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_B") as ParameterSlider).m_slider.value = 255;
+        }
+      
+
+        private void Zanzou_CC_Yellow_Clicked(object sender, EventArgs e)
+        {
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_R") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_B") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_R") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_B") as ParameterSlider).m_slider.value = 0;
+        }
+
+        private void Zanzou_CC_Orange_Clicked(object sender, EventArgs e)
+        {
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_R") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_B") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_R") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_G") as ParameterSlider).m_slider.value = 125;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_B") as ParameterSlider).m_slider.value = 0;
+        }
+
+        private void Zanzou_CC_Blue_Clicked(object sender, EventArgs e)
+        {
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_R") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_ins_B") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_R") as ParameterSlider).m_slider.value = 0;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Zanzou_out_B") as ParameterSlider).m_slider.value = 255;
         }
 
         private void Zanzou_Invert_ValueChanged(object sender, EventArgs e)
@@ -102,7 +160,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void Zanzou_out_B_ValueChanged(object sender, EventArgs e)
         {
-            this.outsidecolor.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
+            this.outsidecolor.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
@@ -114,13 +172,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void Zanzou_out_R_ValueChanged(object sender, EventArgs e)
         {
-            this.outsidecolor.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
+            this.outsidecolor.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
         private void Zanzou_ins_B_ValueChanged(object sender, EventArgs e)
         {
-            this.insidecolor.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
+            this.insidecolor.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
@@ -132,7 +190,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void Zanzou_ins_R_ValueChanged(object sender, EventArgs e)
         {
-            this.insidecolor.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
+            this.insidecolor.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
