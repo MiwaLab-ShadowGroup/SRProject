@@ -16,17 +16,23 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         VividNormal,
         /// <summary>
-        /// CA
+        /// 黒
         /// </summary>
-        CellAutomaton,
-        /// <summary>
-        /// ポリゴン
-        /// </summary>
-        Polygon,
+        Black,
         /// <summary>
         /// 二重残像
         /// </summary>
         DoubleAfterImage,
+        /// <summary>
+        /// ハリネズミ影
+        /// </summary>
+        Spike,
+        
+        /// <summary>
+        /// ポリゴン
+        /// </summary>
+        Polygon,
+        
         /// <summary>
         /// 時間遅れ影
         /// </summary>
@@ -35,14 +41,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// 田村スケルトン
         /// </summary>
         TamuraSkeleton,
-        /// <summary>
-        /// ハリネズミ影
-        /// </summary>
-        Spike,
+        
         /// <summary>
         /// パーティクル影
         /// </summary>
         Particle,
+        /// <summary>
+        /// CA
+        /// </summary>
+        CellAutomaton,
         /// <summary>
         /// 個数を数えるためのもの．消したら処刑
         /// </summary>

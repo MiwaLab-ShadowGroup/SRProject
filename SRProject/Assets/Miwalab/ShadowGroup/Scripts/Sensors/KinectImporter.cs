@@ -30,6 +30,16 @@ public class KinectImporter : ASensorImporter
     public GameObject ReadData;
     private bool IsArchive = false;
 
+    //public ColorSourceManager _colormanager;
+    //ColorImageFormat colorImageFormat;
+    //ColorFrameReader colorFrameReader;
+    //FrameDescription colorFrameDescription;
+    //byte[] colordata;
+    //public ushort[] colors;
+    //int imageWidth;
+    //int imageHeight;
+    //public Mat Colorimagemat;
+
     #region 送信用
     private NetworkHost m_networkHost;
     private ThreadHost m_threadHost;
@@ -43,6 +53,7 @@ public class KinectImporter : ASensorImporter
     private RemoteManager m_remoteManager;
     private CameraSpacePoint m_kinectPosition = new CameraSpacePoint();
     #endregion
+
     // Use this for initialization
     void Start()
     {
@@ -61,10 +72,15 @@ public class KinectImporter : ASensorImporter
                 m_frameDescription = m_sensor.DepthFrameSource.FrameDescription;
                 m_depthFrameSource = m_sensor.DepthFrameSource;
                 this.m_mat = new Mat(new Size(m_frameDescription.Width, m_frameDescription.Height), this.m_matType);
+
+               
+
             }
             m_cameraSpacePoints = new CameraSpacePoint[m_frameDescription.Width * m_frameDescription.Height];
         }
         m_readdata = ReadData.GetComponent<ReadData>();
+        //this.Colorimagemat = new Mat(1080, 1920, MatType.CV_8UC3, colors);
+
     }
 
     private void InitializeNetwork()
@@ -106,6 +122,7 @@ public class KinectImporter : ASensorImporter
 
         m_depthData = _depthManager.GetData();
         m_SaveDepth = m_depthData;
+        //this.colordata = _colormanager.GetColorData();
 
         if (IsArchive)
         {
@@ -182,6 +199,24 @@ public class KinectImporter : ASensorImporter
                     data[i + 2] = 0;
                 }
             }
+
+            //if (_colormanager == null)
+            //{
+            //    Debug.Log("null");
+            //    return;
+            //}
+            //byte* colormatdata = (byte*)Colorimagemat.Data;
+            //int colorlength = 1920 * 1080 * 3;
+            //for (int i = 0; i < colorlength; i += 3)
+            //{
+
+            //    colormatdata[i] = colordata[i];
+            //    colormatdata[i + 1] = colordata[i + 1];
+            //    colormatdata[i + 2] = colordata[i + 2];
+
+            //}
+
+
         }
 
 
@@ -205,6 +240,9 @@ public class KinectImporter : ASensorImporter
             var afterEffect = this.m_AfterEffectList[i];
             afterEffect.ImageProcess(ref this.m_mat, ref this.m_mat);
         }
+
+        
+
     }
 
     public override void setUpUI()

@@ -42,7 +42,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Polygon_CC_Blue") as ParameterButton).Clicked += Polygon_CC_Blue_Clicked;
             (ShadowMediaUIHost.GetUI("Polygon_CC_Orange") as ParameterButton).Clicked += Polygon_CC_Orange_Clicked;
             (ShadowMediaUIHost.GetUI("Polygon_CC_Yellow") as ParameterButton).Clicked += Polygon_CC_Yellow_Clicked;
-            
+            (ShadowMediaUIHost.GetUI("Polygon_CC_Pink") as ParameterButton).Clicked += Polygon_CC_Pink_Clicked;
+            (ShadowMediaUIHost.GetUI("Polygon_CC_Green") as ParameterButton).Clicked += Polygon_CC_Green_Clicked;
+
 
             (ShadowMediaUIHost.GetUI("Polygon_con_R") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Polygon_con_G") as ParameterSlider).ValueUpdate();
@@ -52,6 +54,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Polygon_UseFade") as ParameterCheckbox).ValueUpdate();
+        }
+
+        private void Polygon_CC_Green_Clicked(object sender, EventArgs e)
+        {
+            (ShadowMediaUIHost.GetUI("Polygon_con_R") as ParameterSlider).m_slider.value = 0;
+            (ShadowMediaUIHost.GetUI("Polygon_con_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Polygon_con_B") as ParameterSlider).m_slider.value = 0;
+        }
+
+        private void Polygon_CC_Pink_Clicked(object sender, EventArgs e)
+        {
+            (ShadowMediaUIHost.GetUI("Polygon_con_R") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Polygon_con_G") as ParameterSlider).m_slider.value = 0;
+            (ShadowMediaUIHost.GetUI("Polygon_con_B") as ParameterSlider).m_slider.value = 255; 
         }
 
         private void Polygon_CC_Yellow_Clicked(object sender, EventArgs e)
@@ -64,13 +80,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private void Polygon_CC_Orange_Clicked(object sender, EventArgs e)
         {
             (ShadowMediaUIHost.GetUI("Polygon_con_R") as ParameterSlider).m_slider.value = 255;
-            (ShadowMediaUIHost.GetUI("Polygon_con_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Polygon_con_G") as ParameterSlider).m_slider.value = 125;
             (ShadowMediaUIHost.GetUI("Polygon_con_B") as ParameterSlider).m_slider.value = 0;
         }
 
         private void Polygon_CC_Blue_Clicked(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            (ShadowMediaUIHost.GetUI("Polygon_con_R") as ParameterSlider).m_slider.value = 0;
+            (ShadowMediaUIHost.GetUI("Polygon_con_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Polygon_con_B") as ParameterSlider).m_slider.value = 255;
         }
 
         private void Polygon_UseFade_ValueChanged(object sender, EventArgs e)

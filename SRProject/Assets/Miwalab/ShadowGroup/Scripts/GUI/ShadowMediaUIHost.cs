@@ -112,13 +112,13 @@ public class ShadowMediaUIHost : MonoBehaviour
         //UI初期化
         this.CreateUIsImageporcessingNormal(m_PanelDictionary[ImageProcesserType.Normal.ToString()]);
         this.CreateUIsImageporcessingTimeDelay(m_PanelDictionary[ImageProcesserType.TimeDelay.ToString()]);
+        this.CreateUIsImageporcessingZanzou(m_PanelDictionary[ImageProcesserType.DoubleAfterImage.ToString()]);
 
         this.CreateUIsImageporcessingSpike(m_PanelDictionary[ImageProcesserType.Spike.ToString()]);
         this.CreateUIsImageporcessingPolygon(m_PanelDictionary[ImageProcesserType.Polygon.ToString()]);
-        this.CreateUIsImageporcessingZanzou(m_PanelDictionary[ImageProcesserType.DoubleAfterImage.ToString()]);
         this.CreateUIsImageporcessingTamuraSkeleton(m_PanelDictionary[ImageProcesserType.TamuraSkeleton.ToString()]);
         this.CreateUIsImageporcessingParticle(m_PanelDictionary[ImageProcesserType.Particle.ToString()]);
-
+        this.CreateUIsImageporcessingBlack(m_PanelDictionary[ImageProcesserType.Black.ToString()]);
 
         this.CreateUIsImportKinectv2(m_PanelDictionary[ImportSettingType.Kinect.ToString()]);
 
@@ -141,7 +141,6 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     }
 
-
     public void ChangeImageProcessingOptionTo(int number)
     {
         ImageProcesserType type = (ImageProcesserType)number;
@@ -155,31 +154,35 @@ public class ShadowMediaUIHost : MonoBehaviour
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(),m_Sensor, new VividNormal()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.VividNormal.ToString()];
                 break;
-            case ImageProcesserType.CellAutomaton:
+            case ImageProcesserType.Spike:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Spike()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Spike.ToString()];
                 break;
-            case ImageProcesserType.Polygon:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Polygon()));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Polygon.ToString()];
+            case ImageProcesserType.Black:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Black()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Black.ToString()];
                 break;
             case ImageProcesserType.DoubleAfterImage:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(),m_Sensor, new Zanzou()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.DoubleAfterImage.ToString()];
                 break;
-            case ImageProcesserType.TimeDelay:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(),m_Sensor, new Timedelay()));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.TimeDelay.ToString()];
+            case ImageProcesserType.Polygon:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Polygon()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Polygon.ToString()];
                 break;
             case ImageProcesserType.TamuraSkeleton:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(),m_Sensor, new TamuraSkelton()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.TamuraSkeleton.ToString()];
                 break;
-            case ImageProcesserType.Spike:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(),m_Sensor, new Spike()));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Spike.ToString()];
+            case ImageProcesserType.TimeDelay:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Timedelay()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.TimeDelay.ToString()];
                 break;
             case ImageProcesserType.Particle:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.Particle()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Particle.ToString()];
+                break;
+            case ImageProcesserType.CellAutomaton:
                 break;
         }
         this.SwitchOffOtherPanelsExceptOf(this.m_currentImageProcesserSettingPanel);
@@ -283,11 +286,13 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsArchiveSave(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddButtonUI(parent, "ChooseSaveFile");
-        AddTextUI(parent, "SaveFileName");
+        AddButtonUI(parent, "ChooseDepthSaveFile");
+        AddButtonUI(parent, "SaveDepthStart");
+        AddButtonUI(parent, "SaveDepthStop");
         
-        AddButtonUI(parent, "SaveStart");
-        AddButtonUI(parent, "SaveStop");
+        AddButtonUI(parent, "ChooseCameraSaveFile");
+        AddButtonUI(parent, "SaveCameraStart");
+        AddButtonUI(parent, "SaveCameraStop");
 
     }
     private void CreateUIsArchivePlay(GameObject parent)
@@ -326,7 +331,10 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight = 0;
         AddBooleanUI(parent, "TamuraSkeleton_Invert", false);
     }
-
+    private void CreateUIsImageporcessingBlack(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+    }
     private void CreateUIsImageporcessingZanzou(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
@@ -342,10 +350,13 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "Zanzou_Invert", false);
 
         m_lastUpdatedHeight += 10;
-
+        //色指定
         AddButtonUI(parent, "Zanzou_CC_Orange");
         AddButtonUI(parent, "Zanzou_CC_Pink");
         AddButtonUI(parent, "Zanzou_CC_Yellow");
+        AddButtonUI(parent, "Zanzou_CC_Blue");
+        AddButtonUI(parent, "Zanzou_CC_Green");
+
     }
 
     private void CreateUIsImageporcessingPolygon(GameObject parent)
@@ -359,12 +370,13 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Polygon_bgd_B", 255, 0, 0);
         AddFloatUI(parent, "Polygon_Rate", 40, 1, 6);
         AddBooleanUI(parent, "Polygon_UseFade", true);
-
         m_lastUpdatedHeight += 10;
 
         AddButtonUI(parent, "Polygon_CC_Blue");
         AddButtonUI(parent, "Polygon_CC_Orange");
         AddButtonUI(parent, "Polygon_CC_Yellow");
+        AddButtonUI(parent, "Polygon_CC_Pink");
+        AddButtonUI(parent, "Polygon_CC_Green");
 
     }
 
@@ -380,12 +392,13 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Spike_bgd_R", 255, 0, 0);
         AddFloatUI(parent, "Spike_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "Spike_bgd_B", 255, 0, 0);
-
         m_lastUpdatedHeight += 10;
 
         AddButtonUI(parent, "Spike_CC_Blue");
         AddButtonUI(parent, "Spike_CC_Orange");
         AddButtonUI(parent, "Spike_CC_Yellow");
+        AddButtonUI(parent, "Spike_CC_Pink");
+        AddButtonUI(parent, "Spike_CC_Green");
 
     }
 
@@ -395,7 +408,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Kinect_x_min", 0, -5, -5);
         AddFloatUI(parent, "Kinect_x_max", 5, 0, 5);
         AddFloatUI(parent, "Kinect_y_min", 0, -2, -1);
-        AddFloatUI(parent, "Kinect_y_max", 5, 0, 2);
+        AddFloatUI(parent, "Kinect_y_max", 5, 0, 4);
         AddFloatUI(parent, "Kinect_z_min", 8, 0, 1);
         AddFloatUI(parent, "Kinect_z_max", 8, 0, 8);
         m_lastUpdatedHeight += 10;
