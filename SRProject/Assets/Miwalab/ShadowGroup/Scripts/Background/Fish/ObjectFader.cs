@@ -28,16 +28,56 @@ namespace Miwalab.ShadowGroup.Background
 
         private Material m_material;
         private Color m_color;
+
+        private bool m_fadeStart = false;
+        public bool UseKeybord = false;
+        public bool IsBackRenderFader1 = false;
+        public bool IsBackRenderFader2 = false;
+        public bool IsFishFader = false;
         // Use this for initialization
         void Start()
         {
             m_material = GetComponent<Renderer>().material;
             m_color = m_material.color;
+            if (IsBackRenderFader1)
+            {
+                (Miwalab.ShadowGroup.GUI.BackgroundMediaUIHost.GetUI("CP_1_Fade") as ParameterButton).Clicked += ParameterSlider_CP_1_Fade_Clicked;
+            }
+            if (IsBackRenderFader2)
+            {
+                (Miwalab.ShadowGroup.GUI.BackgroundMediaUIHost.GetUI("CP_2_Fade") as ParameterButton).Clicked += ParameterSlider_CP_2_Fade_Clicked;
+            }
+            if (IsFishFader)
+            {
+                (Miwalab.ShadowGroup.GUI.BackgroundMediaUIHost.GetUI("Fish_FadeOut") as ParameterButton).Clicked += ParameterSlider_Fish_FadeOut_Clicked;
+            }
+        }
+
+        private void ParameterSlider_Fish_FadeOut_Clicked(object sender, EventArgs e)
+        {
+            this.m_fadeStart = true;
+        }
+
+        private void ParameterSlider_CP_2_Fade_Clicked(object sender, EventArgs e)
+        {
+            this.m_fadeStart = true;
+        }
+
+        private void ParameterSlider_CP_1_Fade_Clicked(object sender, EventArgs e)
+        {
+            this.m_fadeStart = true;
         }
 
         // Update is called once per frame
         void Update()
         {
+            if (UseKeybord)
+            {
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    this.m_fadeStart = true;
+                }
+            }
             switch (m_fadeMode)
             {
                 case FadeMode.NotFadeMode:
@@ -88,7 +128,7 @@ namespace Miwalab.ShadowGroup.Background
             m_color.a -= 0.01f;
 
             //終了条件
-            if (m_color.a < 0.02f )
+            if (m_color.a < 0.02f)
             {
                 this.m_fadeState = FadeState.FadeFinished;
             }
@@ -106,9 +146,10 @@ namespace Miwalab.ShadowGroup.Background
 
         private void UpdateBlackModeNotFade()
         {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.F))
+            if (this.m_fadeStart)
             {
                 this.m_fadeState = FadeState.FadeStart;
+                this.m_fadeStart = false;
             }
         }
 
@@ -145,7 +186,7 @@ namespace Miwalab.ShadowGroup.Background
         {
 
             m_color.a += 0.01f;
-                //終了条件
+            //終了条件
             if (m_color.a > 1f)
             {
                 this.m_fadeState = FadeState.FadeFinished;
@@ -163,9 +204,10 @@ namespace Miwalab.ShadowGroup.Background
 
         private void UpdateNotFadeModeNotFade()
         {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.F))
+            if (m_fadeStart)
             {
                 this.m_fadeState = FadeState.FadeStart;
+                m_fadeStart = false;
             }
         }
     }

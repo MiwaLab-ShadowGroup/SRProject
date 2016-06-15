@@ -8,12 +8,20 @@ using UnityEngine.UI;
 
 namespace Miwalab.ShadowGroup.GUI
 {
+    public enum CameraProjectionSettingType
+    {
+        Fade,
+        Count
+    }
+
     public class BackgroundMediaUIHost : ShadowMediaUIHost
     {
         public Dropdown BackRenderCameraSettingMenu;
         public Dropdown BackgroundTypeSettingMenu;
+        public Dropdown CameraProjectionSettingMenu;
         private GameObject m_currentBackRenderCameraSettingPanel;
         private GameObject m_currentBackgroundTypeSettingPanel;
+        private GameObject m_currentCameraProjectionSettingPanel;
         public override void Start()
         {
             ResetUI();
@@ -33,10 +41,15 @@ namespace Miwalab.ShadowGroup.GUI
             {
                 this.BackgroundTypeSettingMenu.options.Add(new Dropdown.OptionData(((Background.BackgroundType)i).ToString()));
             }
+            for (int i = 0; i < (int)CameraProjectionSettingType.Count; ++i)
+            {
+                this.CameraProjectionSettingMenu.options.Add(new Dropdown.OptionData(((CameraProjectionSettingType)i).ToString()));
+            }
 
             m_MenuList.Add(this.CallibrationSettingMenu);
             m_MenuList.Add(this.BackRenderCameraSettingMenu);
             m_MenuList.Add(this.BackgroundTypeSettingMenu);
+            m_MenuList.Add(this.CameraProjectionSettingMenu);
 
             foreach (var menu in this.m_MenuList)
             {
@@ -51,6 +64,7 @@ namespace Miwalab.ShadowGroup.GUI
             this.m_currentCallibrationSettingPanel = m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()];
             this.m_currentBackRenderCameraSettingPanel = m_PanelDictionary[Background.BackRenderCameraSettingType.BackRenderCamera.ToString()];
             this.m_currentBackgroundTypeSettingPanel = m_PanelDictionary[Background.BackgroundType.Fish.ToString()];
+            this.m_currentCameraProjectionSettingPanel = m_PanelDictionary[CameraProjectionSettingType.Fade.ToString()];
 
 
             this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()]);
@@ -58,7 +72,7 @@ namespace Miwalab.ShadowGroup.GUI
             this.CreateUIsBackRenderCamera(m_PanelDictionary[Background.BackRenderCameraSettingType.BackRenderCamera.ToString()]);
             this.CreateUIsBackgroundFish(m_PanelDictionary[Background.BackgroundType.Fish.ToString()]);
             this.CreateUIsBackgroundButterfly(m_PanelDictionary[Background.BackgroundType.Butterfly.ToString()]);
-
+            this.CreateUIsCameraProjectionSetting(m_PanelDictionary[CameraProjectionSettingType.Fade.ToString()]);
 
             this.m_meshrenderer.SetUpUIs();
             this.CallibrationSettingPanelSet(false);
@@ -92,6 +106,22 @@ namespace Miwalab.ShadowGroup.GUI
 
         }
 
+        public void ChangeCameraProjectionSettingOptionTo(int number)
+        {
+            CameraProjectionSettingType type = (CameraProjectionSettingType)number;
+
+            switch (type)
+            {
+                case CameraProjectionSettingType.Fade:
+                    //一回作って使いまわす
+                    this.m_currentBackgroundTypeSettingPanel = this.m_PanelDictionary[CameraProjectionSettingType.Fade.ToString()];
+                    this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
+                    break;
+
+            }
+
+        }
+
         public void BackRenderCameraSettingPanelSet(bool value)
         {
             m_currentBackRenderCameraSettingPanel.SetActive(value);
@@ -100,6 +130,10 @@ namespace Miwalab.ShadowGroup.GUI
         {
             m_currentBackgroundTypeSettingPanel.SetActive(value);
         }
+        public void CameraProjectionSettingPanelSet(bool value)
+        {
+            m_currentCameraProjectionSettingPanel.SetActive(value);
+        }
 
         private void CreateUIsBackgroundButterfly(GameObject parent)
         {
@@ -107,22 +141,29 @@ namespace Miwalab.ShadowGroup.GUI
             AddFloatUI(parent, "Butterfly_R", 1f, 0, 1f);
             AddFloatUI(parent, "Butterfly_G", 1f, 0, 1f);
             AddFloatUI(parent, "Butterfly_B", 1f, 0, 1f);
+            m_lastUpdatedHeight += 10;
             AddFloatUI(parent, "Butterfly_BG_R", 1f, 0, 0);
             AddFloatUI(parent, "Butterfly_BG_G", 1f, 0, 0);
             AddFloatUI(parent, "Butterfly_BG_B", 1f, 0, 0);
+            m_lastUpdatedHeight += 10;
             AddFloatUI(parent, "Particle_Size", 1f, 0.1f, 0.5f);
-            AddFloatUI(parent, "Particle_Num", 200, 1, 200);
+            AddFloatUI(parent, "Particle_Num", 200, 0, 200);
             m_lastUpdatedHeight += 10;
             AddButtonUI(parent,"Particle_FadeWhite");
-            AddButtonUI(parent,"Particle_Reset");
+            AddButtonUI(parent, "Particle_FadeBlack");
+        }
 
-
+        private void CreateUIsCameraProjectionSetting(GameObject parent)
+        {
+            m_lastUpdatedHeight = 0;
+            AddButtonUI(parent, "CP_1_Fade");
+            AddButtonUI(parent, "CP_2_Fade");
         }
 
         private void CreateUIsBackgroundFish(GameObject parent)
         {
             m_lastUpdatedHeight = 0;
-
+            AddButtonUI(parent, "Fish_FadeOut");
         }
 
         

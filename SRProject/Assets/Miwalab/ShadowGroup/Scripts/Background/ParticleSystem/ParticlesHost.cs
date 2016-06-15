@@ -12,7 +12,7 @@ public class ParticlesHost : MonoBehaviour
 
     public List<AParticle> ParticleList = new List<AParticle>();
     public AParticle Paricle;
-    public int ParticleNum;
+    public int ParticleNum = 200;
     public Vector3 CreatePosition;
     public Quaternion CreateQuaternion;
 
@@ -40,14 +40,30 @@ public class ParticlesHost : MonoBehaviour
         (BackgroundMediaUIHost.GetUI("Particle_Num") as ParameterSlider).ValueChanged += Particle_Num_ValueChanged;
 
         (BackgroundMediaUIHost.GetUI("Particle_FadeWhite") as ParameterButton).Clicked += Particle_FadeWhite_Clicked;
+        (BackgroundMediaUIHost.GetUI("Particle_FadeBlack") as ParameterButton).Clicked += Particle_FadeBlack_Clicked;
+    }
+
+    private void Particle_FadeBlack_Clicked(object sender, EventArgs e)
+    {
+        (BackgroundMediaUIHost.GetUI("Butterfly_BG_R") as ParameterSlider).m_slider.value = 0;
+        (BackgroundMediaUIHost.GetUI("Butterfly_BG_G") as ParameterSlider).m_slider.value = 0;
+        (BackgroundMediaUIHost.GetUI("Butterfly_BG_B") as ParameterSlider).m_slider.value = 0;
+        (BackgroundMediaUIHost.GetUI("Butterfly_R") as ParameterSlider).m_slider.value = 1f;
+        (BackgroundMediaUIHost.GetUI("Butterfly_G") as ParameterSlider).m_slider.value = 1f;
+        (BackgroundMediaUIHost.GetUI("Butterfly_B") as ParameterSlider).m_slider.value = 1f;
     }
 
     private void Particle_FadeWhite_Clicked(object sender, EventArgs e)
     {
-        throw new NotImplementedException();
+        (BackgroundMediaUIHost.GetUI("Butterfly_BG_R") as ParameterSlider).m_slider.value = 1f;
+        (BackgroundMediaUIHost.GetUI("Butterfly_BG_G") as ParameterSlider).m_slider.value = 1f;
+        (BackgroundMediaUIHost.GetUI("Butterfly_BG_B") as ParameterSlider).m_slider.value = 1f;
+        (BackgroundMediaUIHost.GetUI("Butterfly_R") as ParameterSlider).m_slider.value = 0;
+        (BackgroundMediaUIHost.GetUI("Butterfly_G") as ParameterSlider).m_slider.value = 0;
+        (BackgroundMediaUIHost.GetUI("Butterfly_B") as ParameterSlider).m_slider.value = 0;
     }
 
-    Vector3 m_particleSize;
+    Vector3 m_particleSize = new Vector3(0.5f,0.5f,0.5f);
     private void Particle_Size_ValueChanged(object sender, EventArgs e)
     {
         float size = (e as ParameterSlider.ChangedValue).Value;
@@ -61,40 +77,40 @@ public class ParticlesHost : MonoBehaviour
 
     private void Butterfly_BG_B_ValueChanged(object sender, EventArgs e)
     {
-        var color = renderCamera.backgroundColor;
+        var color = m_backGroundColor;
         var value = (e as ParameterSlider.ChangedValue).Value;
-        renderCamera.backgroundColor = new Color(color.r, color.g, value);
+        m_backGroundColor = new Color(color.r, color.g, value);
     }
 
     private void Butterfly_BG_G_ValueChanged(object sender, EventArgs e)
     {
-        var color = renderCamera.backgroundColor;
+        var color = m_backGroundColor;
         var value = (e as ParameterSlider.ChangedValue).Value;
-        renderCamera.backgroundColor = new Color(color.r, value, color.b);
+        m_backGroundColor = new Color(color.r, value, color.b);
 
     }
 
     private void Butterfly_BG_R_ValueChanged(object sender, EventArgs e)
     {
-        var color = renderCamera.backgroundColor;
+        var color = m_backGroundColor;
         var value = (e as ParameterSlider.ChangedValue).Value;
-        renderCamera.backgroundColor = new Color(value, color.g, color.b);
+        m_backGroundColor = new Color(value, color.g, color.b);
 
     }
 
     private void Butterfly_B_ValueChanged(object sender, EventArgs e)
     {
-        color.b = (e as ParameterSlider.ChangedValue).Value;
+        m_particleColor.b = (e as ParameterSlider.ChangedValue).Value;
     }
 
     private void Butterfly_G_ValueChanged(object sender, EventArgs e)
     {
-        color.g = (e as ParameterSlider.ChangedValue).Value;
+        m_particleColor.g = (e as ParameterSlider.ChangedValue).Value;
     }
 
     private void Butterfly_R_ValueChanged(object sender, EventArgs e)
     {
-        color.r = (e as ParameterSlider.ChangedValue).Value;
+        m_particleColor.r = (e as ParameterSlider.ChangedValue).Value;
     }
 
     // Update is called once per frame
@@ -105,32 +121,8 @@ public class ParticlesHost : MonoBehaviour
         {
             AddParticles(1);
         }
-        if (Input.GetKey(KeyCode.Q))
-        {
-            this.color.r -= 5;
-        }
-        if (Input.GetKey(KeyCode.W))
-        {
-            this.color.r += 5;
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            this.color.g -= 5;
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            this.color.g += 5;
-        }
-
-        if (Input.GetKey(KeyCode.Z))
-        {
-            this.color.b -= 5;
-        }
-        if (Input.GetKey(KeyCode.X))
-        {
-            this.color.b += 5;
-        }
+        this.renderCamera.backgroundColor += (m_backGroundColor - this.renderCamera.backgroundColor) / 30;
+        color += (m_particleColor - color) / 30;
 
     }
     #endregion
@@ -195,8 +187,12 @@ public class ParticlesHost : MonoBehaviour
             _color.b = color.b + value;
             item.setColor(_color);
             item.transform.SetParent(this.gameObject.transform, false);
-        }
-    }
 
+        }
+
+        
+    }
+    private Color m_backGroundColor = new Color(0,0,0,0);
+    private Color m_particleColor = new Color(1f,1f,1f,0);
 
 }
