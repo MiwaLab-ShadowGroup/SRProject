@@ -20,6 +20,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         Black,
         /// <summary>
+        /// 白
+        /// </summary>
+        White,
+        /// <summary>
         /// 二重残像
         /// </summary>
         DoubleAfterImage,
