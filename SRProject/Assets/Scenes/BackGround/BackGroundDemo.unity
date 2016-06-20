@@ -711,6 +711,10 @@ Prefab:
       propertyPath: levelSizeZ
       value: -40
       objectReference: {fileID: 0}
+    - target: {fileID: 129150, guid: 22e1b8418289bb44a83d54f03c376270, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 22e1b8418289bb44a83d54f03c376270, type: 2}
   m_IsPrefabParent: 0
