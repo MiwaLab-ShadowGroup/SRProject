@@ -17,7 +17,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             {
                 var particle = new CircleParticle();
                 particle.Size = 5;
-                particle.Color = new Scalar(255,255,255);
+                particle.Color = new Scalar(255, 0, 255);
                 particle.Position = new UnityEngine.Vector2(UnityEngine.Random.Range(0, 100), UnityEngine.Random.Range(0, 100));
                 this.m_particleList.Add(particle);
             }
@@ -28,19 +28,34 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             return ImageProcesserType.Particle2D;
         }
-
+        Mat m_dst;
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
                 var size = src.Size();
-            for (int i =0; i < this.m_particleList.Count; ++i)
+            m_dst = new Mat(size,MatType.CV_8UC3,new Scalar(0,0,0));
+            unsafe
             {
-                this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)));
-                this.m_particleList[i].Update();
-                this.m_particleList[i].DeadCheck(size.Width, size.Height);
-                this.m_particleList[i].Revirth(size.Width, size.Height);
-                this.m_particleList[i].DrawShape(ref dst);
+                byte* data = src.DataPointer;
+                for (int i = 0; i < this.m_particleList.Count; ++i)
+                {
+
+                    this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)));
+                    this.m_particleList[i].Update();
+                    this.m_particleList[i].DeadCheck(size.Width, size.Height);
+                    this.m_particleList[i].Revirth(size.Width, size.Height);
+                    int index = ((int)this.m_particleList[i].Position.x + size.Width * (int)this.m_particleList[i].Position.y) * 3;
+                    if(index > size.Height*size.Width*3 -1 || index < 0)
+                    {
+                        continue;
+                    }
+                    int _size =(int)( data[index] / 255f * 3);
+                    this.m_particleList[i].Size = _size;
+
+                    this.m_particleList[i].DrawShape(ref m_dst);
+                }
             }
-        } 
+            m_dst.CopyTo(dst);
+        }
         public override string ToString()
         {
             return ImageProcesserType.Normal.ToString();
