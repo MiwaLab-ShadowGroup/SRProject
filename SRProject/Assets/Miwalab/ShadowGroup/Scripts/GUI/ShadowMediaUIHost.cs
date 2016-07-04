@@ -182,6 +182,10 @@ public class ShadowMediaUIHost : MonoBehaviour
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.Particle()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Particle.ToString()];
                 break;
+            case ImageProcesserType.Particle2D:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.ShadowParticle2D()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Particle2D.ToString()];
+                break;
             case ImageProcesserType.CellAutomaton:
                 break;
         }

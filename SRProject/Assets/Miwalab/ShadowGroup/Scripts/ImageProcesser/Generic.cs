@@ -51,6 +51,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         CellAutomaton,
         /// <summary>
+        /// 二次元パーティクル
+        /// </summary>
+        Particle2D,
+        /// <summary>
         /// 個数を数えるためのもの．消したら処刑
         /// </summary>
         Count,
