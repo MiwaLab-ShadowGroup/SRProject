@@ -17,7 +17,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             {
                 var particle = new CircleParticle();
                 particle.Size = 5;
-                particle.Color = new Scalar(255, 0, 255);
+                particle.Color = new Scalar(255, 255, 255);
                 particle.Position = new UnityEngine.Vector2(UnityEngine.Random.Range(0, 100), UnityEngine.Random.Range(0, 100));
                 this.m_particleList.Add(particle);
             }
@@ -39,7 +39,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 for (int i = 0; i < this.m_particleList.Count; ++i)
                 {
 
-                    this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-1f, 1f), UnityEngine.Random.Range(-1f, 1f)));
+                    this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-0.1f, 0.1f), UnityEngine.Random.Range(-0.1f, 0.1f)));
                     this.m_particleList[i].Update();
                     this.m_particleList[i].DeadCheck(size.Width, size.Height);
                     this.m_particleList[i].Revirth(size.Width, size.Height);
@@ -48,7 +48,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     {
                         continue;
                     }
-                    int _size =(int)( data[index] / 255f * 3);
+                    int _size =(int)( data[index] / 255f * 2 + 1);
                     this.m_particleList[i].Size = _size;
 
                     this.m_particleList[i].DrawShape(ref m_dst);
