@@ -3,10 +3,14 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 
+
 public class ShadowMeshRenderer : MonoBehaviour
 {
 
+    public int CallibNumber;
+
     //public
+    [SerializeField, Space(15)]
     public Vector3 topLeft;
     public Vector3 bottomLeft;
     public Vector3 bottomRight;
@@ -47,23 +51,23 @@ public class ShadowMeshRenderer : MonoBehaviour
         this.CreateMesh(this.Col, this.Row);
         //this.RefreshData();
 
-        (ShadowMediaUIHost.GetUI("Clb_I_TL_X") as ParameterSlider).ValueChanged += Clb_I_TL_XChanged;
-        (ShadowMediaUIHost.GetUI("Clb_I_TL_Y") as ParameterSlider).ValueChanged += Clb_I_TL_YChanged;
-        (ShadowMediaUIHost.GetUI("Clb_I_BL_X") as ParameterSlider).ValueChanged += Clb_I_BL_XChanged;
-        (ShadowMediaUIHost.GetUI("Clb_I_BL_Y") as ParameterSlider).ValueChanged += Clb_I_BL_YChanged;
-        (ShadowMediaUIHost.GetUI("Clb_I_BR_X") as ParameterSlider).ValueChanged += Clb_I_BR_XChanged;
-        (ShadowMediaUIHost.GetUI("Clb_I_BR_Y") as ParameterSlider).ValueChanged += Clb_I_BR_YChanged;
-        (ShadowMediaUIHost.GetUI("Clb_I_TR_X") as ParameterSlider).ValueChanged += Clb_I_TR_XChanged;
-        (ShadowMediaUIHost.GetUI("Clb_I_TR_Y") as ParameterSlider).ValueChanged += Clb_I_TR_YChanged;
-        (ShadowMediaUIHost.GetUI("Clb_E_TL_X") as ParameterSlider).ValueChanged += Clb_E_TL_XChanged;
-        (ShadowMediaUIHost.GetUI("Clb_E_TL_Y") as ParameterSlider).ValueChanged += Clb_E_TL_YChanged;
-        (ShadowMediaUIHost.GetUI("Clb_E_BL_X") as ParameterSlider).ValueChanged += Clb_E_BL_XChanged;
-        (ShadowMediaUIHost.GetUI("Clb_E_BL_Y") as ParameterSlider).ValueChanged += Clb_E_BL_YChanged;
-        (ShadowMediaUIHost.GetUI("Clb_E_BR_X") as ParameterSlider).ValueChanged += Clb_E_BR_XChanged;
-        (ShadowMediaUIHost.GetUI("Clb_E_BR_Y") as ParameterSlider).ValueChanged += Clb_E_BR_YChanged;
-        (ShadowMediaUIHost.GetUI("Clb_E_TR_X") as ParameterSlider).ValueChanged += Clb_E_TR_XChanged;
-        (ShadowMediaUIHost.GetUI("Clb_E_TR_Y") as ParameterSlider).ValueChanged += Clb_E_TR_YChanged;
-        (ShadowMediaUIHost.GetUI("Clb_E_Vsbl") as ParameterCheckbox).ValueChanged += Clb_E_VsblChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_TL_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_TL_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_TL_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_TL_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_BL_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_BL_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_BL_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_BL_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_BR_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_BR_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_BR_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_BR_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_TR_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_TR_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_I_TR_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_TR_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_TL_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_TL_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_TL_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_TL_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_BL_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_BL_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_BL_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_BL_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_BR_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_BR_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_BR_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_BR_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_TR_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_TR_XChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_TR_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_TR_YChanged;
+        (ShadowMediaUIHost.GetUI("Clb_E_Vsbl" + CallibNumber) as ParameterCheckbox).ValueChanged += Clb_E_VsblChanged;
 
         //pointobject
         this.PointObjectList = new List<GameObject>();
@@ -81,23 +85,23 @@ public class ShadowMeshRenderer : MonoBehaviour
             PointObjectList.Add(item);
         }
 
-        (ShadowMediaUIHost.GetUI("Clb_I_TL_X") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_I_TL_Y") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_I_BL_X") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_I_BL_Y") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_I_BR_X") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_I_BR_Y") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_I_TR_X") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_I_TR_Y") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_E_TL_X") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_E_TL_Y") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_E_BL_X") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_E_BL_Y") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_E_BR_X") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_E_BR_Y") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_E_TR_X") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_E_TR_Y") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Clb_E_Vsbl") as ParameterCheckbox).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_TL_X" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_TL_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_BL_X" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_BL_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_BR_X" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_BR_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_TR_X" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_I_TR_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_TL_X" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_TL_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_BL_X" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_BL_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_BR_X" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_BR_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_TR_X" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_TR_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("Clb_E_Vsbl" + CallibNumber) as ParameterCheckbox).ValueUpdate();
     }
 
     private void Clb_E_VsblChanged(object sender, EventArgs e)

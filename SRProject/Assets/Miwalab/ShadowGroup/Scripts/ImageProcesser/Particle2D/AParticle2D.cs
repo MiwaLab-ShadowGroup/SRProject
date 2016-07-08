@@ -19,7 +19,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
 
         public float Size { set; get; }
         public Vector2 Position { set; get; }
-        public Vector2 Vector { set; get; }
+        public Vector2 Vellocity { set; get; }
         public Vector2 Accell { set; get; }
         public Scalar Color { set; get; }
         public bool Alive { set; get; }
@@ -31,7 +31,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
             Size = 1f;
             Position = new Vector2();
             Accell = new Vector2();
-            Vector = new Vector2();
+            Vellocity = new Vector2();
             Color = new Scalar();
             Alive = true;
         }
@@ -43,8 +43,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
         {
             if (Alive)
             {
-                Vector += Accell;
-                Position += Vector;
+                Vellocity += Accell;
+                Position += Vellocity;
                 Accell = new Vector2(0, 0);
             }
         }
@@ -69,6 +69,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
             {
                 Alive = false;
                 _DeadType = DeadType.Bottom;
+            }
+        }
+
+        public void CutOffVellocity(float MaxValue)
+        {
+            if(this.Vellocity.magnitude > MaxValue)
+            {
+                this.Vellocity = this.Vellocity.normalized*MaxValue;
             }
         }
 

@@ -53,7 +53,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     public Dropdown CallibrationSettingMenu;
     public Dropdown AfterEffectSettingMenu;
     public Dropdown ArchiveSettingMenu;
-    public ShadowMeshRenderer m_meshrenderer;
+    public List<ShadowMeshRenderer> m_meshrenderer = new List<ShadowMeshRenderer>();
 
     public GameObject SettingPanel;
     public Canvas MainCanvas;
@@ -104,26 +104,24 @@ public class ShadowMediaUIHost : MonoBehaviour
         }
         this.m_currentImageProcesserSettingPanel = m_PanelDictionary[ImageProcesserType.Normal.ToString()];
         this.m_currentImportSettingPanel = m_PanelDictionary[ImportSettingType.Kinect.ToString()];
-        this.m_currentCallibrationSettingPanel = m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()];
+        this.m_currentCallibrationSettingPanel = m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()];
         this.m_currentAfterEffectSettingPanel = m_PanelDictionary[AfterEffectSettingType.Fade.ToString()];
         this.m_currentArchiveSettingPanel = m_PanelDictionary[ArchiveSettingType.Save.ToString()];
 
 
         //UI初期化
-        this.CreateUIsImageporcessingNormal(m_PanelDictionary[ImageProcesserType.Normal.ToString()]);
-        this.CreateUIsImageporcessingTimeDelay(m_PanelDictionary[ImageProcesserType.TimeDelay.ToString()]);
-        this.CreateUIsImageporcessingZanzou(m_PanelDictionary[ImageProcesserType.DoubleAfterImage.ToString()]);
+        this.SetupUIsImageprocess();
 
-        this.CreateUIsImageporcessingSpike(m_PanelDictionary[ImageProcesserType.Spike.ToString()]);
-        this.CreateUIsImageporcessingPolygon(m_PanelDictionary[ImageProcesserType.Polygon.ToString()]);
-        this.CreateUIsImageporcessingTamuraSkeleton(m_PanelDictionary[ImageProcesserType.TamuraSkeleton.ToString()]);
-        this.CreateUIsImageporcessingParticle(m_PanelDictionary[ImageProcesserType.Particle.ToString()]);
-        this.CreateUIsImageporcessingBlack(m_PanelDictionary[ImageProcesserType.Black.ToString()]);
+        
+
+
 
         this.CreateUIsImportKinectv2(m_PanelDictionary[ImportSettingType.Kinect.ToString()]);
 
-        this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()]);
-        this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport.ToString()]);
+        this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()], 1);
+        this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport1.ToString()], 1);
+        this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport2.ToString()], 2);
+        this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport2.ToString()], 2);
 
         this.CreateUIsAffterEffectFade(m_PanelDictionary[AfterEffectSettingType.Fade.ToString()]);
 
@@ -131,7 +129,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsArchivePlay(m_PanelDictionary[ArchiveSettingType.Play.ToString()]);
 
 
-        this.m_meshrenderer.SetUpUIs();
+        this.m_meshrenderer.ForEach(p => p.SetUpUIs());
         this.m_Sensor.setUpUI();
 
         this.ImageProcesserSettingPanelSet(false);
@@ -141,17 +139,31 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     }
 
+    private void SetupUIsImageprocess()
+    {
+        this.CreateUIsImageporcessingNormal(m_PanelDictionary[ImageProcesserType.Normal.ToString()]);
+        this.CreateUIsImageporcessingTimeDelay(m_PanelDictionary[ImageProcesserType.TimeDelay.ToString()]);
+        this.CreateUIsImageporcessingZanzou(m_PanelDictionary[ImageProcesserType.DoubleAfterImage.ToString()]);
+
+        this.CreateUIsImageporcessingSpike(m_PanelDictionary[ImageProcesserType.Spike.ToString()]);
+        this.CreateUIsImageporcessingPolygon(m_PanelDictionary[ImageProcesserType.Polygon.ToString()]);
+        this.CreateUIsImageporcessingTamuraSkeleton(m_PanelDictionary[ImageProcesserType.TamuraSkeleton.ToString()]);
+        this.CreateUIsImageporcessingParticle(m_PanelDictionary[ImageProcesserType.Particle.ToString()]);
+        this.CreateUIsImageporcessingBlack(m_PanelDictionary[ImageProcesserType.Black.ToString()]);
+        this.CreateUIsImageporcessingParticle2D(m_PanelDictionary[ImageProcesserType.Particle2D.ToString()]);
+    }
+
     public void ChangeImageProcessingOptionTo(int number)
     {
         ImageProcesserType type = (ImageProcesserType)number;
         switch (type)
         {
             case ImageProcesserType.Normal:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(),m_Sensor, new Normal()));
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Normal()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Normal.ToString()];
                 break;
             case ImageProcesserType.VividNormal:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(),m_Sensor, new VividNormal()));
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new VividNormal()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.VividNormal.ToString()];
                 break;
             case ImageProcesserType.Spike:
@@ -163,7 +175,7 @@ public class ShadowMediaUIHost : MonoBehaviour
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Black.ToString()];
                 break;
             case ImageProcesserType.DoubleAfterImage:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(),m_Sensor, new Zanzou()));
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Zanzou()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.DoubleAfterImage.ToString()];
                 break;
             case ImageProcesserType.Polygon:
@@ -171,7 +183,7 @@ public class ShadowMediaUIHost : MonoBehaviour
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Polygon.ToString()];
                 break;
             case ImageProcesserType.TamuraSkeleton:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(),m_Sensor, new TamuraSkelton()));
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new TamuraSkelton()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.TamuraSkeleton.ToString()];
                 break;
             case ImageProcesserType.TimeDelay:
@@ -218,13 +230,22 @@ public class ShadowMediaUIHost : MonoBehaviour
 
         switch (type)
         {
-            case CallibrationSettingType.CallibrationImport:
+            case CallibrationSettingType.CallibrationImport1:
                 //一回作って使いまわす
-                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()];
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
                 break;
-            case CallibrationSettingType.CallibrationExport:
-                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport.ToString()];
+            case CallibrationSettingType.CallibrationExport1:
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport1.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
+                break;
+            case CallibrationSettingType.CallibrationImport2:
+                //一回作って使いまわす
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport2.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
+                break;
+            case CallibrationSettingType.CallibrationExport2:
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport2.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
                 break;
 
@@ -243,7 +264,7 @@ public class ShadowMediaUIHost : MonoBehaviour
                 this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[AfterEffectSettingType.Fade.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentAfterEffectSettingPanel);
                 break;
-            
+
         }
 
     }
@@ -293,7 +314,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddButtonUI(parent, "ChooseDepthSaveFile");
         AddButtonUI(parent, "SaveDepthStart");
         AddButtonUI(parent, "SaveDepthStop");
-        
+
         AddButtonUI(parent, "ChooseCameraSaveFile");
         AddButtonUI(parent, "SaveCameraStart");
         AddButtonUI(parent, "SaveCameraStop");
@@ -319,6 +340,14 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Particle_bgd_R", 255, 0, 255);
         AddFloatUI(parent, "Particle_bgd_G", 255, 0, 255);
         AddFloatUI(parent, "Particle_bgd_B", 255, 0, 255);
+
+    }
+
+    private void CreateUIsImageporcessingParticle2D(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "P2D_Max_V", 50, 0, 20);
+
 
     }
 
@@ -413,7 +442,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Kinect_x_max", 5, 0, 5);
         AddFloatUI(parent, "Kinect_y_min", 0, -2, -1);
         AddFloatUI(parent, "Kinect_y_max", 5, 0, 4);
-        AddFloatUI(parent, "Kinect_z_min", 8, 0, 1);
+        AddFloatUI(parent, "Kinect_z_min", 8, 0, 0);
         AddFloatUI(parent, "Kinect_z_max", 8, 0, 8);
         m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Kinect_pos_x", 15, -15, 0);
@@ -422,7 +451,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Kinect_Cut_y", 2, -2, 0);
         AddFloatUI(parent, "Kinect_Cut_diff", 0.1f, 0.005f, 0.02f);
-        AddBooleanUI(parent, "Archive",false);
+        AddBooleanUI(parent, "Archive", false);
 
     }
     /// <summary>
@@ -440,32 +469,32 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "TimeDelay_DelayTime", 1000, 0, 0);
     }
 
-    protected void CreateUIsCallibrationImport(GameObject parent)
+    protected void CreateUIsCallibrationImport(GameObject parent, int num)
     {
         m_lastUpdatedHeight = 0;
-        AddFloatUI(parent, "Clb_I_TL_X", 2, -1, 0);
-        AddFloatUI(parent, "Clb_I_TL_Y", 2, -1, 0);
-        AddFloatUI(parent, "Clb_I_BL_X", 2, -1, 0);
-        AddFloatUI(parent, "Clb_I_BL_Y", 2, -1, 1);
-        AddFloatUI(parent, "Clb_I_BR_X", 2, -1, 1);
-        AddFloatUI(parent, "Clb_I_BR_Y", 2, -1, 1);
-        AddFloatUI(parent, "Clb_I_TR_X", 2, -1, 1);
-        AddFloatUI(parent, "Clb_I_TR_Y", 2, -1, 0);
+        AddFloatUI(parent, "Clb_I_TL_X" + num, 2, -1, 0);
+        AddFloatUI(parent, "Clb_I_TL_Y" + num, 2, -1, 0);
+        AddFloatUI(parent, "Clb_I_BL_X" + num, 2, -1, 0);
+        AddFloatUI(parent, "Clb_I_BL_Y" + num, 2, -1, 1);
+        AddFloatUI(parent, "Clb_I_BR_X" + num, 2, -1, 1);
+        AddFloatUI(parent, "Clb_I_BR_Y" + num, 2, -1, 1);
+        AddFloatUI(parent, "Clb_I_TR_X" + num, 2, -1, 1);
+        AddFloatUI(parent, "Clb_I_TR_Y" + num, 2, -1, 0);
     }
 
-    protected void CreateUIsCallibrationExport(GameObject parent)
+    protected void CreateUIsCallibrationExport(GameObject parent, int num)
     {
         m_lastUpdatedHeight = 0;
-        AddFloatUI(parent, "Clb_E_TL_X", 2000, -1000, 0);
-        AddFloatUI(parent, "Clb_E_TL_Y", 2000, -1000, Screen.height);
-        AddFloatUI(parent, "Clb_E_BL_X", 2000, -1000, 0);
-        AddFloatUI(parent, "Clb_E_BL_Y", 2000, -1000, 0);
-        AddFloatUI(parent, "Clb_E_BR_X", 2000, -1000, Screen.width);
-        AddFloatUI(parent, "Clb_E_BR_Y", 2000, -1000, 0);
-        AddFloatUI(parent, "Clb_E_TR_X", 2000, -1000, Screen.width);
-        AddFloatUI(parent, "Clb_E_TR_Y", 2000, -1000, Screen.height);
+        AddFloatUI(parent, "Clb_E_TL_X" + num, 2000, -1000, 0);
+        AddFloatUI(parent, "Clb_E_TL_Y" + num, 2000, -1000, Screen.height);
+        AddFloatUI(parent, "Clb_E_BL_X" + num, 2000, -1000, 0);
+        AddFloatUI(parent, "Clb_E_BL_Y" + num, 2000, -1000, 0);
+        AddFloatUI(parent, "Clb_E_BR_X" + num, 2000, -1000, Screen.width);
+        AddFloatUI(parent, "Clb_E_BR_Y" + num, 2000, -1000, 0);
+        AddFloatUI(parent, "Clb_E_TR_X" + num, 2000, -1000, Screen.width);
+        AddFloatUI(parent, "Clb_E_TR_Y" + num, 2000, -1000, Screen.height);
 
-        AddBooleanUI(parent, "Clb_E_Vsbl", true);
+        AddBooleanUI(parent, "Clb_E_Vsbl" + num, true);
     }
 
     #endregion

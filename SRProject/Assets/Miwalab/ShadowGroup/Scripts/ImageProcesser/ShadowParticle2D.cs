@@ -10,6 +10,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
     public class ShadowParticle2D : AShadowImageProcesser
     {
         public List<Particle2D.AParticle2D> m_particleList = new List<Particle2D.AParticle2D>();
+
+        public float MaxVellocity;
         public ShadowParticle2D()
             : base()
         {
@@ -21,8 +23,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 particle.Position = new UnityEngine.Vector2(UnityEngine.Random.Range(0, 100), UnityEngine.Random.Range(0, 100));
                 this.m_particleList.Add(particle);
             }
+            (GUI.BackgroundMediaUIHost.GetUI("P2D_Max_V") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Max_V_ValueChanged;
         }
 
+        private void BackRenderCamera_P2D_Max_V_ValueChanged(object sender, EventArgs e)
+        {
+            MaxVellocity = (e as ParameterSlider.ChangedValue).Value;
+        }
 
         public override ImageProcesserType getImageProcesserType()
         {
@@ -41,6 +48,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                     this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-0.1f, 0.1f), UnityEngine.Random.Range(-0.1f, 0.1f)));
                     this.m_particleList[i].Update();
+                    this.m_particleList[i].CutOffVellocity(MaxVellocity);
                     this.m_particleList[i].DeadCheck(size.Width, size.Height);
                     this.m_particleList[i].Revirth(size.Width, size.Height);
                     int index = ((int)this.m_particleList[i].Position.x + size.Width * (int)this.m_particleList[i].Position.y) * 3;
