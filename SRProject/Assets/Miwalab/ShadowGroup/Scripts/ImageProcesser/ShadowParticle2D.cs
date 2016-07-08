@@ -12,10 +12,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         public List<Particle2D.AParticle2D> m_particleList = new List<Particle2D.AParticle2D>();
 
         public float MaxVellocity;
+
+        public float MaxSize;
+        public float MinSize;
+
         public ShadowParticle2D()
             : base()
         {
-            for (int i = 0; i < 1000; ++i)
+            for (int i = 0; i < 10000; ++i)
             {
                 var particle = new CircleParticle();
                 particle.Size = 5;
@@ -23,7 +27,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 particle.Position = new UnityEngine.Vector2(UnityEngine.Random.Range(0, 100), UnityEngine.Random.Range(0, 100));
                 this.m_particleList.Add(particle);
             }
-            (GUI.BackgroundMediaUIHost.GetUI("P2D_Max_V") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Max_V_ValueChanged;
+            
+           (GUI.BackgroundMediaUIHost.GetUI("P2D_Max_V") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Max_V_ValueChanged;
+            (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Max") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Size_Max_ValueChanged;
+            (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Min") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Size_Min_ValueChanged;
+        }
+
+        private void BackRenderCamera_P2D_Size_Min_ValueChanged(object sender, EventArgs e)
+        {
+            MinSize = (e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void BackRenderCamera_P2D_Size_Max_ValueChanged(object sender, EventArgs e)
+        {
+            MaxSize = (e as ParameterSlider.ChangedValue).Value;
         }
 
         private void BackRenderCamera_P2D_Max_V_ValueChanged(object sender, EventArgs e)
@@ -56,8 +73,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     {
                         continue;
                     }
-                    int _size =(int)( data[index] / 255f * 2 + 1);
-                    this.m_particleList[i].Size = _size;
+
+                    if(data[index] > 100)
+                    {
+                        this.m_particleList[i].Size = MaxSize;
+                    }else
+                    {
+                        this.m_particleList[i].Size = MinSize;
+                    }
 
                     this.m_particleList[i].DrawShape(ref m_dst);
                 }
