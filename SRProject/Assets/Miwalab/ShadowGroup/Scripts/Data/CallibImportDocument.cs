@@ -10,39 +10,46 @@ namespace Miwalab.ShadowGroup.Data
     public class CallibImportDocument : ACallibDataDocument
     {
         [SerializeField]
-        private List<Vector3> m_PointList;
+        private List<float> m_floatList;
 
         public CallibImportDocument()
         {
-            m_PointList = new List<Vector3>();
+            m_floatList = new List<float>();
 
         }
 
-        public override void SetPoints(IEnumerable<Vector3> points)
+        public override void SetFloatValues(IEnumerable<float> points)
         {
-            this.m_PointList.Clear();
+            this.m_floatList.Clear();
 
             foreach (var point in points)
             {
-                this.m_PointList.Add(point);
+                this.m_floatList.Add(point);
             }
         }
+        public override IEnumerable<float> GetFloatValues()
+        {
+            return this.m_floatList;
+        }
+
         public override void CopyFrom(ADocument from)
         {
             var CallibData = from as CallibImportDocument;
 
-            m_PointList = CallibData.m_PointList;
+            m_floatList = CallibData.m_floatList;
         }
 
         public override void Save(string documentName)
         {
             System.IO.StreamWriter sw = new System.IO.StreamWriter(documentName);
-            sw.WriteLine(JsonUtility.ToJson(this));
+            sw.Write(JsonUtility.ToJson(this,true));
+            sw.Close();
         }
         public override void Load(string documentName)
         {
             System.IO.StreamReader sr = new System.IO.StreamReader(documentName);
-            this.CopyFrom(JsonUtility.FromJson<CallibImportDocument>(sr.ReadLine()));
+            this.CopyFrom(JsonUtility.FromJson<CallibImportDocument>(sr.ReadToEnd()));
+            sr.Close();
 
         }
     }

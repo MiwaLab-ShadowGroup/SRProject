@@ -8,6 +8,7 @@ namespace Miwalab.ShadowGroup.Data
 {
     public abstract class ACallibDataDocument : ADocument
     {
-        public abstract void SetPoints(IEnumerable<Vector3> points);
+        public abstract void SetFloatValues(IEnumerable<float> points);
+        public abstract IEnumerable<float> GetFloatValues();
     }
 }

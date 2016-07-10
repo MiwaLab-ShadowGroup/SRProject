@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 using System.Collections.Generic;
-
+using System.Text.RegularExpressions;
 
 public class ShadowMeshRenderer : MonoBehaviour
 {
@@ -46,7 +46,7 @@ public class ShadowMeshRenderer : MonoBehaviour
     // Use this for initialization
     public void SetUpUIs()
     {
-        
+
         //メッシュを作る
         this.CreateMesh(this.Col, this.Row);
         //this.RefreshData();
@@ -62,6 +62,7 @@ public class ShadowMeshRenderer : MonoBehaviour
 
 
         (ShadowMediaUIHost.GetUI("Clb_I_Save" + CallibNumber) as ParameterButton).Clicked += Clb_I_Save_Clicked;
+        (ShadowMediaUIHost.GetUI("Clb_I_Load" + CallibNumber) as ParameterButton).Clicked += Clb_I_Load_Clicked;
 
 
 
@@ -76,7 +77,8 @@ public class ShadowMeshRenderer : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Clb_E_Vsbl" + CallibNumber) as ParameterCheckbox).ValueChanged += Clb_E_VsblChanged;
 
 
-        (ShadowMediaUIHost.GetUI("Clb_E_Save" + CallibNumber) as ParameterButton).Clicked += Clb_I_Save_Clicked;
+        (ShadowMediaUIHost.GetUI("Clb_E_Save" + CallibNumber) as ParameterButton).Clicked += Clb_E_Save_Clicked;
+        (ShadowMediaUIHost.GetUI("Clb_E_Load" + CallibNumber) as ParameterButton).Clicked += Clb_E_Load_Clicked;
 
         //pointobject
         this.PointObjectList = new List<GameObject>();
@@ -113,9 +115,124 @@ public class ShadowMeshRenderer : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Clb_E_Vsbl" + CallibNumber) as ParameterCheckbox).ValueUpdate();
     }
 
+    private void Clb_E_Load_Clicked(object sender, EventArgs e)
+    {
+        string str = "";
+        OpenFileDialog.OpenFileDialog.Read(ref str);
+        if (str == "")
+        {
+            return;
+        }
+        Miwalab.ShadowGroup.Data.CallibExportDocument CED = new Miwalab.ShadowGroup.Data.CallibExportDocument();
+        CED.Load(str);
+        var values = CED.GetFloatValues() as List<float>;
+
+        (ShadowMediaUIHost.GetUI("Clb_E_TL_X" + CallibNumber) as ParameterSlider).m_slider.value = values[0];
+        (ShadowMediaUIHost.GetUI("Clb_E_TL_Y" + CallibNumber) as ParameterSlider).m_slider.value = values[1];
+        (ShadowMediaUIHost.GetUI("Clb_E_BL_X" + CallibNumber) as ParameterSlider).m_slider.value = values[2];
+        (ShadowMediaUIHost.GetUI("Clb_E_BL_Y" + CallibNumber) as ParameterSlider).m_slider.value = values[3];
+        (ShadowMediaUIHost.GetUI("Clb_E_BR_X" + CallibNumber) as ParameterSlider).m_slider.value = values[4];
+        (ShadowMediaUIHost.GetUI("Clb_E_BR_Y" + CallibNumber) as ParameterSlider).m_slider.value = values[5];
+        (ShadowMediaUIHost.GetUI("Clb_E_TR_X" + CallibNumber) as ParameterSlider).m_slider.value = values[6];
+        (ShadowMediaUIHost.GetUI("Clb_E_TR_Y" + CallibNumber) as ParameterSlider).m_slider.value = values[7];
+
+    }
+
+    private void Clb_I_Load_Clicked(object sender, EventArgs e)
+    {
+        string str = "";
+        OpenFileDialog.OpenFileDialog.Read(ref str);
+        if (str == "")
+        {
+            return;
+        }
+
+        Miwalab.ShadowGroup.Data.CallibImportDocument CID = new Miwalab.ShadowGroup.Data.CallibImportDocument();
+        CID.Load(str);
+        var values = CID.GetFloatValues() as List<float>;
+
+        (ShadowMediaUIHost.GetUI("Clb_I_TL_X" + CallibNumber) as ParameterSlider).m_slider.value = values[0];
+        (ShadowMediaUIHost.GetUI("Clb_I_TL_Y" + CallibNumber) as ParameterSlider).m_slider.value = values[1];
+        (ShadowMediaUIHost.GetUI("Clb_I_BL_X" + CallibNumber) as ParameterSlider).m_slider.value = values[2];
+        (ShadowMediaUIHost.GetUI("Clb_I_BL_Y" + CallibNumber) as ParameterSlider).m_slider.value = values[3];
+        (ShadowMediaUIHost.GetUI("Clb_I_BR_X" + CallibNumber) as ParameterSlider).m_slider.value = values[4];
+        (ShadowMediaUIHost.GetUI("Clb_I_BR_Y" + CallibNumber) as ParameterSlider).m_slider.value = values[5];
+        (ShadowMediaUIHost.GetUI("Clb_I_TR_X" + CallibNumber) as ParameterSlider).m_slider.value = values[6];
+        (ShadowMediaUIHost.GetUI("Clb_I_TR_Y" + CallibNumber) as ParameterSlider).m_slider.value = values[7];
+    }
+
+    private void Clb_E_Save_Clicked(object sender, EventArgs e)
+    {
+        string str = "";
+        OpenFileDialog.OpenFileDialog.Save(ref str);
+        if (str == "")
+        {
+            return;
+        }
+
+        Regex reg = new Regex(@"\.CED$");
+        if (!reg.IsMatch(str))
+        {
+            str += ".CED";
+        }
+
+        float[] data = new float[8];
+
+        data[0] = (ShadowMediaUIHost.GetUI("Clb_E_TL_X" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[1] = (ShadowMediaUIHost.GetUI("Clb_E_TL_Y" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[2] = (ShadowMediaUIHost.GetUI("Clb_E_BL_X" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[3] = (ShadowMediaUIHost.GetUI("Clb_E_BL_Y" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[4] = (ShadowMediaUIHost.GetUI("Clb_E_BR_X" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[5] = (ShadowMediaUIHost.GetUI("Clb_E_BR_Y" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[6] = (ShadowMediaUIHost.GetUI("Clb_E_TR_X" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[7] = (ShadowMediaUIHost.GetUI("Clb_E_TR_Y" + CallibNumber) as ParameterSlider).m_slider.value;
+
+        Miwalab.ShadowGroup.Data.CallibExportDocument CED = new Miwalab.ShadowGroup.Data.CallibExportDocument();
+        CED.SetFloatValues(
+            new float[] {
+                data[0],data[1],
+                data[2],data[3],
+                data[4],data[5],
+                data[6],data[7],
+            });
+        CED.Save(str);
+
+    }
+
     private void Clb_I_Save_Clicked(object sender, EventArgs e)
     {
-        throw new NotImplementedException();
+        string str = "";
+        OpenFileDialog.OpenFileDialog.Save(ref str);
+        if (str == "")
+        {
+            return;
+        }
+        Regex reg = new Regex(@"\.CID$");
+        if (!reg.IsMatch(str))
+        {
+            str += ".CID";
+        }
+
+        float[] data = new float[8];
+
+        data[0] = (ShadowMediaUIHost.GetUI("Clb_I_TL_X" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[1] = (ShadowMediaUIHost.GetUI("Clb_I_TL_Y" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[2] = (ShadowMediaUIHost.GetUI("Clb_I_BL_X" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[3] = (ShadowMediaUIHost.GetUI("Clb_I_BL_Y" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[4] = (ShadowMediaUIHost.GetUI("Clb_I_BR_X" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[5] = (ShadowMediaUIHost.GetUI("Clb_I_BR_Y" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[6] = (ShadowMediaUIHost.GetUI("Clb_I_TR_X" + CallibNumber) as ParameterSlider).m_slider.value;
+        data[7] = (ShadowMediaUIHost.GetUI("Clb_I_TR_Y" + CallibNumber) as ParameterSlider).m_slider.value;
+
+        Miwalab.ShadowGroup.Data.CallibImportDocument CID = new Miwalab.ShadowGroup.Data.CallibImportDocument();
+        CID.SetFloatValues(
+            new float[] {
+                data[0],data[1],
+                data[2],data[3],
+                data[4],data[5],
+                data[6],data[7],
+            });
+        CID.Save(str);
     }
 
     private void Clb_E_VsblChanged(object sender, EventArgs e)
