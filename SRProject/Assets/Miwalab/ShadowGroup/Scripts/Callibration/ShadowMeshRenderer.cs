@@ -59,6 +59,12 @@ public class ShadowMeshRenderer : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Clb_I_BR_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_BR_YChanged;
         (ShadowMediaUIHost.GetUI("Clb_I_TR_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_TR_XChanged;
         (ShadowMediaUIHost.GetUI("Clb_I_TR_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_TR_YChanged;
+
+
+        (ShadowMediaUIHost.GetUI("Clb_I_Save" + CallibNumber) as ParameterButton).Clicked += Clb_I_Save_Clicked;
+
+
+
         (ShadowMediaUIHost.GetUI("Clb_E_TL_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_TL_XChanged;
         (ShadowMediaUIHost.GetUI("Clb_E_TL_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_TL_YChanged;
         (ShadowMediaUIHost.GetUI("Clb_E_BL_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_BL_XChanged;
@@ -68,6 +74,9 @@ public class ShadowMeshRenderer : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Clb_E_TR_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_TR_XChanged;
         (ShadowMediaUIHost.GetUI("Clb_E_TR_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_TR_YChanged;
         (ShadowMediaUIHost.GetUI("Clb_E_Vsbl" + CallibNumber) as ParameterCheckbox).ValueChanged += Clb_E_VsblChanged;
+
+
+        (ShadowMediaUIHost.GetUI("Clb_E_Save" + CallibNumber) as ParameterButton).Clicked += Clb_I_Save_Clicked;
 
         //pointobject
         this.PointObjectList = new List<GameObject>();
@@ -102,6 +111,11 @@ public class ShadowMeshRenderer : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Clb_E_TR_X" + CallibNumber) as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Clb_E_TR_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Clb_E_Vsbl" + CallibNumber) as ParameterCheckbox).ValueUpdate();
+    }
+
+    private void Clb_I_Save_Clicked(object sender, EventArgs e)
+    {
+        throw new NotImplementedException();
     }
 
     private void Clb_E_VsblChanged(object sender, EventArgs e)

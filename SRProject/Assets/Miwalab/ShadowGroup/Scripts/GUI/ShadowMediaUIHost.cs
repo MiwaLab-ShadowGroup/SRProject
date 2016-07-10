@@ -482,6 +482,9 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Clb_I_BR_Y" + num, 2, -1, 1);
         AddFloatUI(parent, "Clb_I_TR_X" + num, 2, -1, 1);
         AddFloatUI(parent, "Clb_I_TR_Y" + num, 2, -1, 0);
+        m_lastUpdatedHeight += 10;
+        AddButtonUI(parent, "Clb_I_Save" + num);
+        AddButtonUI(parent, "Clb_I_Load" + num);
     }
 
     protected void CreateUIsCallibrationExport(GameObject parent, int num)
@@ -497,6 +500,10 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Clb_E_TR_Y" + num, 2000, -1000, Screen.height);
 
         AddBooleanUI(parent, "Clb_E_Vsbl" + num, true);
+
+        m_lastUpdatedHeight += 10;
+        AddButtonUI(parent, "Clb_E_Save" + num);
+        AddButtonUI(parent, "Clb_E_Load" + num);
     }
 
     #endregion
