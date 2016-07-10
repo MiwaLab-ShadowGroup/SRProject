@@ -15,11 +15,31 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         public float MaxSize;
         public float MinSize;
+        private float ParticleNum;
+
+        private float CenterX;
+        private float CenterY;
+
 
         public ShadowParticle2D()
             : base()
         {
-            for (int i = 0; i < 10000; ++i)
+
+            (GUI.BackgroundMediaUIHost.GetUI("P2D_Max_V") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Max_V_ValueChanged;
+            (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Max") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Size_Max_ValueChanged;
+            (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Min") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Size_Min_ValueChanged;
+            (GUI.BackgroundMediaUIHost.GetUI("P2D_Num_Init") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Num_Init_ValueChanged;
+
+
+            (GUI.BackgroundMediaUIHost.GetUI("P2D_Center_X") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Center_X_ValueChanged;
+            (GUI.BackgroundMediaUIHost.GetUI("P2D_Center_Y") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Center_Y_ValueChanged;
+
+
+            (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Max") as ParameterSlider).ValueUpdate();
+            (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Min") as ParameterSlider).ValueUpdate();
+            (GUI.BackgroundMediaUIHost.GetUI("P2D_Num_Init") as ParameterSlider).ValueUpdate();
+
+            for (int i = 0; i < ParticleNum; ++i)
             {
                 var particle = new CircleParticle();
                 particle.Size = 5;
@@ -27,10 +47,21 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 particle.Position = new UnityEngine.Vector2(UnityEngine.Random.Range(0, 100), UnityEngine.Random.Range(0, 100));
                 this.m_particleList.Add(particle);
             }
+        }
 
-           (GUI.BackgroundMediaUIHost.GetUI("P2D_Max_V") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Max_V_ValueChanged;
-            (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Max") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Size_Max_ValueChanged;
-            (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Min") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Size_Min_ValueChanged;
+        private void BackRenderCamera_P2D_Center_Y_ValueChanged(object sender, EventArgs e)
+        {
+            CenterY = (e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void BackRenderCamera_P2D_Center_X_ValueChanged(object sender, EventArgs e)
+        {
+            CenterX = (e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void BackRenderCamera_P2D_Num_Init_ValueChanged(object sender, EventArgs e)
+        {
+            ParticleNum = (e as ParameterSlider.ChangedValue).Value;
         }
 
         private void BackRenderCamera_P2D_Size_Min_ValueChanged(object sender, EventArgs e)
@@ -63,7 +94,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 for (int i = 0; i < this.m_particleList.Count; ++i)
                 {
 
-                    this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-0.1f, 0.1f), UnityEngine.Random.Range(-0.1f, 0.1f)));
+                    this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-0.1f, 0.1f) + CenterX, UnityEngine.Random.Range(-0.1f, 0.1f) + CenterY));
                     this.m_particleList[i].Update();
                     this.m_particleList[i].CutOffVellocity(MaxVellocity);
                     this.m_particleList[i].DeadCheck(size.Width, size.Height);
