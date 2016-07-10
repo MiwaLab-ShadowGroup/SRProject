@@ -27,7 +27,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 particle.Position = new UnityEngine.Vector2(UnityEngine.Random.Range(0, 100), UnityEngine.Random.Range(0, 100));
                 this.m_particleList.Add(particle);
             }
-            
+
            (GUI.BackgroundMediaUIHost.GetUI("P2D_Max_V") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Max_V_ValueChanged;
             (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Max") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Size_Max_ValueChanged;
             (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Min") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Size_Min_ValueChanged;
@@ -55,8 +55,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         Mat m_dst;
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
-                var size = src.Size();
-            m_dst = new Mat(size,MatType.CV_8UC3,new Scalar(0,0,0));
+            var size = src.Size();
+            m_dst = new Mat(size, MatType.CV_8UC3, new Scalar(0, 0, 0));
             unsafe
             {
                 byte* data = src.DataPointer;
@@ -69,15 +69,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     this.m_particleList[i].DeadCheck(size.Width, size.Height);
                     this.m_particleList[i].Revirth(size.Width, size.Height);
                     int index = ((int)this.m_particleList[i].Position.x + size.Width * (int)this.m_particleList[i].Position.y) * 3;
-                    if(index > size.Height*size.Width*3 -1 || index < 0)
+                    if (index > size.Height * size.Width * 3 - 1 || index < 0)
                     {
                         continue;
                     }
 
-                    if(data[index] > 100)
+                    if (data[index] > 100)
                     {
                         this.m_particleList[i].Size = MaxSize;
-                    }else
+                    }
+                    else
                     {
                         this.m_particleList[i].Size = MinSize;
                     }

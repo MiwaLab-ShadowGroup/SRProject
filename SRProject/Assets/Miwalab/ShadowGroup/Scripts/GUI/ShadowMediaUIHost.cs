@@ -349,7 +349,9 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "P2D_Max_V", 50, 0, 20);
         AddFloatUI(parent, "P2D_Size_Max", 20, 0, 1);
         AddFloatUI(parent, "P2D_Size_Min", 20, 0, 1);
+        m_lastUpdatedHeight += 10;
 
+        AddFloatUI(parent, "P2D_Num_Init", 10000, 1000, 1000);
 
     }
 
