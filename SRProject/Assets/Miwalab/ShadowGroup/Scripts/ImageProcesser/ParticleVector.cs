@@ -7,7 +7,10 @@ using System.Text;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    public class ShadowParticle2D : AShadowImageProcesser
+    /// <summary>
+    /// TODO:FIXME:未実装 
+    /// </summary>
+    public class ParticleVector : AShadowImageProcesser
     {
         public List<Particle2D.AParticle2D> m_particleList = new List<Particle2D.AParticle2D>();
 
@@ -21,23 +24,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private float CenterY;
 
 
-        public ShadowParticle2D()
+        public ParticleVector()
             : base()
         {
 
-            (GUI.BackgroundMediaUIHost.GetUI("P2D_Max_V") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Max_V_ValueChanged;
-            (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Max") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Size_Max_ValueChanged;
-            (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Min") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Size_Min_ValueChanged;
-            (GUI.BackgroundMediaUIHost.GetUI("P2D_Num_Init") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Num_Init_ValueChanged;
-
-
-            (GUI.BackgroundMediaUIHost.GetUI("P2D_Center_X") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Center_X_ValueChanged;
-            (GUI.BackgroundMediaUIHost.GetUI("P2D_Center_Y") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Center_Y_ValueChanged;
-
-
-            (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Max") as ParameterSlider).ValueUpdate();
-            (GUI.BackgroundMediaUIHost.GetUI("P2D_Size_Min") as ParameterSlider).ValueUpdate();
-            (GUI.BackgroundMediaUIHost.GetUI("P2D_Num_Init") as ParameterSlider).ValueUpdate();
+            (GUI.BackgroundMediaUIHost.GetUI("PV_Num_Init") as ParameterSlider).ValueChanged += BackRenderCamera_P2D_Num_Init_ValueChanged;
+            
+            (GUI.BackgroundMediaUIHost.GetUI("PV_Num_Init") as ParameterSlider).ValueUpdate();
 
             for (int i = 0; i < ParticleNum; ++i)
             {
@@ -49,39 +42,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
         }
 
-        private void BackRenderCamera_P2D_Center_Y_ValueChanged(object sender, EventArgs e)
-        {
-            CenterY = (e as ParameterSlider.ChangedValue).Value;
-        }
-
-        private void BackRenderCamera_P2D_Center_X_ValueChanged(object sender, EventArgs e)
-        {
-            CenterX = (e as ParameterSlider.ChangedValue).Value;
-        }
-
+        
         private void BackRenderCamera_P2D_Num_Init_ValueChanged(object sender, EventArgs e)
         {
             ParticleNum = (e as ParameterSlider.ChangedValue).Value;
         }
-
-        private void BackRenderCamera_P2D_Size_Min_ValueChanged(object sender, EventArgs e)
-        {
-            MinSize = (e as ParameterSlider.ChangedValue).Value;
-        }
-
-        private void BackRenderCamera_P2D_Size_Max_ValueChanged(object sender, EventArgs e)
-        {
-            MaxSize = (e as ParameterSlider.ChangedValue).Value;
-        }
-
-        private void BackRenderCamera_P2D_Max_V_ValueChanged(object sender, EventArgs e)
-        {
-            MaxVellocity = (e as ParameterSlider.ChangedValue).Value;
-        }
+        
+        
 
         public override ImageProcesserType getImageProcesserType()
         {
-            return ImageProcesserType.Particle2D;
+            return ImageProcesserType.ParticleVector;
         }
         Mat m_dst;
         public override void ImageProcess(ref Mat src, ref Mat dst)

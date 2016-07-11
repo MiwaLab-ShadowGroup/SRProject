@@ -151,6 +151,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingParticle(m_PanelDictionary[ImageProcesserType.Particle.ToString()]);
         this.CreateUIsImageporcessingBlack(m_PanelDictionary[ImageProcesserType.Black.ToString()]);
         this.CreateUIsImageporcessingParticle2D(m_PanelDictionary[ImageProcesserType.Particle2D.ToString()]);
+        this.CreateUIsImageporcessingParticleVector(m_PanelDictionary[ImageProcesserType.ParticleVector.ToString()]);
     }
 
     public void ChangeImageProcessingOptionTo(int number)
@@ -197,6 +198,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.Particle2D:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.ShadowParticle2D()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Particle2D.ToString()];
+                break;
+            case ImageProcesserType.ParticleVector:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.ParticleVector()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.ParticleVector.ToString()];
                 break;
             case ImageProcesserType.CellAutomaton:
                 break;
@@ -347,16 +352,19 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "P2D_Max_V", 50, 0, 20);
-        AddFloatUI(parent, "P2D_Size_Max", 20, 0, 1);
-        AddFloatUI(parent, "P2D_Size_Min", 20, 0, 0);
+        AddFloatUI(parent, "P2D_Size_Max", 20, -1, 1);
+        AddFloatUI(parent, "P2D_Size_Min", 20, -1, 0);
         m_lastUpdatedHeight += 10;
 
         AddFloatUI(parent, "P2D_Num_Init", 10000, 1000, 1000);
         AddFloatUI(parent, "P2D_Center_X", 1f, -1f, 0);
         AddFloatUI(parent, "P2D_Center_Y", 1f, -1f, 0);
+    }
 
-
-
+    private void CreateUIsImageporcessingParticleVector(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "PV_Num_Init", 10000, 1000, 1000);
     }
 
     private void CreateUIsAffterEffectFade(GameObject parent)

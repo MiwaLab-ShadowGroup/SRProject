@@ -55,6 +55,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         Particle2D,
         /// <summary>
+        /// 二次元パーティクル　際に集まってくる
+        /// </summary>
+        ParticleVector,
+        /// <summary>
         /// 個数を数えるためのもの．消したら処刑
         /// </summary>
         Count,
