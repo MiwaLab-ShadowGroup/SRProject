@@ -365,6 +365,9 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "PV_Num_Init", 10000, 1000, 1000);
+
+        AddFloatUI(parent, "PV_Size_Max", 20, -1, 1);
+        AddFloatUI(parent, "PV_Size_Min", 20, -1, 0);
     }
 
     private void CreateUIsAffterEffectFade(GameObject parent)
