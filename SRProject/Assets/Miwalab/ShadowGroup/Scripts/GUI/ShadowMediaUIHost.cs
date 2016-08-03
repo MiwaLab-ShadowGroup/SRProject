@@ -152,6 +152,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingBlack(m_PanelDictionary[ImageProcesserType.Black.ToString()]);
         this.CreateUIsImageporcessingParticle2D(m_PanelDictionary[ImageProcesserType.Particle2D.ToString()]);
         this.CreateUIsImageporcessingParticleVector(m_PanelDictionary[ImageProcesserType.ParticleVector.ToString()]);
+        this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
     }
 
     public void ChangeImageProcessingOptionTo(int number)
@@ -202,6 +203,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.ParticleVector:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.ParticleVector()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.ParticleVector.ToString()];
+                break;
+            case ImageProcesserType.EachMoveParticle:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.EachMoveParticle()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()];
                 break;
             case ImageProcesserType.CellAutomaton:
                 break;
@@ -359,6 +364,15 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "P2D_Num_Init", 10000, 1000, 1000);
         AddFloatUI(parent, "P2D_Center_X", 1f, -1f, 0);
         AddFloatUI(parent, "P2D_Center_Y", 1f, -1f, 0);
+    }
+
+    private void CreateUIsImageporcessingEachMoveParticle(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "EMP_Num_Init", 10000, 1000, 1000);
+
+        AddFloatUI(parent, "EMP_Size_Max", 20, -1, 1);
+        AddFloatUI(parent, "EMP_Size_Min", 20, -1, 0);
     }
 
     private void CreateUIsImageporcessingParticleVector(GameObject parent)
