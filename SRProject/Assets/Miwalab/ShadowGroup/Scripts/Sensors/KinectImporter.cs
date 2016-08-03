@@ -43,7 +43,7 @@ public class KinectImporter : ASensorImporter
     #region 送信用
     private NetworkHost m_networkHost;
     private ThreadHost m_threadHost;
-    private bool m_isGettingData = true;
+    private bool m_isGettingData = false;
     private float m_gettingPlaneHeight = 0;
     private float m_gettingHeightDiff = 0.01f;
     private const string clientName = "Importer_Sender";
@@ -58,7 +58,7 @@ public class KinectImporter : ASensorImporter
     void Start()
     {
         this.InitializeNetwork();
-
+        this.InitializeField();
         m_sensor = KinectSensor.GetDefault();
         this.m_ImagerProcesserList = new System.Collections.Generic.List<Miwalab.ShadowGroup.ImageProcesser.AShadowImageProcesser>();
         this.m_AfterEffectList = new System.Collections.Generic.List<Miwalab.ShadowGroup.AfterEffect.AAfterEffect>();
@@ -81,6 +81,16 @@ public class KinectImporter : ASensorImporter
         m_readdata = ReadData.GetComponent<ReadData>();
         //this.Colorimagemat = new Mat(1080, 1920, MatType.CV_8UC3, colors);
 
+    }
+
+    private void InitializeField()
+    {
+        this.m_left = 10f;
+        this.m_right = 10f;
+        this.m_top = 10f;
+        this.m_bottom = 10f;
+        this.m_rear = 10f;
+        this.m_front = 10f;
     }
 
     private void InitializeNetwork()

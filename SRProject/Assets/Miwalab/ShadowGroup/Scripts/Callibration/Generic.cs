@@ -7,8 +7,10 @@ namespace Miwalab.ShadowGroup.Scripts.Callibration
 {
     public enum CallibrationSettingType
     {
-        CallibrationImport,
-        CallibrationExport,
+        CallibrationImport1,
+        CallibrationExport1,
+        CallibrationImport2,
+        CallibrationExport2,
         Count,
     }
 }

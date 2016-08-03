@@ -61,20 +61,23 @@ namespace Miwalab.ShadowGroup.GUI
                     item.SetActive(false);
                 }
             }
-            this.m_currentCallibrationSettingPanel = m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()];
+            this.m_currentCallibrationSettingPanel = m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()];
             this.m_currentBackRenderCameraSettingPanel = m_PanelDictionary[Background.BackRenderCameraSettingType.BackRenderCamera.ToString()];
             this.m_currentBackgroundTypeSettingPanel = m_PanelDictionary[Background.BackgroundType.Fish.ToString()];
             this.m_currentCameraProjectionSettingPanel = m_PanelDictionary[CameraProjectionSettingType.Fade.ToString()];
 
 
-            this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport.ToString()]);
-            this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport.ToString()]);
+            this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()], 1);
+            this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport1.ToString()], 1);
+
+
+
             this.CreateUIsBackRenderCamera(m_PanelDictionary[Background.BackRenderCameraSettingType.BackRenderCamera.ToString()]);
             this.CreateUIsBackgroundFish(m_PanelDictionary[Background.BackgroundType.Fish.ToString()]);
             this.CreateUIsBackgroundButterfly(m_PanelDictionary[Background.BackgroundType.Butterfly.ToString()]);
             this.CreateUIsCameraProjectionSetting(m_PanelDictionary[CameraProjectionSettingType.Fade.ToString()]);
 
-            this.m_meshrenderer.SetUpUIs();
+            this.m_meshrenderer.ForEach(p => p.SetUpUIs());
             this.CallibrationSettingPanelSet(false);
             this.BackRenderCameraSettingPanelSet(false);
             this.BackgroundTypeSettingPanelSet(true);
@@ -100,6 +103,7 @@ namespace Miwalab.ShadowGroup.GUI
                     this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
                     FishSet.SetActive(true);
                     ButterflySet.SetActive(false);
+                    (BackgroundMediaUIHost.GetUI("Particle_FadeBlack") as ParameterButton).OnClicked();
                     break;
 
             }
@@ -149,7 +153,7 @@ namespace Miwalab.ShadowGroup.GUI
             AddFloatUI(parent, "Particle_Size", 1f, 0.1f, 0.5f);
             AddFloatUI(parent, "Particle_Num", 200, 0, 200);
             m_lastUpdatedHeight += 10;
-            AddButtonUI(parent,"Particle_FadeWhite");
+            AddButtonUI(parent, "Particle_FadeWhite");
             AddButtonUI(parent, "Particle_FadeBlack");
         }
 
@@ -166,7 +170,7 @@ namespace Miwalab.ShadowGroup.GUI
             AddButtonUI(parent, "Fish_FadeOut");
         }
 
-        
+
 
         private void CreateUIsBackRenderCamera(GameObject parent)
         {
