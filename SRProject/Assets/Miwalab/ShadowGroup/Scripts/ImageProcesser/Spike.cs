@@ -39,6 +39,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Spike_bgd_R") as ParameterSlider).ValueChanged += Spike_bgd_R_Changed;
             (ShadowMediaUIHost.GetUI("Spike_bgd_G") as ParameterSlider).ValueChanged += Spike_bgd_G_Changed;
             (ShadowMediaUIHost.GetUI("Spike_bgd_B") as ParameterSlider).ValueChanged += Spike_bgd_B_Changed;
+
+            (ShadowMediaUIHost.GetUI("Spike_CC_Blue") as ParameterButton).Clicked += Spike_CC_Blue_Clicked;
+            (ShadowMediaUIHost.GetUI("Spike_CC_Orange") as ParameterButton).Clicked += Spike_CC_Orange_Clicked;
+            (ShadowMediaUIHost.GetUI("Spike_CC_Yellow") as ParameterButton).Clicked += Spike_CC_Yellow_Clicked;
+            (ShadowMediaUIHost.GetUI("Spike_CC_Pink") as ParameterButton).Clicked += Spike_CC_Pink_Clicked;
+            (ShadowMediaUIHost.GetUI("Spike_CC_Green") as ParameterButton).Clicked += Spike_CC_Green_Clicked;
+
+
             (ShadowMediaUIHost.GetUI("Spike_inval") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Spike_lngth") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Spike_rdius") as ParameterSlider).ValueUpdate();
@@ -51,14 +59,46 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             
         }
 
-        private void Spike_CC_Blue_Clicked(object sender, EventArgs e)
+        private void Spike_CC_Green_Clicked(object sender, EventArgs e)
         {
+            (ShadowMediaUIHost.GetUI("Spike_con_R") as ParameterSlider).m_slider.value = 0;
+            (ShadowMediaUIHost.GetUI("Spike_con_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Spike_con_B") as ParameterSlider).m_slider.value = 0;
+        }
+
+        private void Spike_CC_Pink_Clicked(object sender, EventArgs e)
+        {
+            (ShadowMediaUIHost.GetUI("Spike_con_R") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Spike_con_G") as ParameterSlider).m_slider.value = 0;
+            (ShadowMediaUIHost.GetUI("Spike_con_B") as ParameterSlider).m_slider.value = 255;
+        }
+
+        private void Spike_CC_Yellow_Clicked(object sender, EventArgs e)
+        {
+            (ShadowMediaUIHost.GetUI("Spike_con_R") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Spike_con_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Spike_con_B") as ParameterSlider).m_slider.value = 0;
+        }
+
+        private void Spike_CC_Orange_Clicked(object sender, EventArgs e)
+        {
+            (ShadowMediaUIHost.GetUI("Spike_con_R") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Spike_con_G") as ParameterSlider).m_slider.value = 125;
+            (ShadowMediaUIHost.GetUI("Spike_con_B") as ParameterSlider).m_slider.value = 0;
 
         }
 
+        private void Spike_CC_Blue_Clicked(object sender, EventArgs e)
+        {
+            (ShadowMediaUIHost.GetUI("Spike_con_R") as ParameterSlider).m_slider.value = 0;
+            (ShadowMediaUIHost.GetUI("Spike_con_G") as ParameterSlider).m_slider.value = 255;
+            (ShadowMediaUIHost.GetUI("Spike_con_B") as ParameterSlider).m_slider.value = 255;
+        }
+
+
         private void Spike_bgd_B_Changed(object sender, EventArgs e)
         {
-            this.colorBack.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
+            this.colorBack.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
@@ -70,13 +110,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void Spike_bgd_R_Changed(object sender, EventArgs e)
         {
-            this.colorBack.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
+            this.colorBack.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
             
         }
 
         private void Spike_con_B_Changed(object sender, EventArgs e)
         {
-            this.color.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
+            this.color.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
             
         }
 
@@ -88,7 +128,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void Spike_con_R_Changed(object sender, EventArgs e)
         {
-            this.color.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
+            this.color.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
         }
 
         private void Spike_rdius_Changed(object sender, EventArgs e)

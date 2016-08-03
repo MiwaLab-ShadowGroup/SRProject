@@ -13,8 +13,8 @@ namespace Miwalab.ShadowGroup.AfterEffect
         AShadowImageProcesser m_to;
         ASensorImporter Sensor { set; get; }
 
-        int Fadein_frame = 100;
-        int Fadeout_frame = 100;
+        int Fadein_frame = 50;
+        int Fadeout_frame = 50;
         private bool IsWhite = true;
 
 

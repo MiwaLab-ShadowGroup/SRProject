@@ -2,6 +2,6 @@
 Stone Roll Project
 ISHI - NO - MAKI - YEAH!
 # ブランチについて
-ブランチは一人一ブランチで開発し，マージはKAJITA or MAHOO or YAMAKAWA
+ブランチは一人一ブランチで開発し，マージはKAJITA or MAHOO or YAMAKAWA or Kouno
 # 背景メディアについて
 同一プロジェクト 別シーンにて管理  

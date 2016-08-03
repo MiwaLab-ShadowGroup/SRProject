@@ -113,6 +113,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.SetupUIsImageprocess();
 
         
+        this.CreateUIsImageporcessingWhite(m_PanelDictionary[ImageProcesserType.White.ToString()]);
 
 
 
@@ -175,6 +176,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.Black:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Black()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Black.ToString()];
+                break;
+            case ImageProcesserType.White:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new White()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.White.ToString()];
                 break;
             case ImageProcesserType.DoubleAfterImage:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Zanzou()));
@@ -387,8 +392,8 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsAffterEffectFade(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddFloatUI(parent, "Frame_of_FadeIn", 1000, 1, 100);
-        AddFloatUI(parent, "Frame_of_FadeOut", 1000, 1, 100);
+        AddFloatUI(parent, "Frame_of_FadeIn", 1000, 1, 50);
+        AddFloatUI(parent, "Frame_of_FadeOut", 1000, 1, 50);
         AddBooleanUI(parent, "White_Fade", false);
     }
 
@@ -398,6 +403,10 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "TamuraSkeleton_Invert", false);
     }
     private void CreateUIsImageporcessingBlack(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+    }
+    private void CreateUIsImageporcessingWhite(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
     }
