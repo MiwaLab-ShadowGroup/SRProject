@@ -66,6 +66,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// 個々の操作を加えるパーティクル
         /// </summary>
         EachMoveParticle,
+
+        /// <summary>
+        /// もち（B5河野）
+        /// </summary>
+        Attraction,
+
+        /// <summary>
+        /// 手のひらくっつくやつ（B5河野）
+        /// </summary>
+        HandsTo,
+
         /// <summary>
         /// 個数を数えるためのもの．消したら処刑
         /// </summary>

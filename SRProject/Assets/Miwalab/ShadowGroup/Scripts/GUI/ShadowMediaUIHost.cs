@@ -153,6 +153,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingBlack(m_PanelDictionary[ImageProcesserType.Black.ToString()]);
         this.CreateUIsImageporcessingParticle2D(m_PanelDictionary[ImageProcesserType.Particle2D.ToString()]);
         this.CreateUIsImageporcessingParticleVector(m_PanelDictionary[ImageProcesserType.ParticleVector.ToString()]);
+        this.CreateUIsImageporcessingAttraction(m_PanelDictionary[ImageProcesserType.Attraction.ToString()]);
+        this.CreateUIsImageporcessingHandsTo(m_PanelDictionary[ImageProcesserType.HandsTo.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
     }
 
@@ -208,6 +210,14 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.ParticleVector:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.ParticleVector()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.ParticleVector.ToString()];
+                break;
+            case ImageProcesserType.Attraction:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Attraction()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Attraction.ToString()];
+                break;
+            case ImageProcesserType.HandsTo:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new HandsTo()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.HandsTo.ToString()];
                 break;
             case ImageProcesserType.EachMoveParticle:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.EachMoveParticle()));
@@ -396,6 +406,34 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Frame_of_FadeOut", 1000, 1, 50);
         AddBooleanUI(parent, "White_Fade", false);
     }
+
+    private void CreateUIsImageporcessingHandsTo(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "HandsTo_con_R", 255, 0, 0);
+        AddFloatUI(parent, "HandsTo_con_G", 255, 0, 0);
+        AddFloatUI(parent, "HandsTo_con_B", 255, 0, 200);
+        AddFloatUI(parent, "HandsTo_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "HandsTo_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "HandsTo_bgd_B", 255, 0, 0);
+        AddFloatUI(parent, "HandsTo_moveTh", 500, 0, 0);
+
+    }
+    private void CreateUIsImageporcessingAttraction(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Attraction_con_R", 255, 0, 0);
+        AddFloatUI(parent, "Attraction_con_G", 255, 0, 0);
+        AddFloatUI(parent, "Attraction_con_B", 255, 0, 200);
+        AddFloatUI(parent, "Attraction_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "Attraction_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "Attraction_bgd_B", 255, 0, 0);
+        AddFloatUI(parent, "Attraction_ctl", 1, 0, 0.1f);
+        AddFloatUI(parent, "Attraction_deleteTh", 1000, 0, 10);
+        AddFloatUI(parent, "Attraction_Rate", 40, 1, 6);
+
+    }
+
 
     private void CreateUIsImageporcessingTamuraSkeleton(GameObject parent)
     {
