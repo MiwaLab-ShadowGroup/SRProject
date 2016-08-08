@@ -21,10 +21,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
         public Vector2 Position { set; get; }
         public Vector2 Vellocity { set; get; }
         public Vector2 Accell { set; get; }
-        public Scalar Color { set; get; }
+
+        private Scalar _Color;
+        public Scalar Color { set { _Color = value; } get { return _Color; } }
         public bool Alive { set; get; }
         public DeadType _DeadType { set; get; }
-
+        public float Friction { set; get; }
 
         public AParticle2D()
         {
@@ -74,9 +76,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
 
         public void CutOffVellocity(float MaxValue)
         {
-            if(this.Vellocity.magnitude > MaxValue)
+            if (this.Vellocity.magnitude > MaxValue)
             {
-                this.Vellocity = this.Vellocity.normalized*MaxValue;
+                this.Vellocity = this.Vellocity.normalized * MaxValue;
             }
         }
 
@@ -103,7 +105,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
             }
         }
 
+        public void GraduallyChangeColorTo(Scalar target, double potion)
+        {
+            _Color.Val0 += (target.Val0 - _Color.Val0) * potion;
+            _Color.Val1 += (target.Val1 - _Color.Val1) * potion;
+            _Color.Val2 += (target.Val2 - _Color.Val2) * potion;
+            _Color.Val3 += (target.Val3 - _Color.Val3) * potion;
+        }
+
+
 
         public abstract void DrawShape(ref Mat mat);
     }
+
 }

@@ -493,7 +493,10 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Kinect_Cut_y", 2, -2, 0);
         AddFloatUI(parent, "Kinect_Cut_diff", 0.1f, 0.005f, 0.02f);
+        m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "Archive", false);
+        m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "Kinect_Depth", false);
 
     }
     /// <summary>
