@@ -47,6 +47,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         double xMaxDist;
         int th;
         double moveThreshold;
+        int centerCtl;
 
 
 
@@ -62,6 +63,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("HandsTo_bgd_G") as ParameterSlider).ValueChanged += HandsTo_bgd_G_ValueChanged;
             (ShadowMediaUIHost.GetUI("HandsTo_bgd_B") as ParameterSlider).ValueChanged += HandsTo_bgd_B_ValueChanged;
             (ShadowMediaUIHost.GetUI("HandsTo_moveTh") as ParameterSlider).ValueChanged += HandsTo_moveTh_ValueChanged;
+            (ShadowMediaUIHost.GetUI("HandsTo_centerCtl") as ParameterSlider).ValueChanged += HandsTo_moveTh_ValueChanged;
 
             (ShadowMediaUIHost.GetUI("HandsTo_con_R") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("HandsTo_con_G") as ParameterSlider).ValueUpdate();
@@ -70,11 +72,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("HandsTo_bgd_G") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("HandsTo_bgd_B") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("HandsTo_moveTh") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("HandsTo_centerCtl") as ParameterSlider).ValueUpdate();
         }
 
         private void HandsTo_moveTh_ValueChanged(object sender, EventArgs e)
         {
             this.moveThreshold = (int)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void HandsTo_centerCtl_ValueChanged(object sender, EventArgs e)
+        {
+            this.centerCtl = (int)(e as ParameterSlider.ChangedValue).Value;
         }
         private void HandsTo_con_R_ValueChanged(object sender, EventArgs e)
         {
@@ -153,6 +161,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 {
                     //重心検出処理
                     var cont = contour[i].ToArray();
+                    
                     var M = Cv2.Moments(cont);
                     this.contour_Center.Add(new Point((M.M10 / M.M00), (M.M01 / M.M00)));
 
@@ -200,7 +209,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             //折れ線コネクタの描画計算
             var _contour = List_Contours.ToArray();
-            var _contour_Center = contour_Center.ToArray();
 
             Cv2.DrawContours(m_buffer, _contour, -1, color, -1, OpenCvSharp.LineType.Link8);
 
@@ -250,7 +258,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                         //int th = (int)Math.Abs(0.5 - t)*15 + 10;
                         //二次関数的に真ん中が細くなる
-                        th = (int)(4 * 15 * (t * t - t + 0.25)) + 5;
+                        th = (int)(4 * 5 * (t * t - t + 0.25)) + 3;
 
                         //繋ぐラインが点々になる
                         //if (UnityEngine.Random.value > 0.8f)

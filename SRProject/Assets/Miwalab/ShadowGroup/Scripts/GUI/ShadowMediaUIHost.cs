@@ -416,8 +416,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "HandsTo_bgd_R", 255, 0, 0);
         AddFloatUI(parent, "HandsTo_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "HandsTo_bgd_B", 255, 0, 0);
-        AddFloatUI(parent, "HandsTo_moveTh", 500, 0, 0);
-
+        AddFloatUI(parent, "HandsTo_moveTh", 500, 0, 500);
+        AddFloatUI(parent, "HandsTo_centerCtl", 100, 0, 0);
     }
     private void CreateUIsImageporcessingAttraction(GameObject parent)
     {
@@ -429,7 +429,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Attraction_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "Attraction_bgd_B", 255, 0, 0);
         AddFloatUI(parent, "Attraction_ctl", 1, 0, 0.1f);
-        AddFloatUI(parent, "Attraction_deleteTh", 1000, 0, 10);
+        AddFloatUI(parent, "Attraction_deleteTh", 640, 0, 500);
         AddFloatUI(parent, "Attraction_Rate", 40, 1, 6);
 
     }

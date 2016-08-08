@@ -19,7 +19,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         int sharpness = 6;
         float ctl;
-        double deleteTh;
+        int deleteTh;
         private Mat grayimage = new Mat();
         private Mat dstMat = new Mat();
         System.Random rand = new System.Random();
@@ -28,6 +28,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         Scalar color;
         Scalar colorLine;
         Scalar colorBack;
+        Scalar colorBuffer;
 
         List<OpenCvSharp.CPlusPlus.Point> contour_Center = new List<Point>();
         List<OpenCvSharp.CPlusPlus.Point> contour_Ymin = new List<Point>();
@@ -84,6 +85,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.color.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
             this.colorLine.Val1 = 50 + (double)(e as ParameterSlider.ChangedValue).Value;
             if (this.colorLine.Val1 > 255) this.colorLine.Val1 = 255;
+            colorBuffer = color;
 
         }
         private void Attraction_con_G_ValueChanged(object sender, EventArgs e)
@@ -91,6 +93,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.color.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
             this.colorLine.Val0 = 50 + (double)(e as ParameterSlider.ChangedValue).Value;
             if (this.colorLine.Val0 > 255) this.colorLine.Val0 = 255;
+            colorBuffer = color;
 
         }
         private void Attraction_con_B_ValueChanged(object sender, EventArgs e)
@@ -98,6 +101,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.color.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
             this.colorLine.Val2 = 50 + (double)(e as ParameterSlider.ChangedValue).Value;
             if (this.colorLine.Val2 > 255) this.colorLine.Val2 = 255;
+            colorBuffer = color;
         }
         private void Attraction_bgd_R_ValueChanged(object sender, EventArgs e)
         {
@@ -123,7 +127,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void Attraction_deleteTh_ValueChanged(object sender, EventArgs e)
         {
-            this.deleteTh = (float)(e as ParameterSlider.ChangedValue).Value;
+            this.deleteTh = (int)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
@@ -143,6 +147,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.MinPolyPoints.Clear();
             this.DistanceList.Clear();
 
+
+            colorBuffer = color;
 
             if (m_buffer == null)
             {
@@ -231,77 +237,85 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 this.deleteNum.Clear();
                 this.MinPolyPoints.Clear();
                 this.DistanceList.Clear();
-
-                //bezierCtlの設定
-                int distance = (this.contour_Center[i + 1].X - this.contour_Center[i].X);
-
-                this.bezierPt.Clear();
-                this.bezierPt.Add(this.contour_Ymax[i]);
-                this.bezierPt.Add(new Point((this.contour_Center[i].X + this.contour_Center[i + 1].X) / 2,
-                                            (this.contour_Center[i].Y + this.contour_Center[i + 1].Y) / 2 - distance * ctl));
-                this.bezierPt.Add(this.contour_Ymax[i + 1]); ;
-
-                this.bezierPt.Add(this.contour_Ymin[i + 1]);
-                this.bezierPt.Add(new Point((this.contour_Center[i].X + this.contour_Center[i + 1].X) / 2,
-                                            (this.contour_Center[i].Y + this.contour_Center[i + 1].Y) / 2 + distance * ctl));
-                this.bezierPt.Add(this.contour_Ymin[i]); ;
-
-                Point newPt;
-
-
-                //Ymaxの曲線描画　左上→右上
-                newPt.X = this.bezierPt[0].X;
-                newPt.Y = this.bezierPt[0].Y;
-
-                for (double t = 0; t <= 1; t += 0.01)  //初期値t=0.005　両方変えるのを忘れずに
+                if (this.contour_Center[i + 1].X - this.contour_Center[i].X < deleteTh)
                 {
 
-                    newPt.X = (int)(Math.Pow(1 - t, 2) * this.bezierPt[0].X + 2 * (1 - t) * t * this.bezierPt[1].X + t * t * this.bezierPt[2].X);
-                    newPt.Y = (int)(Math.Pow(1 - t, 2) * this.bezierPt[0].Y + 2 * (1 - t) * t * this.bezierPt[1].Y + t * t * this.bezierPt[2].Y);
-                    PolyPoints.Add(newPt);
+                    //色の調整 伸びたら白く 
+                    int distance = (this.contour_Center[i + 1].X - this.contour_Center[i].X);
+                    this.colorBuffer.Val0 += (255 - colorBuffer.Val0) * distance / deleteTh / 1.5f;
+                    this.colorBuffer.Val1 += (255 - colorBuffer.Val1) * distance / deleteTh / 1.5f;
+                    this.colorBuffer.Val2 += (255 - colorBuffer.Val2) * distance / deleteTh / 1.5f;
 
-                }
 
-                //Yminの曲線描画 右下→左下
-                newPt.X = this.bezierPt[3].X;
-                newPt.Y = this.bezierPt[3].Y;
+                    //bezierCtlの設定
+                    this.bezierPt.Clear();
+                    this.bezierPt.Add(this.contour_Ymax[i]);
+                    this.bezierPt.Add(new Point((this.contour_Center[i].X + this.contour_Center[i + 1].X) / 2,
+                                                (this.contour_Center[i].Y + this.contour_Center[i + 1].Y) / 2 - distance * ctl));
+                    this.bezierPt.Add(this.contour_Ymax[i + 1]); ;
 
-                for (double t = 0; t <= 1; t += 0.01)  //初期値t=0.005 両方変えるのを忘れずに
-                {
+                    this.bezierPt.Add(this.contour_Ymin[i + 1]);
+                    this.bezierPt.Add(new Point((this.contour_Center[i].X + this.contour_Center[i + 1].X) / 2,
+                                                (this.contour_Center[i].Y + this.contour_Center[i + 1].Y) / 2 + distance * ctl));
+                    this.bezierPt.Add(this.contour_Ymin[i]); ;
 
-                    newPt.X = (int)(Math.Pow(1 - t, 2) * this.bezierPt[3].X + 2 * (1 - t) * t * this.bezierPt[4].X + t * t * this.bezierPt[5].X);
-                    newPt.Y = (int)(Math.Pow(1 - t, 2) * this.bezierPt[3].Y + 2 * (1 - t) * t * this.bezierPt[4].Y + t * t * this.bezierPt[5].Y);
+                    Point newPt;
 
-                    PolyPoints.Add(newPt);
-                    MinPolyPoints.Add(newPt);
 
-                }
-                //交点のチェック
-                MinPolyPoints.Reverse();
-                deleteCheck = false;
-                //Min > Max になる点を検出
-                for (int j = 0; j <= PolyPoints.Count/2 -1; j++)
-                {
+                    //Ymaxの曲線描画　左上→右上
+                    newPt.X = this.bezierPt[0].X;
+                    newPt.Y = this.bezierPt[0].Y;
 
-                    if (PolyPoints[PolyPoints.Count - 1 - j].Y > PolyPoints[j].Y)  //min > max
+                    for (double t = 0; t <= 1; t += 0.01)  //初期値t=0.005　両方変えるのを忘れずに
                     {
-                        this.DeletePoints.Add(PolyPoints[PolyPoints.Count - 1 - j]);
-                        this.DeletePoints.Insert(0, PolyPoints[j]);
-                        //消失確認用の丸描画
-                        //Cv2.Circle(m_buffer, this.PolyPoints[PolyPoints.Count - 1 - j], 5, colorLine);
-                        //Cv2.Circle(m_buffer, this.PolyPoints[j], 5, colorLine);
 
-                        deleteCheck = true;
+                        newPt.X = (int)(Math.Pow(1 - t, 2) * this.bezierPt[0].X + 2 * (1 - t) * t * this.bezierPt[1].X + t * t * this.bezierPt[2].X);
+                        newPt.Y = (int)(Math.Pow(1 - t, 2) * this.bezierPt[0].Y + 2 * (1 - t) * t * this.bezierPt[1].Y + t * t * this.bezierPt[2].Y);
+                        PolyPoints.Add(newPt);
+
                     }
 
+                    //Yminの曲線描画 右下→左下
+                    newPt.X = this.bezierPt[3].X;
+                    newPt.Y = this.bezierPt[3].Y;
+
+                    for (double t = 0; t <= 1; t += 0.01)  //初期値t=0.005 両方変えるのを忘れずに
+                    {
+
+                        newPt.X = (int)(Math.Pow(1 - t, 2) * this.bezierPt[3].X + 2 * (1 - t) * t * this.bezierPt[4].X + t * t * this.bezierPt[5].X);
+                        newPt.Y = (int)(Math.Pow(1 - t, 2) * this.bezierPt[3].Y + 2 * (1 - t) * t * this.bezierPt[4].Y + t * t * this.bezierPt[5].Y);
+
+                        PolyPoints.Add(newPt);
+                        MinPolyPoints.Add(newPt);
+
+                    }
+                    //交点のチェック
+                    MinPolyPoints.Reverse();
+                    deleteCheck = false;
+                    //Min > Max になる点を検出
+                    for (int j = 0; j <= PolyPoints.Count / 2 - 1; j++)
+                    {
+
+                        if (PolyPoints[PolyPoints.Count - 1 - j].Y > PolyPoints[j].Y)  //min > max
+                        {
+                            this.DeletePoints.Add(PolyPoints[PolyPoints.Count - 1 - j]);
+                            this.DeletePoints.Insert(0, PolyPoints[j]);
+                            //消失確認用の丸描画
+                            //Cv2.Circle(m_buffer, this.PolyPoints[PolyPoints.Count - 1 - j], 5, colorLine);
+                            //Cv2.Circle(m_buffer, this.PolyPoints[j], 5, colorLine);
+
+                            deleteCheck = true;
+                        }
+
+                    }
+
+                    //リストinリストにin
+                    this.PolyPoints.Insert(this.PolyPoints.Count / 2, this.contour_Center[i + 1]);
+                    this.PolyPoints.Insert(0, this.contour_Center[i]);
+
+                    this.polyLinePoint.Add(new List<Point>(PolyPoints));
+                    if (deleteCheck) this.deleteLinePoint.Add(new List<Point>(DeletePoints));
                 }
-
-                //リストinリストにin
-                this.PolyPoints.Insert(this.PolyPoints.Count/2, this.contour_Center[i + 1]);
-                this.PolyPoints.Insert(0, this.contour_Center[i]);   //なんかこれをいれるとうまくいかない
-
-                this.polyLinePoint.Add(new List<Point>(PolyPoints));
-                if(deleteCheck) this.deleteLinePoint.Add(new List<Point>(DeletePoints));
             }
 
             var _contour = List_Contours.ToArray();
@@ -309,15 +323,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             //Cv2.FillPoly(m_buffer, _poly, color, OpenCvSharp.LineType.Link8);
             // Cv2.FillPoly(m_buffer, _deletePoly, colorBack, OpenCvSharp.LineType.Link8);
-            Cv2.DrawContours(m_buffer, _contour, -1, color, -1, OpenCvSharp.LineType.Link8);
-            Cv2.DrawContours(m_buffer, _poly, -1, color, -1, OpenCvSharp.LineType.Link8);
-         
+            Cv2.DrawContours(m_buffer, _contour, -1, colorBuffer, -1, OpenCvSharp.LineType.Link8);
+            Cv2.DrawContours(m_buffer, _poly, -1, colorBuffer, -1, OpenCvSharp.LineType.Link8);
+
             if (deleteLinePoint != null)
             {
                 var _delete_poly = deleteLinePoint.ToArray();
                 Cv2.DrawContours(m_buffer, _delete_poly, -1, colorBack, -1, OpenCvSharp.LineType.Link8);
             }
-            
+
             dst += m_buffer;
 
             this.List_Contours_Buffer = this.List_Contours;
