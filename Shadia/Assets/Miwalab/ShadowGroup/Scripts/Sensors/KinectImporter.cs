@@ -30,6 +30,9 @@ public class KinectImporter : ASensorImporter
     public GameObject ReadData;
     private bool IsArchive = false;
 
+    public bool IsDepthStream { get; private set; }
+
+
     //public ColorSourceManager _colormanager;
     //ColorImageFormat colorImageFormat;
     //ColorFrameReader colorFrameReader;
@@ -52,6 +55,7 @@ public class KinectImporter : ASensorImporter
     public TextAsset RemoteEPSettings;
     private RemoteManager m_remoteManager;
     private CameraSpacePoint m_kinectPosition = new CameraSpacePoint();
+
     #endregion
 
     // Use this for initialization
@@ -73,7 +77,7 @@ public class KinectImporter : ASensorImporter
                 m_depthFrameSource = m_sensor.DepthFrameSource;
                 this.m_mat = new Mat(new Size(m_frameDescription.Width, m_frameDescription.Height), this.m_matType);
 
-               
+
 
             }
             m_cameraSpacePoints = new CameraSpacePoint[m_frameDescription.Width * m_frameDescription.Height];
@@ -91,6 +95,8 @@ public class KinectImporter : ASensorImporter
         this.m_bottom = 10f;
         this.m_rear = 10f;
         this.m_front = 10f;
+
+        this.IsDepthStream = false;
     }
 
     private void InitializeNetwork()
@@ -171,9 +177,19 @@ public class KinectImporter : ASensorImporter
                 CameraSpacePoint point = this.m_cameraSpacePoints[i / 3];
                 if (point.X > m_left && point.X < m_right && point.Y > m_bottom && point.Y < m_top && point.Z > m_rear && point.Z < m_front)
                 {
-                    data[i] = 255;
-                    data[i + 1] = 255;
-                    data[i + 2] = 255;
+                    if (IsDepthStream)
+                    {
+                        byte s = (byte)(point.Z / 8f * 255);
+                        data[i] = s;
+                        data[i + 1] = s;
+                        data[i + 2] = s;
+                    }
+                    else
+                    {
+                        data[i] = 255;
+                        data[i + 1] = 255;
+                        data[i + 2] = 255;
+                    }
                     //断面取得
                     #region 断面
                     if (this.m_isGettingData)
@@ -251,7 +267,7 @@ public class KinectImporter : ASensorImporter
             afterEffect.ImageProcess(ref this.m_mat, ref this.m_mat);
         }
 
-        
+
 
     }
 
@@ -274,6 +290,9 @@ public class KinectImporter : ASensorImporter
 
         (ShadowMediaUIHost.GetUI("Archive") as ParameterCheckbox).ValueChanged += KinectImporter_ValueChanged;
 
+        (ShadowMediaUIHost.GetUI("Kinect_Depth") as ParameterCheckbox).ValueChanged += KinectImporter_KinectDepth_ValueChanged;
+
+
 
         (ShadowMediaUIHost.GetUI("Kinect_x_min") as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Kinect_x_max") as ParameterSlider).ValueUpdate();
@@ -291,7 +310,14 @@ public class KinectImporter : ASensorImporter
 
         (ShadowMediaUIHost.GetUI("Archive") as ParameterCheckbox).ValueUpdate();
 
+        (ShadowMediaUIHost.GetUI("Kinect_Depth") as ParameterCheckbox).ValueUpdate();
 
+
+    }
+
+    private void KinectImporter_KinectDepth_ValueChanged(object sender, EventArgs e)
+    {
+        this.IsDepthStream = (e as ParameterCheckbox.ChangedValue).Value;
     }
 
     private void KinectImporter_ValueChanged(object sender, EventArgs e)

@@ -18,7 +18,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
                 {
                     point.X = (int)Position.x;
                     point.Y = (int)Position.y;
-                    OpenCvSharp.CPlusPlus.Cv2.Circle(mat, point, (int)this.Size, Color, -1);
+                    OpenCvSharp.CPlusPlus.Cv2.Circle(mat, point, (int)this.Size, Color, 1);
                 }
             }
         }
