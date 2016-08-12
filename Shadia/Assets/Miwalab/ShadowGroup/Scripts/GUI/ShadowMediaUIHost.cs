@@ -112,7 +112,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         //UI初期化
         this.SetupUIsImageprocess();
 
-        
+
         this.CreateUIsImageporcessingWhite(m_PanelDictionary[ImageProcesserType.White.ToString()]);
 
 
@@ -385,9 +385,19 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "EMP_Num_Init", 10000, 1000, 1000);
-
         AddFloatUI(parent, "EMP_Size_Max", 20, -1, 1);
         AddFloatUI(parent, "EMP_Size_Min", 20, -1, 0);
+        AddFloatUI(parent, "EMP_Max_V", 20, 0, 0.1f);
+        m_lastUpdatedHeight += 5;
+        AddBooleanUI(parent, "EMP_UseOwnMove", true);
+        AddFloatUI(parent, "EMP_Response", 50, 1, 20);
+        m_lastUpdatedHeight += 5;
+        AddFloatUI(parent, "EMP_VK", 5, -5, 0);
+        m_lastUpdatedHeight += 5;
+        AddBooleanUI(parent, "EMP_ColorUse", true);
+
+
+
     }
 
     private void CreateUIsImageporcessingParticleVector(GameObject parent)
