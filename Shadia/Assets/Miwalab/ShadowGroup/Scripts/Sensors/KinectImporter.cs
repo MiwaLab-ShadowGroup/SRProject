@@ -11,6 +11,7 @@ using Miwalab.ShadowGroup.Thread;
 public class KinectImporter : ASensorImporter
 {
     public DepthSourceManager _depthManager;
+    public BodySourceManager _bodyManager;
     private KinectSensor m_sensor;
     private ushort[] m_depthData;
     public ushort[] m_SaveDepth;
@@ -161,6 +162,7 @@ public class KinectImporter : ASensorImporter
             m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
 
         }
+        
 
         List<CameraSpacePoint> points = new List<CameraSpacePoint>();
         List<int> counts = new List<int>();
@@ -257,6 +259,7 @@ public class KinectImporter : ASensorImporter
 
         foreach (var imageProcesser in this.m_ImagerProcesserList)
         {
+            imageProcesser.SetBody(_bodyManager.GetData());
             imageProcesser.ImageProcess(ref this.m_mat, ref this.m_mat);
 
         }

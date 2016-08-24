@@ -28,6 +28,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
         public DeadType _DeadType { set; get; }
         public float Friction { set; get; }
 
+        protected Point point = new Point();
+
         public AParticle2D()
         {
             Size = 1f;
@@ -116,6 +118,21 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
 
 
         public abstract void DrawShape(ref Mat mat);
+
+        public void PutText(ref Mat mat, string str, double scale)
+        {
+            mat.PutText(str, this.point, OpenCvSharp.FontFace.Vector0, scale, Scalar.White);
+        }
+
+        internal void RevirthRandom(int width, int height)
+        {
+            if (!this.Alive)
+            {
+                Alive = true;
+                Position = new UnityEngine.Vector2(UnityEngine.Random.Range(0, width), UnityEngine.Random.Range(0, height));
+
+            }
+        }
     }
 
 }
