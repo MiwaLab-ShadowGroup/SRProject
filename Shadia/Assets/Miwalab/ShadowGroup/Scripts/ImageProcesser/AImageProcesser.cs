@@ -89,11 +89,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         public abstract void ImageProcess(ref Mat src, ref Mat dst);
         public void SetBody(Body[] bodyData)
         {
-            if(bodydata == null)
+            if(bodyData == null)
             {
                 return;
             }
-            bodydata = new Body[bodyData.Length];
+            if (bodydata == null)
+            {
+                bodydata = new Body[bodyData.Length];
+            }
             bodyData.CopyTo(bodydata, 0);
             this.UpdateBody();
         }

@@ -26,6 +26,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours_Buffer = new List<List<Point>>();
         Scalar color;
         Scalar colorBack;
+        DepthBody db;
 
 
         public Polygon() : base()
@@ -194,6 +195,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             var _contour = List_Contours.ToArray();
 
             Cv2.DrawContours(m_buffer, _contour, -1, color, -1, OpenCvSharp.LineType.Link8);
+
+
             dst += m_buffer;
             this.List_Contours_Buffer = this.List_Contours;
             //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
