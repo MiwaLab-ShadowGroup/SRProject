@@ -8,6 +8,7 @@ using Miwalab.ShadowGroup.Scripts.Sensors;
 using Miwalab.ShadowGroup.Scripts.Callibration;
 using Miwalab.ShadowGroup.AfterEffect;
 using Miwalab.ShadowGroup.Archive;
+using System.Text.RegularExpressions;
 
 public class ShadowMediaUIHost : MonoBehaviour
 {
@@ -38,6 +39,40 @@ public class ShadowMediaUIHost : MonoBehaviour
         }
         m_ParameterUI.Clear();
 
+    }
+
+    public static void LoadAllSettings()
+    {
+        string str = "";
+        OpenFileDialog.OpenFileDialog.Read(ref str);
+        if (str == "")
+        {
+            return;
+        }
+
+        Miwalab.ShadowGroup.Data.UIParameterDocument UIPD = new Miwalab.ShadowGroup.Data.UIParameterDocument();
+        UIPD.Load(str);
+        UIPD.SetParameter(GetInstance());
+    }
+
+    public static void SaveAllSettings()
+    {
+        string str = "";
+        OpenFileDialog.OpenFileDialog.Save(ref str);
+        if (str == "")
+        {
+            return;
+        }
+        Regex reg = new Regex(@"\.SAS$");
+        if (!reg.IsMatch(str))
+        {
+            str += ".SAS";
+        }
+        
+        
+        Miwalab.ShadowGroup.Data.UIParameterDocument UIPD = new Miwalab.ShadowGroup.Data.UIParameterDocument();
+        UIPD.SetupField( GetInstance() );
+        UIPD.Save(str);
     }
     #endregion
 

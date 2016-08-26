@@ -55,4 +55,19 @@ public class ParameterCheckbox : AParameterUI {
     {
         return new Rect(0, 0, 400, 30);
     }
+
+    public override ParameterType GetParameterType()
+    {
+        return ParameterType.Boolean;
+    }
+
+    public override object GetValue()
+    {
+        return m_toggle.isOn;
+    }
+
+    public override void SetValue(object value)
+    {
+        this.m_toggle.isOn = (Boolean)value;
+    }
 }
