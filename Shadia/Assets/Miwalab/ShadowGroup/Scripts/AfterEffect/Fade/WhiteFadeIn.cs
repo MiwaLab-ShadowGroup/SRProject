@@ -29,6 +29,7 @@ namespace Miwalab.ShadowGroup.AfterEffect.Fade
 
             int channel = src.Channels();
 
+
             unsafe
             {
                 byte* srcPtr = src.DataPointer;

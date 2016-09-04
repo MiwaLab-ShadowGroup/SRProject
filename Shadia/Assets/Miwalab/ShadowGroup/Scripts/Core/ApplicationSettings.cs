@@ -8,8 +8,25 @@ namespace Miwalab.ShadowGroup.Core
 {
     public class ApplicationSettings : MonoBehaviour
     {
+        public static ShadowMediaMode _CurrentMode;
+        public static ShadowMediaMode CurrentMode
+        {
+            get
+            {
+                return _CurrentMode;
+            }
+            private set
+            {
+                _CurrentMode = value;
+            }
+        }
+
+
+
         public void Start()
         {
+
+            CurrentMode = ShadowMediaMode.ShadowMedia2D;
 
             Debug.Log("displays connected: " + Display.displays.Length);
             // Display.displays[0] is the primary, default display and is always ON.
@@ -39,6 +56,22 @@ namespace Miwalab.ShadowGroup.Core
         public void LoadAllParameters()
         {
             ShadowMediaUIHost.LoadAllSettings();
+        }
+        
+
+        public void SetShadowMediaMode(int i)
+        {
+            switch (i)
+            {
+                case 0:
+                    CurrentMode = ShadowMediaMode.ShadowMedia2D;
+                    break;
+                case 1:
+                    CurrentMode = ShadowMediaMode.ShadowMedia3D;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

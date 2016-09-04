@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="shift_jis"?>
+<?xml version="1.0" encoding="utf-8"?>
 <UIParameterDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <parameterSingle>
     <KeyAndValueOfStringSingle>
@@ -263,11 +263,11 @@
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>FP_Num_Init</Key>
-      <Value>0</Value>
+      <Value>7285.326</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>FP_Size_Max</Key>
-      <Value>0</Value>
+      <Value>2.4266305</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>FP_Size_Min</Key>
@@ -275,11 +275,11 @@
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>FP_Max_V</Key>
-      <Value>0</Value>
+      <Value>0.6434784</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>FP_Force_X</Key>
-      <Value>0</Value>
+      <Value>0.0597826242</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>FP_Force_Y</Key>
@@ -287,19 +287,19 @@
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_x_min</Key>
-      <Value>-0.314545929</Value>
+      <Value>-1.86141312</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_x_max</Key>
-      <Value>0.8382137</Value>
+      <Value>1.875</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_y_min</Key>
-      <Value>-0.680286765</Value>
+      <Value>-1.01630437</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_y_max</Key>
-      <Value>1.21628869</Value>
+      <Value>1.30978251</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_z_min</Key>
@@ -307,7 +307,7 @@
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_z_max</Key>
-      <Value>1.82622492</Value>
+      <Value>4.5</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_pos_x</Key>
@@ -331,145 +331,145 @@
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_TL_X1</Key>
-      <Value>0</Value>
+      <Value>0.8260869</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_TL_Y1</Key>
-      <Value>0</Value>
+      <Value>0.326087</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_BL_X1</Key>
-      <Value>0</Value>
+      <Value>0.9375001</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_BL_Y1</Key>
-      <Value>0</Value>
+      <Value>0.184782773</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_BR_X1</Key>
-      <Value>0</Value>
+      <Value>0.111413181</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_BR_Y1</Key>
-      <Value>0</Value>
+      <Value>0.184782773</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_TR_X1</Key>
-      <Value>0</Value>
+      <Value>0.209239244</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_TR_Y1</Key>
-      <Value>0</Value>
+      <Value>0.37500003</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_TL_X1</Key>
-      <Value>0</Value>
+      <Value>89.6739655</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_TL_Y1</Key>
-      <Value>0</Value>
+      <Value>640.7609</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_BL_X1</Key>
-      <Value>0</Value>
+      <Value>65.2175</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_BL_Y1</Key>
-      <Value>0</Value>
+      <Value>2.98023224E-05</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_BR_X1</Key>
-      <Value>0</Value>
+      <Value>1223.913</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_BR_Y1</Key>
-      <Value>0</Value>
+      <Value>-8.152098</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_TR_X1</Key>
-      <Value>0</Value>
+      <Value>1223.913</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_TR_Y1</Key>
-      <Value>0</Value>
+      <Value>632.608765</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_TL_X2</Key>
-      <Value>0</Value>
+      <Value>0.21195659</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_TL_Y2</Key>
-      <Value>0</Value>
+      <Value>0.3342392</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_BL_X2</Key>
-      <Value>0</Value>
+      <Value>0.220108718</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_BL_Y2</Key>
-      <Value>0</Value>
+      <Value>0.755435</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_BR_X2</Key>
-      <Value>0</Value>
+      <Value>0.820652366</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_BR_Y2</Key>
-      <Value>0</Value>
+      <Value>0.7635871</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_TR_X2</Key>
-      <Value>0</Value>
+      <Value>0.8288045</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_I_TR_Y2</Key>
-      <Value>0</Value>
+      <Value>0.326087</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_TL_X2</Key>
-      <Value>0</Value>
+      <Value>228.260941</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_TL_Y2</Key>
-      <Value>0</Value>
+      <Value>591.847961</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_BL_X2</Key>
-      <Value>0</Value>
+      <Value>269.021851</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_BL_Y2</Key>
-      <Value>0</Value>
+      <Value>24.45659</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_BR_X2</Key>
-      <Value>0</Value>
+      <Value>1093.47827</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_BR_Y2</Key>
-      <Value>0</Value>
+      <Value>16.3043747</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_TR_X2</Key>
-      <Value>0</Value>
+      <Value>1142.39136</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Clb_E_TR_Y2</Key>
-      <Value>0</Value>
+      <Value>583.6957</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Frame_of_FadeIn</Key>
-      <Value>1</Value>
+      <Value>50</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Frame_of_FadeOut</Key>
-      <Value>1</Value>
+      <Value>50</Value>
     </KeyAndValueOfStringSingle>
   </parameterSingle>
   <parameterBoolean>
     <KeyAndValueOfStringBoolean>
       <Key>Normal_Invert</Key>
-      <Value>false</Value>
+      <Value>true</Value>
     </KeyAndValueOfStringBoolean>
     <KeyAndValueOfStringBoolean>
       <Key>Zanzou_Invert</Key>
@@ -493,7 +493,7 @@
     </KeyAndValueOfStringBoolean>
     <KeyAndValueOfStringBoolean>
       <Key>FP_ColorUse</Key>
-      <Value>false</Value>
+      <Value>true</Value>
     </KeyAndValueOfStringBoolean>
     <KeyAndValueOfStringBoolean>
       <Key>Archive</Key>
@@ -505,7 +505,7 @@
     </KeyAndValueOfStringBoolean>
     <KeyAndValueOfStringBoolean>
       <Key>Clb_E_Vsbl1</Key>
-      <Value>false</Value>
+      <Value>true</Value>
     </KeyAndValueOfStringBoolean>
     <KeyAndValueOfStringBoolean>
       <Key>Clb_E_Vsbl2</Key>
