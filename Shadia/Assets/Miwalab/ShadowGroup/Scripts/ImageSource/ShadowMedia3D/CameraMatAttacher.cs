@@ -32,7 +32,7 @@ public class CameraMatAttacher : MonoBehaviour
             byte* dstData = (byte*)mat.Data;
             for (int i = 0; i < 512 * 424 * 3; ++i)
             {
-                dstData[i] = srcData[i];
+                dstData[i] = srcData[512 * 424 * 3 - i-1];
             }
         }
         RenderTexture.active = null;

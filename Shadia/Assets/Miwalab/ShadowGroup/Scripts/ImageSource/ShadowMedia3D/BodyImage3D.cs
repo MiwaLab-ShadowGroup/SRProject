@@ -31,8 +31,39 @@ public class BodyImage3D : MonoBehaviour
         this._Mr.material = material;
         this._Mf.sharedMesh = _mesh;
         this._Mr.sharedMesh = _mesh;
-    }
 
+        (ShadowMediaUIHost.GetUI("Kinect_x_min") as ParameterSlider).ValueChanged += KinectImporter_x_min_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_x_max") as ParameterSlider).ValueChanged += KinectImporter_x_max_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_y_min") as ParameterSlider).ValueChanged += KinectImporter_y_min_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_y_max") as ParameterSlider).ValueChanged += KinectImporter_y_max_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_z_min") as ParameterSlider).ValueChanged += KinectImporter_z_min_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueChanged += KinectImporter_z_max_ValueChanged;
+
+    }
+    private void KinectImporter_x_min_ValueChanged(object sender, EventArgs e)
+    {
+        this.material.SetFloat("_VertXMin", (e as ParameterSlider.ChangedValue).Value);
+    }
+    private void KinectImporter_x_max_ValueChanged(object sender, EventArgs e)
+    {
+        this.material.SetFloat("_VertXMax", (e as ParameterSlider.ChangedValue).Value);
+    }
+    private void KinectImporter_y_min_ValueChanged(object sender, EventArgs e)
+    {
+        this.material.SetFloat("_VertYMin", (e as ParameterSlider.ChangedValue).Value);
+    }
+    private void KinectImporter_y_max_ValueChanged(object sender, EventArgs e)
+    {
+        this.material.SetFloat("_VertYMax", (e as ParameterSlider.ChangedValue).Value);
+    }
+    private void KinectImporter_z_min_ValueChanged(object sender, EventArgs e)
+    {
+        this.material.SetFloat("_VertZMin", (e as ParameterSlider.ChangedValue).Value);
+    }
+    private void KinectImporter_z_max_ValueChanged(object sender, EventArgs e)
+    {
+        this.material.SetFloat("_VertZMax", (e as ParameterSlider.ChangedValue).Value);
+    }
     private void SetupTriangles()
     {
         int i = 0;
