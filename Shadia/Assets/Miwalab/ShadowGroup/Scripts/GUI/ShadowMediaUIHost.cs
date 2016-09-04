@@ -163,6 +163,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
         this.CreateUIsArchiveSave(m_PanelDictionary[ArchiveSettingType.Save.ToString()]);
         this.CreateUIsArchivePlay(m_PanelDictionary[ArchiveSettingType.Play.ToString()]);
+        this.CreateUIsArchiveRobot(m_PanelDictionary[ArchiveSettingType.Robot.ToString()]);
 
 
         this.m_meshrenderer.ForEach(p => p.SetUpUIs());
@@ -345,6 +346,12 @@ public class ShadowMediaUIHost : MonoBehaviour
                 this.m_currentArchiveSettingPanel = this.m_PanelDictionary[ArchiveSettingType.Play.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentArchiveSettingPanel);
                 break;
+
+            case ArchiveSettingType.Robot:
+                //一回作って使いまわす
+                this.m_currentArchiveSettingPanel = this.m_PanelDictionary[ArchiveSettingType.Robot.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentArchiveSettingPanel);
+                break;
         }
 
     }
@@ -383,9 +390,18 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsArchivePlay(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddButtonUI(parent, "ChooseFile");
-        AddButtonUI(parent, "PlayStart");
-        AddBooleanUI(parent, "Pause", false);
+        AddButtonUI(parent, "ACV_ChooseFile");
+        AddButtonUI(parent, "ACV_PlayStart");
+        AddBooleanUI(parent, "ACV_Pause", false);
+
+    }
+    private void CreateUIsArchiveRobot(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddButtonUI(parent, "ChooseRobotFile");
+        AddButtonUI(parent, "PlayRobotStart");
+        AddBooleanUI(parent, "RobotSet", false);
+
 
     }
 
