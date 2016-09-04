@@ -12,5 +12,5 @@ public class ProjectionPlane : MonoBehaviour {
         this.m_material = material;
         this.GetComponent<MeshRenderer>().material = material;
     }
-	
+    
 }

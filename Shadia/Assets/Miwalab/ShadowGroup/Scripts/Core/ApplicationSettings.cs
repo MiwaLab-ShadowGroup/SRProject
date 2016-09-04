@@ -25,7 +25,20 @@ namespace Miwalab.ShadowGroup.Core
 
         public void Update()
         {
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
+        }
 
+
+        public void SaveAllParameters()
+        {
+            ShadowMediaUIHost.SaveAllSettings();
+        }
+        public void LoadAllParameters()
+        {
+            ShadowMediaUIHost.LoadAllSettings();
         }
     }
 }

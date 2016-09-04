@@ -65,4 +65,19 @@ public class ParameterSlider : AParameterUI{
         return new Rect(0, 0, 400, 30);
     }
 
+    public override ParameterType GetParameterType()
+    {
+        return ParameterType.Single;
+    }
+
+
+    public override object GetValue()
+    {
+        return m_slider.value;
+    }
+
+    public override void SetValue(object value)
+    {
+        this.m_slider.value = (Single)value;
+    }
 }

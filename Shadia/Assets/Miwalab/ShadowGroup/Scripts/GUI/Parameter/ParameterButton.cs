@@ -37,4 +37,9 @@ public class ParameterButton : AParameterUI
     {
         return new Rect(0, 0, 400, 30);
     }
+
+    public override ParameterType GetParameterType()
+    {
+        return ParameterType.Other;
+    }
 }
