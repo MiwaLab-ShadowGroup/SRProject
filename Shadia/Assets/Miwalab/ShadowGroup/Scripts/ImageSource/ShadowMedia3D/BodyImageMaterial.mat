@@ -127,6 +127,30 @@ Material:
         first:
           name: _Metallic
         second: 0
+      data:
+        first:
+          name: _VertXMin
+        second: -0.6
+      data:
+        first:
+          name: _VertXMax
+        second: 1.93
+      data:
+        first:
+          name: _VertYMin
+        second: -1
+      data:
+        first:
+          name: _VertYMax
+        second: 1.28
+      data:
+        first:
+          name: _VertZMin
+        second: 0
+      data:
+        first:
+          name: _VertZMax
+        second: 8
     m_Colors:
       data:
         first:
