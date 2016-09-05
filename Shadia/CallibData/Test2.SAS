@@ -262,20 +262,44 @@
       <Value>0</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
+      <Key>FP_Num_Init</Key>
+      <Value>3877.42017</Value>
+    </KeyAndValueOfStringSingle>
+    <KeyAndValueOfStringSingle>
+      <Key>FP_Size_Max</Key>
+      <Value>2.27334142</Value>
+    </KeyAndValueOfStringSingle>
+    <KeyAndValueOfStringSingle>
+      <Key>FP_Size_Min</Key>
+      <Value>1.38910019</Value>
+    </KeyAndValueOfStringSingle>
+    <KeyAndValueOfStringSingle>
+      <Key>FP_Max_V</Key>
+      <Value>1.21270621</Value>
+    </KeyAndValueOfStringSingle>
+    <KeyAndValueOfStringSingle>
+      <Key>FP_Force_X</Key>
+      <Value>-0.0609802</Value>
+    </KeyAndValueOfStringSingle>
+    <KeyAndValueOfStringSingle>
+      <Key>FP_Force_Y</Key>
+      <Value>-5.364418E-07</Value>
+    </KeyAndValueOfStringSingle>
+    <KeyAndValueOfStringSingle>
       <Key>Kinect_x_min</Key>
-      <Value>-5</Value>
+      <Value>-0.314545929</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_x_max</Key>
-      <Value>5</Value>
+      <Value>0.8382137</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_y_min</Key>
-      <Value>-1</Value>
+      <Value>-0.680286765</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_y_max</Key>
-      <Value>1.8777647</Value>
+      <Value>1.21628869</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_z_min</Key>
@@ -283,7 +307,7 @@
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_z_max</Key>
-      <Value>0.988355041</Value>
+      <Value>1.82622492</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Kinect_pos_x</Key>
@@ -435,11 +459,11 @@
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Frame_of_FadeIn</Key>
-      <Value>0</Value>
+      <Value>1</Value>
     </KeyAndValueOfStringSingle>
     <KeyAndValueOfStringSingle>
       <Key>Frame_of_FadeOut</Key>
-      <Value>0</Value>
+      <Value>1</Value>
     </KeyAndValueOfStringSingle>
   </parameterSingle>
   <parameterBoolean>
@@ -466,6 +490,10 @@
     <KeyAndValueOfStringBoolean>
       <Key>EMP_ColorUse</Key>
       <Value>false</Value>
+    </KeyAndValueOfStringBoolean>
+    <KeyAndValueOfStringBoolean>
+      <Key>FP_ColorUse</Key>
+      <Value>true</Value>
     </KeyAndValueOfStringBoolean>
     <KeyAndValueOfStringBoolean>
       <Key>Archive</Key>

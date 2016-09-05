@@ -30,10 +30,10 @@ public class ReadData : MonoBehaviour
 
     void Start()
     {
-        (ShadowMediaUIHost.GetUI("ChooseFile") as ParameterButton).Clicked += ChooseFile_Clicked;
-        (ShadowMediaUIHost.GetUI("PlayStart") as ParameterButton).Clicked += PlayStart_Clicked;
-        (ShadowMediaUIHost.GetUI("Pause") as ParameterCheckbox).ValueChanged += Pause_ValueChanged;
-        (ShadowMediaUIHost.GetUI("Pause") as ParameterCheckbox).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("ACV_ChooseFile") as ParameterButton).Clicked += ChooseFile_Clicked;
+        (ShadowMediaUIHost.GetUI("ACV_PlayStart") as ParameterButton).Clicked += PlayStart_Clicked;
+        (ShadowMediaUIHost.GetUI("ACV_Pause") as ParameterCheckbox).ValueChanged += Pause_ValueChanged;
+        (ShadowMediaUIHost.GetUI("ACV_Pause") as ParameterCheckbox).ValueUpdate();
 
         this.ReadDepthData = new ushort[512 * 424];
 

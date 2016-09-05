@@ -18,7 +18,6 @@ public class MatAttacher : MonoBehaviour {
             return;
         }
         tex = new Texture2D((int)textureSize.x, (int)textureSize.y);
-        material = GetComponent<Renderer>().material;
 
         foreach(var p in this.m_ProjectionPlane)
         {
