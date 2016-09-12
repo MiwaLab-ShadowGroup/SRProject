@@ -105,22 +105,22 @@ Material:
       second: 0
     - first:
         name: _VertXMax
-      second: 2.486892
+      second: 2.0772939
     - first:
         name: _VertXMin
-      second: -0.7409048
+      second: -1.4613523
     - first:
         name: _VertYMax
-      second: 1.4187307
+      second: 1.2826084
     - first:
         name: _VertYMin
-      second: -1
+      second: -0.99033844
     - first:
         name: _VertZMax
-      second: 8
+      second: 4.3864727
     - first:
         name: _VertZMin
-      second: 0
+      second: 1.2834908
     - first:
         name: _ZWrite
       second: 1

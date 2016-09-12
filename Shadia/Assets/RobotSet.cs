@@ -11,7 +11,10 @@ public class RobotSet : MonoBehaviour
     void Start()
     {
         (ShadowMediaUIHost.GetUI("RobotSet") as ParameterCheckbox).ValueChanged += RobotSet_ValueChanged;
+
         (ShadowMediaUIHost.GetUI("RobotSet") as ParameterCheckbox).ValueUpdate();
+
+
     }
 
 

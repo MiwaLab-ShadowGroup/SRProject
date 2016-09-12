@@ -398,6 +398,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddButtonUI(parent, "ACV_ChooseFile");
         AddButtonUI(parent, "ACV_PlayStart");
         AddBooleanUI(parent, "ACV_Pause", false);
+        AddBooleanUI(parent, "ACV_Robot", false);
 
     }
     private void CreateUIsArchiveRobot(GameObject parent)
@@ -407,6 +408,9 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddButtonUI(parent, "PlayRobotStart");
         AddBooleanUI(parent, "RobotSet", false);
 
+        AddFloatUI(parent, "RobotOffset_X", 8, -8, 0);
+        AddFloatUI(parent, "RobotOffset_Y", 3, -3, 0);
+        AddFloatUI(parent, "RobotOffset_Z", 15, -15, 0);
 
     }
 

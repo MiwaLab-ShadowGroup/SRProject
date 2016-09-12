@@ -31,6 +31,10 @@ public class ArchiveAgent : MonoBehaviour {
     int frame;
     public bool IsRead;
 
+    float RobotOffset_x;
+    float RobotOffset_y;
+    float RobotOffset_z;
+
 
     // Use this for initialization
     void Start () {
@@ -38,10 +42,38 @@ public class ArchiveAgent : MonoBehaviour {
         (ShadowMediaUIHost.GetUI("ChooseRobotFile") as ParameterButton).Clicked += ChooseRobotFile_Clicked;
         (ShadowMediaUIHost.GetUI("PlayRobotStart") as ParameterButton).Clicked += PlayRobotStart_Clicked;
 
+        (ShadowMediaUIHost.GetUI("RobotOffset_X") as ParameterSlider).ValueChanged += RobotOffset_X_ValueChanged;
+        (ShadowMediaUIHost.GetUI("RobotOffset_Y") as ParameterSlider).ValueChanged += RobotOffset_Y_ValueChanged;
+        (ShadowMediaUIHost.GetUI("RobotOffset_Z") as ParameterSlider).ValueChanged += RobotOffset_Z_ValueChanged;
+
+        (ShadowMediaUIHost.GetUI("RobotOffset_X") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("RobotOffset_Y") as ParameterSlider).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("RobotOffset_Z") as ParameterSlider).ValueUpdate();
+
+
+
         this.FpsAd = new FPSAdjuster.FPSAdjuster();
-        this.FpsAd.Fps = 23;
+        this.FpsAd.Fps = 21;
         this.FpsAd.Start();
     }
+
+    private void RobotOffset_Z_ValueChanged(object sender, EventArgs e)
+    {
+        this.RobotOffset_z = (e as ParameterSlider.ChangedValue).Value;
+    }
+
+    private void RobotOffset_Y_ValueChanged(object sender, EventArgs e)
+    {
+        this.RobotOffset_y = (e as ParameterSlider.ChangedValue).Value;
+
+    }
+
+    private void RobotOffset_X_ValueChanged(object sender, EventArgs e)
+    {
+        this.RobotOffset_x = (e as ParameterSlider.ChangedValue).Value;
+
+    }
+
 
     private void PlayRobotStart_Clicked(object sender, EventArgs e)
     {
@@ -80,49 +112,49 @@ public class ArchiveAgent : MonoBehaviour {
             while (true)
             {
                 FpsAd.Adjust();
-                
-                    if (Isreader)
+
+                if (Isreader)
+                {
+                    frame = this.reader.ReadInt32();
+                    robotpos.x = this.reader.ReadSingle()+ RobotOffset_x;
+                    robotpos.z = this.reader.ReadSingle()+ RobotOffset_z;
+                    robotpos.y = this.reader.ReadSingle()+ RobotOffset_y;
+
+                    //robotpos.y = 0;
+
+                    if (reader.PeekChar() == -1)
                     {
-                        frame = this.reader.ReadInt32();
-                        robotpos.x = this.reader.ReadSingle();
-                        robotpos.z = this.reader.ReadSingle();
-                        robotpos.y = this.reader.ReadSingle();
-
-                        robotpos.y = 0;
-
-                        if (reader.PeekChar() == -1)
-                        {
-                            Debug.Log("end");
-                            reader.Close();
-                            Isreader = false;
-                        }
-
-                        if (ReadStop)
-                        {
-                            Isreader = false;
-                            ReadStop = false;
-                        }
-
+                        Debug.Log("end");
+                        reader.Close();
+                        Isreader = false;
                     }
-                    else
+
+                    if (ReadStop)
                     {
-                        if (reader != null)
-                        {
-                            reader.Close();
-
-                        }
-
-                        break;
+                        Isreader = false;
+                        ReadStop = false;
                     }
 
                 }
-            
+                else
+                {
+                    if (reader != null)
+                    {
+                        reader.Close();
+
+                    }
+
+                    break;
+                }
+
+            }
+
         }
         catch
         {
 
         }
-    
+
 
 
     }
