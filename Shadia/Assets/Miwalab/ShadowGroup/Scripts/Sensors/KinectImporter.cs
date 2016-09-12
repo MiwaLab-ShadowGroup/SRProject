@@ -35,7 +35,7 @@ public class KinectImporter : ASensorImporter
 
     #region 3D
     public BodyImage3D BodyImage3D;
-    public CameraMatAttacher CameraAttacher; 
+    public CameraMatAttacher CameraAttacher;
     #endregion
     //public ColorSourceManager _colormanager;
     //ColorImageFormat colorImageFormat;
@@ -80,8 +80,6 @@ public class KinectImporter : ASensorImporter
                 m_frameDescription = m_sensor.DepthFrameSource.FrameDescription;
                 m_depthFrameSource = m_sensor.DepthFrameSource;
                 this.m_mat = new Mat(new Size(m_frameDescription.Width, m_frameDescription.Height), this.m_matType);
-
-
 
             }
             m_cameraSpacePoints = new CameraSpacePoint[m_frameDescription.Width * m_frameDescription.Height];
@@ -146,25 +144,17 @@ public class KinectImporter : ASensorImporter
 
         if (IsArchive)
         {
-            //try
-            //{
+
             if (m_readdata.IsRead)
             {
-                m_mapper.MapDepthFrameToCameraSpace(m_readdata.ReadDepthData, m_cameraSpacePoints);
+
+                Merge(m_readdata.ReadDepthData, m_depthData);
 
             }
-            //}
-            //catch
-            //{
 
-            //}
 
         }
-        else
-        {
-            m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
-
-        }
+        m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
 
         if (Miwalab.ShadowGroup.Core.ApplicationSettings.CurrentMode == Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia3D)
         {
@@ -282,6 +272,21 @@ public class KinectImporter : ASensorImporter
 
 
 
+    }
+
+    unsafe private static void Merge(ushort[] from, ushort[] dest)
+    {
+        fixed (ushort* _data1 = &from[0])
+        fixed (ushort* _dest = &dest[0])
+        {
+            for (int i = 0; i < dest.Length; i++)
+            {
+                if (from[i] < dest[i] && from[i] != 0)
+                {
+                    dest[i] = from[i];
+                }
+            }
+        }
     }
 
     public override void setUpUI()
