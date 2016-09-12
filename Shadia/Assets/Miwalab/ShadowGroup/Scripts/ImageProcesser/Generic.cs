@@ -78,6 +78,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         HandsTo,
 
         /// <summary>
+        /// 手動かすやつ（B5河野）
+        /// </summary>
+        HandElbow,
+
+
+
+
+        /// <summary>
         /// 個数を数えるためのもの．消したら処刑
         /// </summary>
         Count,

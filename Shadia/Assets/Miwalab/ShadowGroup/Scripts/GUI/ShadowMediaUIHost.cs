@@ -155,6 +155,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingParticleVector(m_PanelDictionary[ImageProcesserType.ParticleVector.ToString()]);
         this.CreateUIsImageporcessingAttraction(m_PanelDictionary[ImageProcesserType.Attraction.ToString()]);
         this.CreateUIsImageporcessingHandsTo(m_PanelDictionary[ImageProcesserType.HandsTo.ToString()]);
+        this.CreateUIsImageporcessingHandElbow(m_PanelDictionary[ImageProcesserType.HandElbow.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
     }
 
@@ -218,6 +219,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.HandsTo:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new HandsTo()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.HandsTo.ToString()];
+                break;
+            case ImageProcesserType.HandElbow:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new HandElbow()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.HandElbow.ToString()];
                 break;
             case ImageProcesserType.EachMoveParticle:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.EachMoveParticle()));
@@ -441,6 +446,28 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Attraction_ctl", 1, 0, 0.1f);
         AddFloatUI(parent, "Attraction_deleteTh", 640, 0, 500);
         AddFloatUI(parent, "Attraction_Rate", 40, 1, 6);
+
+    }
+
+    private void CreateUIsImageporcessingHandElbow(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "HandElbow_con_R", 255, 0, 0);
+        AddFloatUI(parent, "HandElbow_con_G", 255, 0, 0);
+        AddFloatUI(parent, "HandElbow_con_B", 255, 0, 200);
+        AddFloatUI(parent, "HandElbow_rot_S", 3, -3 ,0);
+        AddFloatUI(parent, "HandElbow_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "HandElbow_bgd_B", 255, 0, 0);
+        AddFloatUI(parent, "HandElbow_Rate", 150, 50, 50);
+        AddBooleanUI(parent, "HandElbow_UseFade", false);
+        AddFloatUI(parent, "HandElbow_CtlRate", 3, -3, 0);
+        m_lastUpdatedHeight += 10;
+        
+        AddButtonUI(parent, "HandElbow_CC_Blue");
+        AddButtonUI(parent, "HandElbow_CC_Orange");
+        AddButtonUI(parent, "HandElbow_CC_Yellow");
+        AddButtonUI(parent, "HandElbow_CC_Pink");
+        AddButtonUI(parent, "HandElbow_CC_Green");
 
     }
 

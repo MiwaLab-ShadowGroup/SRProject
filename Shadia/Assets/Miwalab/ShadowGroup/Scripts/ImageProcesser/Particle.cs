@@ -182,7 +182,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                             p.lifeTimeFrame = this.lifeTimeFrame;
 
-
+                            
                             this.List_particle.Add(p);
 
                         }
