@@ -457,18 +457,19 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "HandElbow_con_B", 255, 0, 200);
         AddFloatUI(parent, "HandElbow_rot_S", 3, -3 ,0);
         AddFloatUI(parent, "HandElbow_bgd_G", 255, 0, 0);
-        AddFloatUI(parent, "HandElbow_bgd_B", 255, 0, 0);
+        AddFloatUI(parent, "HandElbow_bodyThick", 1, 0, 1);
         AddFloatUI(parent, "HandElbow_Rate", 150, 50, 50);
         AddBooleanUI(parent, "HandElbow_UseFade", false);
+        AddBooleanUI(parent, "HandElbow_UseExa", false);
         AddFloatUI(parent, "HandElbow_CtlRate", 3, -3, 0);
         m_lastUpdatedHeight += 10;
-        
+        /*
         AddButtonUI(parent, "HandElbow_CC_Blue");
         AddButtonUI(parent, "HandElbow_CC_Orange");
         AddButtonUI(parent, "HandElbow_CC_Yellow");
         AddButtonUI(parent, "HandElbow_CC_Pink");
         AddButtonUI(parent, "HandElbow_CC_Green");
-
+        */
     }
 
 

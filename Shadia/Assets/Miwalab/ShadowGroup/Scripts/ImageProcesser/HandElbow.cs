@@ -67,17 +67,23 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         //Mat transBack;
         //int[,,] scaleM;
         List<List<BoneMat>> List_BoneMat = new List<List<BoneMat>>();
-        Dictionary<Kinect.JointType, Point> BoneDictionary = new Dictionary<Kinect.JointType, Point>();
-        List<Dictionary<Kinect.JointType, Point>> List_BoneDictionary = new List<Dictionary<Kinect.JointType, Point>>();
-        List<Dictionary<Kinect.JointType, Point>> List_preBoneDictionary = new List<Dictionary<Kinect.JointType, Point>>();
+        //Dictionary<Kinect.JointType, Point> BoneDictionary = new Dictionary<Kinect.JointType, Point>();
+        //List<Dictionary<Kinect.JointType, Point>> List_BoneDictionary = new List<Dictionary<Kinect.JointType, Point>>();
+        //List<Dictionary<Kinect.JointType, Point>> List_preBoneDictionary = new List<Dictionary<Kinect.JointType, Point>>();
+
+        Dictionary<Kinect.JointType, double> BoneRads = new Dictionary<Kinect.JointType, double>();
+        List<Dictionary<Kinect.JointType, double>> List_BoneRads = new List<Dictionary<Kinect.JointType, double>>();
 
         Dictionary<Kinect.JointType, Point> MoveMatDictionary = new Dictionary<Kinect.JointType, Point>();
         List<Dictionary<Kinect.JointType, Point>> List_moveMat = new List<Dictionary<Kinect.JointType, Point>>();
 
         DepthBody[] preBodyData ;
+        double boneRad;
+        float bodyThick;
+        int targetContNum;
 
-
-
+        double count = 0;
+        bool useExa;
 
         public HandElbow() : base()
         {
@@ -86,29 +92,31 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("HandElbow_con_B") as ParameterSlider).ValueChanged += HandElbow_con_B_ValueChanged;
             (ShadowMediaUIHost.GetUI("HandElbow_rot_S") as ParameterSlider).ValueChanged += HandElbow_rot_S_ValueChanged;
             (ShadowMediaUIHost.GetUI("HandElbow_bgd_G") as ParameterSlider).ValueChanged += HandElbow_bgd_G_ValueChanged;
-            (ShadowMediaUIHost.GetUI("HandElbow_bgd_B") as ParameterSlider).ValueChanged += HandElbow_bgd_B_ValueChanged;
+            (ShadowMediaUIHost.GetUI("HandElbow_bodyThick") as ParameterSlider).ValueChanged += HandElbow_bodyThick_ValueChanged;
             (ShadowMediaUIHost.GetUI("HandElbow_Rate") as ParameterSlider).ValueChanged += HandElbow_Rate_ValueChanged;
             (ShadowMediaUIHost.GetUI("HandElbow_CtlRate") as ParameterSlider).ValueChanged += HandElbow_CtlRate_ValueChanged;
             (ShadowMediaUIHost.GetUI("HandElbow_UseFade") as ParameterCheckbox).ValueChanged += HandElbow_UseFade_ValueChanged;
-
+            (ShadowMediaUIHost.GetUI("HandElbow_UseExa") as ParameterCheckbox).ValueChanged += HandElbow_UseExa_ValueChanged;
+            /*
             (ShadowMediaUIHost.GetUI("HandElbow_CC_Blue") as ParameterButton).Clicked += HandElbow_CC_Blue_Clicked;
             (ShadowMediaUIHost.GetUI("HandElbow_CC_Orange") as ParameterButton).Clicked += HandElbow_CC_Orange_Clicked;
             (ShadowMediaUIHost.GetUI("HandElbow_CC_Yellow") as ParameterButton).Clicked += HandElbow_CC_Yellow_Clicked;
             (ShadowMediaUIHost.GetUI("HandElbow_CC_Pink") as ParameterButton).Clicked += HandElbow_CC_Pink_Clicked;
             (ShadowMediaUIHost.GetUI("HandElbow_CC_Green") as ParameterButton).Clicked += HandElbow_CC_Green_Clicked;
-
+            */
 
             (ShadowMediaUIHost.GetUI("HandElbow_con_R") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("HandElbow_con_G") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("HandElbow_con_B") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("HandElbow_rot_S") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("HandElbow_bgd_G") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("HandElbow_bgd_B") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("HandElbow_bodyThick") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("HandElbow_Rate") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("HandElbow_CtlRate") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("HandElbow_UseFade") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("HandElbow_UseExa") as ParameterCheckbox).ValueUpdate();
         }
-
+        /*
         private void HandElbow_CC_Green_Clicked(object sender, EventArgs e)
         {
             (ShadowMediaUIHost.GetUI("HandElbow_con_R") as ParameterSlider).m_slider.value = 0;
@@ -143,10 +151,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("HandElbow_con_G") as ParameterSlider).m_slider.value = 255;
             (ShadowMediaUIHost.GetUI("HandElbow_con_B") as ParameterSlider).m_slider.value = 255;
         }
-
+        */
         private void HandElbow_UseFade_ValueChanged(object sender, EventArgs e)
         {
             this.m_UseFade = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+        }
+
+        private void HandElbow_UseExa_ValueChanged(object sender, EventArgs e)
+        {
+            this.useExa = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
         private void HandElbow_Rate_ValueChanged(object sender, EventArgs e)
@@ -189,9 +202,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         }
 
-        private void HandElbow_bgd_B_ValueChanged(object sender, EventArgs e)
+        private void HandElbow_bodyThick_ValueChanged(object sender, EventArgs e)
         {
-            this.colorBack.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
+            this.bodyThick = (float)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
@@ -209,6 +222,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             //this.nearElbow.Clear();
             this.contour_Center.Clear();
             this.bodyContList.Clear();
+            this.List_BoneRads.Clear();
+
+
 
             if (m_buffer == null)
             {
@@ -230,7 +246,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             {
                 preBodyData = BodyDataOnDepthImage;
             }
-
+            //if (count > 2 * Math.PI) count = 0;
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
             Cv2.MedianBlur(grayimage, grayimage, 21);
             //dstMat = new Mat(dst.Height, dst.Width, MatType.CV_8UC4,colorBack);
@@ -281,21 +297,37 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             for (int i = 0; i < BodyData.Length; i++)
             {
-                bodyConts.Clear();
-                BoneDictionary.Clear();
+                this.bodyConts.Clear();
+                this.BoneRads.Clear();
                 if (BodyData[i].IsTracked)
                 {
-                    //Boneの位置情報リスト作成
-                    for (int j = 0; j < _TrackigBoneList.Count; j++)
-                    {
+                    //Boneの角度情報リスト作成   spinebase基準 全部で9箇所
+                    if (BodyData[i].Joints[Kinect.JointType.ElbowLeft].Position != null && BodyData[i].Joints[Kinect.JointType.WristLeft].Position != null && BodyData[i].Joints[Kinect.JointType.ShoulderLeft].Position != null)
+                        BoneRads.Add(Kinect.JointType.ElbowLeft, GetBoneRad(i, Kinect.JointType.WristLeft, Kinect.JointType.ElbowLeft));
+                    //if (BodyData[i].Joints[Kinect.JointType.ShoulderLeft].Position != null && BodyData[i].Joints[Kinect.JointType.ElbowLeft].Position != null && BodyData[i].Joints[Kinect.JointType.SpineMid].Position != null && BodyData[i].Joints[Kinect.JointType.SpineBase].Position != null)
+                    //    BoneRads.Add(Kinect.JointType.ShoulderLeft, GetBoneRad(i, Kinect.JointType.ElbowLeft, Kinect.JointType.SpineMid));
+                    //if (BodyData[i].Joints[Kinect.JointType.ElbowRight].Position != null && BodyData[i].Joints[Kinect.JointType.WristRight].Position != null && BodyData[i].Joints[Kinect.JointType.ShoulderRight].Position != null)
+                    //    BoneRads.Add(Kinect.JointType.ElbowRight, GetBoneRad(i, Kinect.JointType.WristRight, Kinect.JointType.ElbowRight));
+                    //if (BodyData[i].Joints[Kinect.JointType.ShoulderRight].Position != null && BodyData[i].Joints[Kinect.JointType.ElbowRight].Position != null && BodyData[i].Joints[Kinect.JointType.SpineMid].Position != null && BodyData[i].Joints[Kinect.JointType.SpineBase].Position != null)
+                    //    BoneRads.Add(Kinect.JointType.ShoulderRight, GetBoneRad(i, Kinect.JointType.ElbowRight, Kinect.JointType.SpineMid));
+                    //if (BodyData[i].Joints[Kinect.JointType.Neck].Position != null && BodyData[i].Joints[Kinect.JointType.Head].Position != null && BodyData[i].Joints[Kinect.JointType.SpineMid].Position != null && BodyData[i].Joints[Kinect.JointType.SpineBase].Position != null)
+                    //    BoneRads.Add(Kinect.JointType.Neck, GetBoneRad(i, Kinect.JointType.Head, Kinect.JointType.SpineMid));
 
-                        BoneDictionary.Add(_TrackigBoneList[j], JointToDepthPoint(i, _TrackigBoneList[j]));
-                    }
-                    this.List_BoneDictionary.Add(new Dictionary<Windows.Kinect.JointType, Point>(BoneDictionary));
+                    //if (BodyData[i].Joints[Kinect.JointType.KneeLeft].Position != null && BodyData[i].Joints[Kinect.JointType.AnkleLeft].Position != null && BodyData[i].Joints[Kinect.JointType.SpineBase].Position != null)
+                    //    BoneRads.Add(Kinect.JointType.KneeLeft, GetBoneRad(i, Kinect.JointType.AnkleLeft, Kinect.JointType.KneeLeft));
+                    //if (BodyData[i].Joints[Kinect.JointType.KneeLeft].Position != null && BodyData[i].Joints[Kinect.JointType.SpineMid].Position != null && BodyData[i].Joints[Kinect.JointType.SpineBase].Position != null)
+                    //    BoneRads.Add(Kinect.JointType.HipLeft, GetBoneRad(i, Kinect.JointType.KneeLeft, Kinect.JointType.SpineBase)); //便宜上HIPを使う　spineBaseだと名前が被る
+                    //if (BodyData[i].Joints[Kinect.JointType.KneeRight].Position != null && BodyData[i].Joints[Kinect.JointType.AnkleRight].Position != null && BodyData[i].Joints[Kinect.JointType.SpineBase].Position != null)
+                    //    BoneRads.Add(Kinect.JointType.KneeRight, GetBoneRad(i, Kinect.JointType.AnkleRight, Kinect.JointType.KneeRight));
+                    //if (BodyData[i].Joints[Kinect.JointType.KneeRight].Position != null && BodyData[i].Joints[Kinect.JointType.SpineMid].Position != null && BodyData[i].Joints[Kinect.JointType.SpineBase].Position != null)
+                    //    BoneRads.Add(Kinect.JointType.HipRight, GetBoneRad(i, Kinect.JointType.KneeRight, Kinect.JointType.SpineBase)); //便宜上HIPを使う　spineBaseだと名前が被る
+
+                    //if (BodyData[i].Joints[Kinect.JointType.SpineBase].Position != null && BodyData[i].Joints[Kinect.JointType.SpineMid].Position != null )
+                    //    BoneRads.Add(Kinect.JointType.SpineBase, GetBoneRad(i,Kinect.JointType.SpineBase));//軸の回転角度
+                    this.List_BoneRads.Add(new Dictionary<Kinect.JointType, double>(BoneRads));
 
 
-
-
+                    
                     //トラッキングされているボーンにつき最も近い輪郭点群を探し番号を取得
                     for (int j = 0; j < this.contour_Center.Count; j++)
                     {
@@ -320,6 +352,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                         {
                             toBoneLength = PointsLength(JointToDepthPoint(i, this._BoneMap[this._BoneKeyTable[m]]) - this.List_Contours[contNumBuf][k] + JointToDepthPoint(i, this._BoneKeyTable[m]) - this.List_Contours[contNumBuf][k]);
 
+                            if (this._BoneKeyTable[m] == Kinect.JointType.SpineBase) toBoneLength *= bodyThick;
                             if (toBoneMin > toBoneLength)
                             {
                                 toBoneMin = toBoneLength;
@@ -336,74 +369,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                 }
             }
-
-            //ボーンごとの変換行列を作成    拡大＝一度原点に戻すしかない？と仮定
-            for (int i = 0; i < this.List_preBoneDictionary.Count; i++)
-            {
-                Mat preMat;
-
-
-                float[,] transMatArr = {{ 1,0, -JointToDepthPoint(i, Kinect.JointType.SpineBase).X -   this.List_preBoneDictionary[i][Kinect.JointType.SpineBase].X },
-                                        { 0,1, -JointToDepthPoint(i, Kinect.JointType.SpineBase).Y -   this.List_preBoneDictionary[i][Kinect.JointType.SpineBase].Y },
-                                        { 0,0,1 }};
-                Mat transMat = new Mat(3, 3, MatType.CV_32FC1, transMatArr);
-
-                float scaleRate = PointsLength(JointToDepthPoint(i, Kinect.JointType.SpineBase), JointToDepthPoint(i, Kinect.JointType.SpineMid)) /
-                                  PointsLength(this.List_preBoneDictionary[i][Kinect.JointType.SpineBase], this.List_preBoneDictionary[i][Kinect.JointType.SpineMid]);
-                float[,] scaleMatArr = { { scaleRate  ,0, 0   },
-                                         { 0,scaleRate, 0 },
-                                         { 0,0,1 } };
-                Mat scaleMat = new Mat(3, 3, MatType.CV_32FC1, scaleMatArr);
-
-
-                float[,] goOriMatArr = { {1,0, -this.List_preBoneDictionary[i][Kinect.JointType.SpineBase].X },
-                                         {0,1, -this.List_preBoneDictionary[i][Kinect.JointType.SpineBase].Y },
-                                         {0,0,1 } };
-                Mat goOriMat = new Mat(3, 3, MatType.CV_32FC1, goOriMatArr);
-
-                float[,] backOriMatArr = { {1,0,this.List_preBoneDictionary[i][Kinect.JointType.SpineBase].X  },
-                                           {0,1,this.List_preBoneDictionary[i][Kinect.JointType.SpineBase].Y  },
-                                           {0,0,1 } };
-                Mat backOriMat = new Mat(3, 3, MatType.CV_32FC1, backOriMatArr);
-
-                //内積から角度を計算
-                double boneRad = Math.Acos( (double) ( (JointToDepthPoint(i, Kinect.JointType.SpineMid).X - JointToDepthPoint(i,Kinect.JointType.SpineBase).X) * (this.List_preBoneDictionary[i][Kinect.JointType.SpineMid].X - this.List_preBoneDictionary[i][Kinect.JointType.SpineBase].X) +
-                                                       (JointToDepthPoint(i, Kinect.JointType.SpineMid).Y - JointToDepthPoint(i,Kinect.JointType.SpineBase).Y) * (this.List_preBoneDictionary[i][Kinect.JointType.SpineMid].Y - this.List_preBoneDictionary[i][Kinect.JointType.SpineBase].Y)  )/
-                                                       PointsLength(JointToDepthPoint(i, Kinect.JointType.SpineMid), JointToDepthPoint(i, Kinect.JointType.SpineBase)) * PointsLength(this.List_preBoneDictionary[i][Kinect.JointType.SpineMid], this.List_preBoneDictionary[i][Kinect.JointType.SpineBase]));
-
-                //det = ax * by - ay * bx = - or +  どっち向きかの判断
-                if ((JointToDepthPoint(i, Kinect.JointType.SpineMid).X - JointToDepthPoint(i,Kinect.JointType.SpineBase).X) * (this.List_preBoneDictionary[i][Kinect.JointType.SpineMid].X - this.List_preBoneDictionary[i][Kinect.JointType.SpineBase].X) -
-                    (JointToDepthPoint(i, Kinect.JointType.SpineMid).Y - JointToDepthPoint(i,Kinect.JointType.SpineBase).Y) * (this.List_preBoneDictionary[i][Kinect.JointType.SpineMid].Y - this.List_preBoneDictionary[i][Kinect.JointType.SpineBase].Y) < 0)
-                {
-                    boneRad *= -1;
-                }
-
-                float[,] rotMatArr = { { (float)Math.Cos(boneRad), (float)-Math.Sin(boneRad),0 },
-                                       { (float)Math.Sin(boneRad), (float)Math.Cos(boneRad),0  },
-                                       {0,0,1 } };
-                Mat rotMat = new Mat(3, 3, MatType.CV_32FC1, rotMatArr);
-
-                //  順番 <----  　　完全に一致　<- 平行移動　<- 元の場所へもどす　<- 回転＋拡大縮小　<- 原点へ移動
-                preMat = transMat * backOriMat * rotMat * scaleMat * goOriMat;
-
-            }
-
-
-
-
-            //行列変換
-            //scaleMat = eyeMat;
-
-            //rotMat = eyeMat;
-            //rotMat.Set<float>(0, 0, (float)Math.Cos(ctlRate));
-            //rotMat.Set<float>(0, 0, (float)-Math.Sin(ctlRate));
-            //rotMat.Set<float>(1, 0, (float)Math.Cos(ctlRate));
-            //rotMat.Set<float>(1, 1, (float)Math.Cos(ctlRate));
-
-            //transMat = eyeMat;
-
-            //transGo = eyeMat;
-            //transGo.Set<float>(0,2,JointToDepthPoint(this.bodyContList[0][0].bodyNum),)
+                        
 
             for (int i = 0; i < this.contour_Center.Count; i++)
             {
@@ -417,12 +383,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             for (int i = 0; i < bodyContList.Count; i++)
             {
                 Cv2.Line(m_buffer, JointToDepthPoint(this.bodyContList[i][0].bodyNum, Windows.Kinect.JointType.SpineBase), this.contour_Center[this.bodyContList[i][0].contourNum], new Scalar(255, 200, 100));
-
                 this.CvPoints.Clear();
+
+                //入れ替える対象のナンバー
+                targetContNum = i + 1;
+                if (targetContNum == List_BoneRads.Count) targetContNum = 0;
 
                 preMat = GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowLeft, rotShoulder);
                 for (int j = 0; j < this.bodyContList[i].Count; j++)  //順番
                 {
+                    
+
                     //ひじと手を動かす
                     if (bodyContList[i][j].nearJt1 == Windows.Kinect.JointType.ElbowLeft)
                     {
@@ -432,25 +403,19 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     }
                     if (bodyContList[i][j].nearJt1 == Windows.Kinect.JointType.WristLeft)
                     {
-                        bodyContList[i][j].center = ContourRotate(bodyContList[i][j], ctlRate, preMat);
+                        //bodyContList[i][j].center = ContourRotate(bodyContList[i][j], ctlRate, preMat);
+                        bodyContList[i][j].center = ContourRotate(bodyContList[i][j], List_BoneRads[targetContNum][Kinect.JointType.ElbowLeft] - List_BoneRads[i][Kinect.JointType.ElbowLeft], preMat);
+                        //bodyContList[i][j].center = ContourRotate(bodyContList[i][j], List_BoneRads[i]"←あやしい"[Windows.Kinect.JointType.ElbowLeft] - List_BoneRads[i]"←あやしい"[Windows.Kinect.JointType.ElbowLeft], preMat);
+
+
+                        if (useExa == true)  //遊び
+                        {
+                            bodyContList[i][j].center = ContourRotate(bodyContList[i][j], count * ctlRate, preMat);
+                        }
                         //Cv2.Circle(m_buffer, ContourRotate(bodyContList[i][j], ctlRate), 5, new Scalar(255, 255, 0), 2);
                     }
 
-
-                    //各ボーンの動きを速める
-                    if (List_preBoneDictionary[i] != null)
-                    {
-                        bodyContList[i][j].center += bodyContList[i][j].center - List_preBoneDictionary[i][bodyContList[i][j].nearJt1];
-
-
-                    }
-
-
-
-
-
-
-
+                    
 
                     this.CvPoints.Add(bodyContList[i][j].center);
                 }
@@ -471,9 +436,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             dst += m_buffer;
             this.List_Contours_Buffer = this.List_Contours;
-            this.List_preBoneDictionary = this.List_BoneDictionary;
             preBodyData = BodyDataOnDepthImage;
-
+            //count += 0.01;
             //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
 
         }
@@ -495,6 +459,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             { Windows.Kinect.JointType.ElbowRight, Windows.Kinect.JointType.ShoulderRight },
             { Windows.Kinect.JointType.SpineBase, Windows.Kinect.JointType.SpineMid },
             { Windows.Kinect.JointType.Head, Windows.Kinect.JointType.Neck },
+
+            { Windows.Kinect.JointType.SpineMid, Windows.Kinect.JointType.SpineBase },
         };
 
         //全部で10本の骨として考える　handではなくwrist, footではなくankleを使用 spineBaseがkey  /Headがkey
@@ -742,7 +708,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
 
             float[,] rotMatArr = { { (float)Math.Cos(boneRad), (float)-Math.Sin(boneRad),0 },
-                                   { (float)Math.Sin(boneRad), (float)Math.Cos(boneRad),0  },
+                                   { (float)Math.Sin(boneRad), (float) Math.Cos(boneRad),0  },
                                    {0, 0, 1 } };
             Mat rotMat = new Mat(3, 3, MatType.CV_32FC1, rotMatArr);
 
@@ -751,23 +717,70 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             
         }
 
+        public double GetBoneRad(int bodyNum, Kinect.JointType farJt, Kinect.JointType pivotJt, Kinect.JointType nearJt)
+        {
+            //内積から角度を計算
+           
+            double boneRad = Math.Acos(((JointToDepthPoint(bodyNum, farJt).X - JointToDepthPoint(bodyNum, pivotJt).X) * (JointToDepthPoint(bodyNum, pivotJt).X - JointToDepthPoint(bodyNum, nearJt).X) +
+                                        (JointToDepthPoint(bodyNum, farJt).Y - JointToDepthPoint(bodyNum, pivotJt).Y) * (JointToDepthPoint(bodyNum, pivotJt).Y - JointToDepthPoint(bodyNum, nearJt).Y)) /
+                                          PointsLength(JointToDepthPoint(bodyNum, farJt), JointToDepthPoint(bodyNum, pivotJt)) / PointsLength(JointToDepthPoint(bodyNum, pivotJt), JointToDepthPoint(bodyNum, nearJt)));
+
+            //det = ax * by - ay * bx = - or +  どっち向きかの判断
+            if ((JointToDepthPoint(bodyNum, farJt).X - JointToDepthPoint(bodyNum, pivotJt).X) * (JointToDepthPoint(bodyNum, pivotJt).Y - JointToDepthPoint(bodyNum, nearJt).Y) -
+                (JointToDepthPoint(bodyNum, farJt).Y - JointToDepthPoint(bodyNum, pivotJt).Y) * (JointToDepthPoint(bodyNum, pivotJt).X - JointToDepthPoint(bodyNum, nearJt).X) < 0)
+            {
+                boneRad *= -1;   // これで左曲がりがマイナス　右曲がりがプラス
+            }
+            return boneRad;
+        }
+
+        public double GetBoneRad(int bodyNum, Kinect.JointType farJtTop,  Kinect.JointType nearJtTop)
+        {
+            //内積から角度を計算
+
+            double boneRad = Math.Acos(((JointToDepthPoint(bodyNum, farJtTop).X - JointToDepthPoint(bodyNum, _BoneMap[farJtTop]).X) * (JointToDepthPoint(bodyNum, nearJtTop).X - JointToDepthPoint(bodyNum, _BoneMap[nearJtTop]).X) +
+                                        (JointToDepthPoint(bodyNum, farJtTop).Y - JointToDepthPoint(bodyNum, _BoneMap[farJtTop]).Y) * (JointToDepthPoint(bodyNum, nearJtTop).Y - JointToDepthPoint(bodyNum, _BoneMap[nearJtTop]).Y)) /
+                                          PointsLength(JointToDepthPoint(bodyNum, farJtTop), JointToDepthPoint(bodyNum, _BoneMap[farJtTop])) / PointsLength(JointToDepthPoint(bodyNum, nearJtTop), JointToDepthPoint(bodyNum, _BoneMap[nearJtTop])));
+
+            //det = ax * by - ay * bx = - or +  どっち向きかの判断
+            if ((JointToDepthPoint(bodyNum, farJtTop).X - JointToDepthPoint(bodyNum, _BoneMap[farJtTop]).X) * (JointToDepthPoint(bodyNum, nearJtTop).Y - JointToDepthPoint(bodyNum, _BoneMap[nearJtTop]).Y) -
+                (JointToDepthPoint(bodyNum, farJtTop).Y - JointToDepthPoint(bodyNum, _BoneMap[farJtTop]).Y) * (JointToDepthPoint(bodyNum, nearJtTop).X - JointToDepthPoint(bodyNum, _BoneMap[nearJtTop]).X) < 0)
+            {
+                boneRad *= -1;   // これで左曲がりがマイナス　右曲がりがプラス
+            }
+            return boneRad;
+        }
+
+        public double GetBoneRad(int bodyNum, Kinect.JointType baseJtTop)
+        {
+            //内積から角度を計算  (0,-1 ) との内積を求める
+
+            double baseRad = Math.Acos((-(JointToDepthPoint(bodyNum, baseJtTop).Y - JointToDepthPoint(bodyNum, _BoneMap[baseJtTop]).Y)) /
+                                          PointsLength(JointToDepthPoint(bodyNum, baseJtTop), JointToDepthPoint(bodyNum, _BoneMap[baseJtTop])));
+
+            //det = ax * by - ay * bx = - or +  どっち向きかの判断
+            //det = 0 * by - (-1)* bx = bx
+            if ( JointToDepthPoint(bodyNum, baseJtTop).X - JointToDepthPoint(bodyNum, _BoneMap[baseJtTop]).X  < 0)
+            {
+                baseRad *= -1;   // これで左曲がりがマイナス　右曲がりがプラス
+            }
+            return baseRad;
+        }
+
+        /*
+        private Windows.Kinect.JointType FindNearJoint1(Point pt , int bodyNum)
+        {
+            for(     
+
+            p1madenokyori = pt
+                 this.List_Contours[j][k] - JointToDepthPoint(i, _BoneMap[keyList[m]]) + this.List_Contours[j][k] - JointToDepthPoint(i, keyList[m]);
+                                if ()
 
 
 
-/*
-private Windows.Kinect.JointType FindNearJoint1(Point pt , int bodyNum)
-{
-    for(     
-
-    p1madenokyori = pt
-         this.List_Contours[j][k] - JointToDepthPoint(i, _BoneMap[keyList[m]]) + this.List_Contours[j][k] - JointToDepthPoint(i, keyList[m]);
-                        if ()
-
-
-
-            return jt;
-}
-*/
+                    return jt;
+        }
+        */
 
 
         public class BodyContor   //すべての輪郭点のクラス
