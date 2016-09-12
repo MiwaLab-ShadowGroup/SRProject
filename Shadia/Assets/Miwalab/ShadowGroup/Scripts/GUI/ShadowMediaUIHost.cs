@@ -193,7 +193,11 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingHandsTo(m_PanelDictionary[ImageProcesserType.HandsTo.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
         this.CreateUIsImageporcessingFlowParticlesShadow(m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()]);
+        this.CreateUIsImageporcessingPainterShadow(m_PanelDictionary[ImageProcesserType.PainterShadow.ToString()]);
+
     }
+
+    
 
     public void ChangeImageProcessingOptionTo(int number)
     {
@@ -263,6 +267,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.FlowParticlesShadow:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.FlowParticlesShadow()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()];
+                break;
+            case ImageProcesserType.PainterShadow:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.PainterShadow()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.PainterShadow.ToString()];
                 break;
             case ImageProcesserType.CellAutomaton:
                 break;
@@ -379,6 +387,11 @@ public class ShadowMediaUIHost : MonoBehaviour
     }
     #region createUIMethods
 
+    private void CreateUIsImageporcessingPainterShadow(GameObject gameObject)
+    {
+        m_lastUpdatedHeight = 0;
+        
+    }
 
     private void CreateUIsArchiveSave(GameObject parent)
     {
