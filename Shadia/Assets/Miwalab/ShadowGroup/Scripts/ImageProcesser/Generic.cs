@@ -82,6 +82,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         HandElbow,
 
+        /// <summary>
+        /// 線が出るやつ（B5河野）
+        /// </summary>
+        Electrical,
+
 
 
 

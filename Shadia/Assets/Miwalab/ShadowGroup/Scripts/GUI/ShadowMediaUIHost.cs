@@ -154,6 +154,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingParticle2D(m_PanelDictionary[ImageProcesserType.Particle2D.ToString()]);
         this.CreateUIsImageporcessingParticleVector(m_PanelDictionary[ImageProcesserType.ParticleVector.ToString()]);
         this.CreateUIsImageporcessingAttraction(m_PanelDictionary[ImageProcesserType.Attraction.ToString()]);
+        this.CreateUIsImageporcessingElectrical(m_PanelDictionary[ImageProcesserType.Electrical.ToString()]);
         this.CreateUIsImageporcessingHandsTo(m_PanelDictionary[ImageProcesserType.HandsTo.ToString()]);
         this.CreateUIsImageporcessingHandElbow(m_PanelDictionary[ImageProcesserType.HandElbow.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
@@ -215,6 +216,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.Attraction:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Attraction()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Attraction.ToString()];
+                break;
+            case ImageProcesserType.Electrical:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Electrical()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Electrical.ToString()];
                 break;
             case ImageProcesserType.HandsTo:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new HandsTo()));
@@ -449,6 +454,22 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     }
 
+    private void CreateUIsImageporcessingElectrical(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Electrical_con_R", 255, 0, 0);
+        AddFloatUI(parent, "Electrical_con_G", 255, 0, 0);
+        AddFloatUI(parent, "Electrical_con_B", 255, 0, 200);
+        AddFloatUI(parent, "Electrical_bgd_R", 255, 0, 255);
+        AddFloatUI(parent, "Electrical_bgd_G", 255, 0, 255);
+        AddFloatUI(parent, "Electrical_bgd_B", 255, 0, 255);
+        AddFloatUI(parent, "Electrical_ctl", 1, 0, 0.1f);
+        AddFloatUI(parent, "Electrical_deleteTh", 500, 0, 50);
+        AddFloatUI(parent, "Electrical_Rate", 100, 5, 50);
+        AddBooleanUI(parent, "Electrical_UseFade", true);
+
+    }
+
     private void CreateUIsImageporcessingHandElbow(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
@@ -456,12 +477,15 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "HandElbow_con_G", 255, 0, 0);
         AddFloatUI(parent, "HandElbow_con_B", 255, 0, 200);
         AddFloatUI(parent, "HandElbow_rot_S", 3, -3 ,0);
-        AddFloatUI(parent, "HandElbow_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "HandElbow_rot_B", 3, -3, 0);
         AddFloatUI(parent, "HandElbow_bodyThick", 1, 0, 1);
         AddFloatUI(parent, "HandElbow_Rate", 150, 50, 50);
         AddBooleanUI(parent, "HandElbow_UseFade", false);
         AddBooleanUI(parent, "HandElbow_UseExa", false);
+        AddBooleanUI(parent, "HandElbow_UseBec", false);
+        AddBooleanUI(parent, "HandElbow_UseAtt", false);
         AddFloatUI(parent, "HandElbow_CtlRate", 3, -3, 0);
+        AddFloatUI(parent, "HandElbow_speedRate", 50, -50, 10);
         m_lastUpdatedHeight += 10;
         /*
         AddButtonUI(parent, "HandElbow_CC_Blue");
