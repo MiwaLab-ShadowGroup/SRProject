@@ -86,7 +86,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// 線が出るやつ（B5河野）
         /// </summary>
         Electrical,
-
+        /// <summary>
+        /// 輪郭線のやつ（B5河野）
+        /// </summary>
+        Canny,
 
 
 

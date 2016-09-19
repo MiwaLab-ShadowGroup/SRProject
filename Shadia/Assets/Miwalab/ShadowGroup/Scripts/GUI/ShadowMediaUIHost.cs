@@ -157,6 +157,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingElectrical(m_PanelDictionary[ImageProcesserType.Electrical.ToString()]);
         this.CreateUIsImageporcessingHandsTo(m_PanelDictionary[ImageProcesserType.HandsTo.ToString()]);
         this.CreateUIsImageporcessingHandElbow(m_PanelDictionary[ImageProcesserType.HandElbow.ToString()]);
+        this.CreateUIsImageporcessingCanny(m_PanelDictionary[ImageProcesserType.Canny.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
     }
 
@@ -229,12 +230,17 @@ public class ShadowMediaUIHost : MonoBehaviour
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new HandElbow()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.HandElbow.ToString()];
                 break;
+            case ImageProcesserType.Canny:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Canny()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Canny.ToString()];
+                break;
             case ImageProcesserType.EachMoveParticle:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.EachMoveParticle()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()];
                 break;
             case ImageProcesserType.CellAutomaton:
                 break;
+
         }
         this.SwitchOffOtherPanelsExceptOf(this.m_currentImageProcesserSettingPanel);
 
@@ -487,13 +493,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "HandElbow_CtlRate", 3, -3, 0);
         AddFloatUI(parent, "HandElbow_speedRate", 50, -50, 10);
         m_lastUpdatedHeight += 10;
-        /*
-        AddButtonUI(parent, "HandElbow_CC_Blue");
-        AddButtonUI(parent, "HandElbow_CC_Orange");
-        AddButtonUI(parent, "HandElbow_CC_Yellow");
-        AddButtonUI(parent, "HandElbow_CC_Pink");
-        AddButtonUI(parent, "HandElbow_CC_Green");
-        */
+    
     }
 
 
@@ -552,6 +552,27 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddButtonUI(parent, "Polygon_CC_Yellow");
         AddButtonUI(parent, "Polygon_CC_Pink");
         AddButtonUI(parent, "Polygon_CC_Green");
+
+    }
+    private void CreateUIsImageporcessingCanny(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Canny_con_R", 255, 0, 0);
+        AddFloatUI(parent, "Canny_con_G", 255, 0, 0);
+        AddFloatUI(parent, "Canny_con_B", 255, 0, 200);
+        AddFloatUI(parent, "Canny_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "Canny_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "Canny_bgd_B", 255, 0, 0);
+        AddFloatUI(parent, "Canny_Rate", 100, 1, 50);
+        AddFloatUI(parent, "Canny_Speed", 20, 1, 1);
+        AddBooleanUI(parent, "Canny_UseFade", true);
+        m_lastUpdatedHeight += 10;
+
+        AddButtonUI(parent, "Canny_CC_Blue");
+        AddButtonUI(parent, "Canny_CC_Orange");
+        AddButtonUI(parent, "Canny_CC_Yellow");
+        AddButtonUI(parent, "Canny_CC_Pink");
+        AddButtonUI(parent, "Canny_CC_Green");
 
     }
 
