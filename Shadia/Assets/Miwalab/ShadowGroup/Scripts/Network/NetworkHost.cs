@@ -51,6 +51,11 @@ namespace Miwalab.ShadowGroup.Network
 
         public void AddClient(int port, string tag)
         {
+            if (m_clientList.ContainsKey(tag))
+            {
+                Debug.Log("tag:" + tag +"は存在します．");
+                return;
+            }
             if (m_portList.Contains(port))
             {
                 ++port;
@@ -72,6 +77,11 @@ namespace Miwalab.ShadowGroup.Network
             return;
         }
 
+        public void AddClient(NetworkSettings.NetworkSetting setting)
+        {
+            this.AddClient(setting.PORT, setting.TAG);
+        }
+
         /// <summary>
         /// Response などで用いる
         /// </summary>
@@ -84,8 +94,13 @@ namespace Miwalab.ShadowGroup.Network
                 return;
             }
             this.m_clientList[tag].SendRemote(data);
-
         }
+
+        public void SendRemote(NetworkSettings.NetworkSetting setting, byte[] data)
+        {
+            this.SendRemote(setting.TAG, data);
+        }
+
         /// <summary>
         /// 送りたい先にデータをぶんなげる
         /// </summary>
@@ -99,6 +114,11 @@ namespace Miwalab.ShadowGroup.Network
             }
             this.m_clientList[tag].SendTo(data,to);
         }
+        public void SendTo(NetworkSettings.NetworkSetting setting, byte[] data,IPEndPoint to)
+        {
+            this.SendTo(setting.TAG, data, to);
+        }
+
         /// <summary>
         /// 複数の送信先にデータを投げる
         /// </summary>
@@ -113,6 +133,11 @@ namespace Miwalab.ShadowGroup.Network
             }
             this.m_clientList[tag].SendTo(data, to);
         }
+        
+        public void SendTo(NetworkSettings.NetworkSetting setting, byte[] data, List<IPEndPoint> to)
+        {
+            this.SendTo(setting.TAG, data, to);
+        }
 
         public void RemoveClient(string tag)
         {
@@ -123,6 +148,11 @@ namespace Miwalab.ShadowGroup.Network
             this.m_clientList[tag].Close();
             this.m_clientList.Remove(tag);
         }
+        public void RemoveClient(NetworkSettings.NetworkSetting setting)
+        {
+            this.RemoveClient(setting.TAG);
+        }
+
 
         public Client GetClient(string tag)
         {
@@ -132,6 +162,10 @@ namespace Miwalab.ShadowGroup.Network
                 return null;
             }
             return this.m_clientList[tag];
+        }
+        public Client GetClient(NetworkSettings.NetworkSetting setting)
+        {
+            return this.GetClient(setting.TAG);
         }
 
         public byte[] Receive(string tag)
@@ -143,6 +177,11 @@ namespace Miwalab.ShadowGroup.Network
             }
             return this.m_clientList[tag].Receive();
         }
+        public byte[] Receive(NetworkSettings.NetworkSetting setting)
+        {
+            return Receive(setting.TAG);
+        }
+
         public byte[] Receive(string tag, ref int available)
         {
             if (!this.m_clientList.ContainsKey(tag))
@@ -152,7 +191,10 @@ namespace Miwalab.ShadowGroup.Network
             }
             return this.m_clientList[tag].Receive(ref available);
         }
-
+        public byte[] Receive(NetworkSettings.NetworkSetting setting, ref int available)
+        {
+            return Receive(setting.TAG, ref available);
+        }
 
         public void Reset()
         {
