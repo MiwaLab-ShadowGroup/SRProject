@@ -78,6 +78,22 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         HandsTo,
 
         /// <summary>
+        /// 手動かすやつ（B5河野）
+        /// </summary>
+        HandElbow,
+
+        /// <summary>
+        /// 線が出るやつ（B5河野）
+        /// </summary>
+        Electrical,
+        /// <summary>
+        /// 輪郭線のやつ（B5河野）
+        /// </summary>
+        Canny,
+
+
+
+        /// <summary>
         /// 一定方向に流れるパーティクル
         /// </summary>
         FlowParticlesShadow,

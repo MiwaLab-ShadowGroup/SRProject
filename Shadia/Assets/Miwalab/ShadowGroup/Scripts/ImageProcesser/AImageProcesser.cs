@@ -116,7 +116,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
 
         }
-
+       
     }
     public abstract class AShadowImageProcesser : AImageProcesser
     {
