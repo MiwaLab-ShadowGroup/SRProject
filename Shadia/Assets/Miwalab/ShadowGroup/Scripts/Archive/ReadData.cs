@@ -30,15 +30,20 @@ public class ReadData : MonoBehaviour
 
     void Start()
     {
-        (ShadowMediaUIHost.GetUI("ChooseFile") as ParameterButton).Clicked += ChooseFile_Clicked;
-        (ShadowMediaUIHost.GetUI("PlayStart") as ParameterButton).Clicked += PlayStart_Clicked;
-        (ShadowMediaUIHost.GetUI("Pause") as ParameterCheckbox).ValueChanged += Pause_ValueChanged;
-        (ShadowMediaUIHost.GetUI("Pause") as ParameterCheckbox).ValueUpdate();
+        (ShadowMediaUIHost.GetUI("ACV_ChooseFile") as ParameterButton).Clicked += ChooseFile_Clicked;
+        (ShadowMediaUIHost.GetUI("ACV_PlayStart") as ParameterButton).Clicked += PlayStart_Clicked;
+        (ShadowMediaUIHost.GetUI("ACV_Pause") as ParameterCheckbox).ValueChanged += Pause_ValueChanged;
+        //(ShadowMediaUIHost.GetUI("ACV_Robot") as ParameterCheckbox).ValueChanged += Pause_ValueChanged;
+
+
+        (ShadowMediaUIHost.GetUI("ACV_Pause") as ParameterCheckbox).ValueUpdate();
+        //(ShadowMediaUIHost.GetUI("ACV_Robot") as ParameterCheckbox).ValueUpdate();
+
 
         this.ReadDepthData = new ushort[512 * 424];
 
         this.FpsAd = new FPSAdjuster.FPSAdjuster();
-        this.FpsAd.Fps = 30;
+        this.FpsAd.Fps = 20;
         this.FpsAd.Start();
 
         playmat = new Mat(new Size(512, 424), MatType.CV_16U);
@@ -74,11 +79,9 @@ public class ReadData : MonoBehaviour
 
     void ReadDepth()
     {
-        //unsafe
-        //{
+        
         try
         {
-
             while (true)
             {
                 if (!PausePlay)
@@ -86,19 +89,14 @@ public class ReadData : MonoBehaviour
 
                     this.FpsAd.Adjust();
 
-                    //ushort* ptr = (ushort*)playmat.Data;
-
                     this.time = reader.ReadString();
                     this.datalength = this.reader.ReadInt32();
-
-
 
                     for (int i = 0; i < datalength; ++i)
                     {
                         this.ReadDepthData[i] = this.reader.ReadUInt16();
 
                     }
-
 
 
                     if (reader.PeekChar() == -1)
@@ -114,10 +112,6 @@ public class ReadData : MonoBehaviour
         {
 
         }
-
-
-        // }
-
 
     }
 

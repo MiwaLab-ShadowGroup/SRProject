@@ -8,6 +8,7 @@ using Miwalab.ShadowGroup.Scripts.Sensors;
 using Miwalab.ShadowGroup.Scripts.Callibration;
 using Miwalab.ShadowGroup.AfterEffect;
 using Miwalab.ShadowGroup.Archive;
+using System.Text.RegularExpressions;
 
 public class ShadowMediaUIHost : MonoBehaviour
 {
@@ -38,6 +39,40 @@ public class ShadowMediaUIHost : MonoBehaviour
         }
         m_ParameterUI.Clear();
 
+    }
+
+    public static void LoadAllSettings()
+    {
+        string str = "";
+        OpenFileDialog.OpenFileDialog.Read(ref str);
+        if (str == "")
+        {
+            return;
+        }
+
+        Miwalab.ShadowGroup.Data.UIParameterDocument UIPD = new Miwalab.ShadowGroup.Data.UIParameterDocument();
+        UIPD.Load(str);
+        UIPD.SetParameter(GetInstance());
+    }
+
+    public static void SaveAllSettings()
+    {
+        string str = "";
+        OpenFileDialog.OpenFileDialog.Save(ref str);
+        if (str == "")
+        {
+            return;
+        }
+        Regex reg = new Regex(@"\.SAS$");
+        if (!reg.IsMatch(str))
+        {
+            str += ".SAS";
+        }
+
+
+        Miwalab.ShadowGroup.Data.UIParameterDocument UIPD = new Miwalab.ShadowGroup.Data.UIParameterDocument();
+        UIPD.SetupField(GetInstance());
+        UIPD.Save(str);
     }
     #endregion
 
@@ -128,6 +163,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
         this.CreateUIsArchiveSave(m_PanelDictionary[ArchiveSettingType.Save.ToString()]);
         this.CreateUIsArchivePlay(m_PanelDictionary[ArchiveSettingType.Play.ToString()]);
+        this.CreateUIsArchiveRobot(m_PanelDictionary[ArchiveSettingType.Robot.ToString()]);
 
 
         this.m_meshrenderer.ForEach(p => p.SetUpUIs());
@@ -159,6 +195,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingHandElbow(m_PanelDictionary[ImageProcesserType.HandElbow.ToString()]);
         this.CreateUIsImageporcessingCanny(m_PanelDictionary[ImageProcesserType.Canny.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
+        this.CreateUIsImageporcessingFlowParticlesShadow(m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()]);
     }
 
     public void ChangeImageProcessingOptionTo(int number)
@@ -237,6 +274,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.EachMoveParticle:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.EachMoveParticle()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()];
+                break;
+            case ImageProcesserType.FlowParticlesShadow:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.FlowParticlesShadow()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()];
                 break;
             case ImageProcesserType.CellAutomaton:
                 break;
@@ -326,6 +367,12 @@ public class ShadowMediaUIHost : MonoBehaviour
                 this.m_currentArchiveSettingPanel = this.m_PanelDictionary[ArchiveSettingType.Play.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentArchiveSettingPanel);
                 break;
+
+            case ArchiveSettingType.Robot:
+                //一回作って使いまわす
+                this.m_currentArchiveSettingPanel = this.m_PanelDictionary[ArchiveSettingType.Robot.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentArchiveSettingPanel);
+                break;
         }
 
     }
@@ -364,9 +411,22 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsArchivePlay(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddButtonUI(parent, "ChooseFile");
-        AddButtonUI(parent, "PlayStart");
-        AddBooleanUI(parent, "Pause", false);
+        AddButtonUI(parent, "ACV_ChooseFile");
+        AddButtonUI(parent, "ACV_PlayStart");
+        AddBooleanUI(parent, "ACV_Pause", false);
+        AddBooleanUI(parent, "ACV_Robot", false);
+
+    }
+    private void CreateUIsArchiveRobot(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddButtonUI(parent, "ChooseRobotFile");
+        AddButtonUI(parent, "PlayRobotStart");
+        AddBooleanUI(parent, "RobotSet", false);
+
+        AddFloatUI(parent, "RobotOffset_X", 8, -8, 0);
+        AddFloatUI(parent, "RobotOffset_Y", 3, -3, 0);
+        AddFloatUI(parent, "RobotOffset_Z", 15, -15, 0);
 
     }
 
@@ -411,10 +471,24 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "EMP_VK", 5, -5, 0);
         m_lastUpdatedHeight += 5;
         AddBooleanUI(parent, "EMP_ColorUse", true);
+    }
 
+    private void CreateUIsImageporcessingFlowParticlesShadow(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "FP_Num_Init", 10000, 1000, 1000);
+        AddFloatUI(parent, "FP_Size_Max", 20, -1, 1);
+        AddFloatUI(parent, "FP_Size_Min", 20, -1, 0);
+        AddFloatUI(parent, "FP_Max_V", 20, 0, 0.1f);
+        m_lastUpdatedHeight += 5;
+        AddBooleanUI(parent, "FP_ColorUse", true);
+        m_lastUpdatedHeight += 5;
+        AddFloatUI(parent, "FP_Force_X", 1, -1, 0);
+        AddFloatUI(parent, "FP_Force_Y", 1, -1, 0);
 
 
     }
+
 
     private void CreateUIsImageporcessingParticleVector(GameObject parent)
     {

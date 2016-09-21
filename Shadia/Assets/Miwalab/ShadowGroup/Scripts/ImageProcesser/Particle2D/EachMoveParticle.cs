@@ -171,10 +171,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 {
 
 
-                    this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-0.1f, 0.1f), UnityEngine.Random.Range(-0.1f, 0.1f)));
+                    //this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-0.1f, 0.1f), UnityEngine.Random.Range(-0.1f, 0.1f)));
                     //this.m_particleList[i].AddForce(new UnityEngine.Vector2((this.m_currentCenter.x - this.m_pastCenter.x) / 10, (this.m_currentCenter.y - this.m_pastCenter.y) / 10));
                     this.m_particleList[i].AddForce(this.m_particleList[i].Vellocity * -0.01f);
-                    this.m_particleList[i].GraduallyChangeColorTo(Scalar.White, 0.02f);
+                    //this.m_particleList[i].GraduallyChangeColorTo(Scalar.White, 0.02f);
                     this.m_particleList[i].Update();
                     this.m_particleList[i].CutOffVellocity(MaxVellocity);
                     this.m_particleList[i].DeadCheck(size.Width, size.Height);

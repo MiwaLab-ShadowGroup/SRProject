@@ -33,7 +33,10 @@ public class KinectImporter : ASensorImporter
 
     public bool IsDepthStream { get; private set; }
 
-
+    #region 3D
+    public BodyImage3D BodyImage3D;
+    public CameraMatAttacher CameraAttacher;
+    #endregion
     //public ColorSourceManager _colormanager;
     //ColorImageFormat colorImageFormat;
     //ColorFrameReader colorFrameReader;
@@ -45,17 +48,17 @@ public class KinectImporter : ASensorImporter
     //public Mat Colorimagemat;
 
     #region 送信用
-    private NetworkHost m_networkHost;
-    private ThreadHost m_threadHost;
-    private bool m_isGettingData = false;
-    private float m_gettingPlaneHeight = 0;
-    private float m_gettingHeightDiff = 0.01f;
-    private const string clientName = "Importer_Sender";
-    private HumanPoints m_HumanCenterPositions;
-    private bool m_IsUpdatedSendData;
-    public TextAsset RemoteEPSettings;
-    private RemoteManager m_remoteManager;
-    private CameraSpacePoint m_kinectPosition = new CameraSpacePoint();
+    //private NetworkHost m_networkHost;
+    //private ThreadHost m_threadHost;
+    //private bool m_isGettingData = false;
+    //private float m_gettingPlaneHeight = 0;
+    //private float m_gettingHeightDiff = 0.01f;
+    //private const string clientName = "Importer_Sender";
+    //private HumanPoints m_HumanCenterPositions;
+    //private bool m_IsUpdatedSendData;
+    //public TextAsset RemoteEPSettings;
+    //private RemoteManager m_remoteManager;
+    //private CameraSpacePoint m_kinectPosition = new CameraSpacePoint();
 
     #endregion
 
@@ -77,8 +80,6 @@ public class KinectImporter : ASensorImporter
                 m_frameDescription = m_sensor.DepthFrameSource.FrameDescription;
                 m_depthFrameSource = m_sensor.DepthFrameSource;
                 this.m_mat = new Mat(new Size(m_frameDescription.Width, m_frameDescription.Height), this.m_matType);
-
-
 
             }
             m_cameraSpacePoints = new CameraSpacePoint[m_frameDescription.Width * m_frameDescription.Height];
@@ -102,13 +103,13 @@ public class KinectImporter : ASensorImporter
 
     private void InitializeNetwork()
     {
-        m_remoteManager = new RemoteManager(this.RemoteEPSettings);
-        m_HumanCenterPositions = new HumanPoints();
-        m_networkHost = NetworkHost.GetInstance();
-        m_networkHost.AddClient(NetworkSettings.KinectImporter_PositionSendPort, clientName);
-        m_threadHost = ThreadHost.GetInstance();
-        m_threadHost.CreateNewThread(new ContinuouslyThread(SendMethod), clientName);
-        m_threadHost.ThreadStart(clientName);
+        //m_remoteManager = new RemoteManager(this.RemoteEPSettings);
+        //m_HumanCenterPositions = new HumanPoints();
+        //m_networkHost = NetworkHost.GetInstance();
+        //m_networkHost.AddClient(NetworkSettings.KinectImporter_PositionSendPort, clientName);
+        //m_threadHost = ThreadHost.GetInstance();
+        //m_threadHost.CreateNewThread(new ContinuouslyThread(SendMethod), clientName);
+        //m_threadHost.ThreadStart(clientName);
 
     }
 
@@ -117,16 +118,16 @@ public class KinectImporter : ASensorImporter
     /// </summary>
     private void SendMethod()
     {
-        if (m_IsUpdatedSendData == true)
-        {
-            byte[] data = this.m_HumanCenterPositions.getData();
-            if (data == null)
-            {
-                return;
-            }
-            m_networkHost.SendTo(clientName, data, m_remoteManager.RemoteEPs);
-            this.m_IsUpdatedSendData = false;
-        }
+        //if (m_IsUpdatedSendData == true)
+        //{
+        //    byte[] data = this.m_HumanCenterPositions.getData();
+        //    if (data == null)
+        //    {
+        //        return;
+        //    }
+        //    m_networkHost.SendTo(clientName, data, m_remoteManager.RemoteEPs);
+        //    this.m_IsUpdatedSendData = false;
+        //}
     }
 
     // Update is called once per frame
@@ -143,113 +144,112 @@ public class KinectImporter : ASensorImporter
 
         if (IsArchive)
         {
-            //try
-            //{
+
             if (m_readdata.IsRead)
             {
-                m_mapper.MapDepthFrameToCameraSpace(m_readdata.ReadDepthData, m_cameraSpacePoints);
+
+                Merge(m_readdata.ReadDepthData, m_depthData);
 
             }
-            //}
-            //catch
-            //{
 
-            //}
 
+        }
+        m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
+
+        if (Miwalab.ShadowGroup.Core.ApplicationSettings.CurrentMode == Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia3D)
+        {
+            this.BodyImage3D.SetupVertices(m_cameraSpacePoints);
+            this.CameraAttacher.Attach(ref m_mat);
         }
         else
         {
-            m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
 
-        }
-        
-
-        List<CameraSpacePoint> points = new List<CameraSpacePoint>();
-        List<int> counts = new List<int>();
-        //接続しているか否かのフラグ
-        bool _flag = false;
-        unsafe
-        {
-            byte* data = (byte*)m_mat.Data;
-            int length = this.m_depthData.Length * 3;
-            CameraSpacePoint _point;
-            int _count;
-            for (int i = 0; i < length; i += 3)
+            //List<CameraSpacePoint> points = new List<CameraSpacePoint>();
+            //List<int> counts = new List<int>();
+            //接続しているか否かのフラグ
+            //bool _flag = false;
+            unsafe
             {
-                CameraSpacePoint point = this.m_cameraSpacePoints[i / 3];
-                if (point.X > m_left && point.X < m_right && point.Y > m_bottom && point.Y < m_top && point.Z > m_rear && point.Z < m_front)
+                byte* data = (byte*)m_mat.Data;
+                int length = this.m_depthData.Length * 3;
+                //CameraSpacePoint _point;
+                //int _count;
+                for (int i = 0; i < length; i += 3)
                 {
-                    if (IsDepthStream)
+                    CameraSpacePoint point = this.m_cameraSpacePoints[i / 3];
+                    if (point.X > m_left && point.X < m_right && point.Y > m_bottom && point.Y < m_top && point.Z > m_rear && point.Z < m_front)
                     {
-                        byte s = (byte)(point.Z / 8f * 255);
-                        data[i] = s;
-                        data[i + 1] = s;
-                        data[i + 2] = s;
-                    }
-                    else
-                    {
-                        data[i] = 255;
-                        data[i + 1] = 255;
-                        data[i + 2] = 255;
-                    }
-                    //断面取得
-                    #region 断面
-                    if (this.m_isGettingData)
-                    {
-                        if (point.Y > m_gettingPlaneHeight && point.Y < m_gettingPlaneHeight + m_gettingHeightDiff)
+                        if (IsDepthStream)
                         {
-                            if (_flag == false)
-                            {
-                                points.Add(point);
-                                counts.Add(0);
-                            }
-                            _count = counts[counts.Count - 1];
-                            _point = points[points.Count - 1];
-                            point.X = ((point.X + m_kinectPosition.X) + _point.X * _count) / (_count + 1);
-                            point.Y = ((point.Y + m_kinectPosition.Y) + _point.Y * _count) / (_count + 1);
-                            point.Z = ((point.Z + m_kinectPosition.Z) + _point.Z * _count) / (_count + 1);
-                            points[points.Count - 1] = point;
-                            counts[counts.Count - 1]++;
-
-                            _flag = true;
+                            byte s = (byte)(point.Z / 8f * 255);
+                            data[i] = s;
+                            data[i + 1] = s;
+                            data[i + 2] = s;
                         }
                         else
                         {
-                            _flag = false;
+                            data[i] = 255;
+                            data[i + 1] = 255;
+                            data[i + 2] = 255;
                         }
+                        //断面取得
+                        #region 断面
+                        //if (this.m_isGettingData)
+                        //{
+                        //    if (point.Y > m_gettingPlaneHeight && point.Y < m_gettingPlaneHeight + m_gettingHeightDiff)
+                        //    {
+                        //        if (_flag == false)
+                        //        {
+                        //            points.Add(point);
+                        //            counts.Add(0);
+                        //        }
+                        //        _count = counts[counts.Count - 1];
+                        //        _point = points[points.Count - 1];
+                        //        point.X = ((point.X + m_kinectPosition.X) + _point.X * _count) / (_count + 1);
+                        //        point.Y = ((point.Y + m_kinectPosition.Y) + _point.Y * _count) / (_count + 1);
+                        //        point.Z = ((point.Z + m_kinectPosition.Z) + _point.Z * _count) / (_count + 1);
+                        //        points[points.Count - 1] = point;
+                        //        counts[counts.Count - 1]++;
+
+                        //        _flag = true;
+                        //    }
+                        //    else
+                        //    {
+                        //        _flag = false;
+                        //    }
+                        //}
+                        #endregion
                     }
-                    #endregion
+                    else
+                    {
+                        data[i] = 0;
+                        data[i + 1] = 0;
+                        data[i + 2] = 0;
+                    }
                 }
-                else
-                {
-                    data[i] = 0;
-                    data[i + 1] = 0;
-                    data[i + 2] = 0;
-                }
+
+                //if (_colormanager == null)
+                //{
+                //    Debug.Log("null");
+                //    return;
+                //}
+                //byte* colormatdata = (byte*)Colorimagemat.Data;
+                //int colorlength = 1920 * 1080 * 3;
+                //for (int i = 0; i < colorlength; i += 3)
+                //{
+
+                //    colormatdata[i] = colordata[i];
+                //    colormatdata[i + 1] = colordata[i + 1];
+                //    colormatdata[i + 2] = colordata[i + 2];
+
+                //}
+
+
             }
-
-            //if (_colormanager == null)
-            //{
-            //    Debug.Log("null");
-            //    return;
-            //}
-            //byte* colormatdata = (byte*)Colorimagemat.Data;
-            //int colorlength = 1920 * 1080 * 3;
-            //for (int i = 0; i < colorlength; i += 3)
-            //{
-
-            //    colormatdata[i] = colordata[i];
-            //    colormatdata[i + 1] = colordata[i + 1];
-            //    colormatdata[i + 2] = colordata[i + 2];
-
-            //}
-
-
         }
 
-
-        this.m_HumanCenterPositions.setData(points);
-        this.m_IsUpdatedSendData = true;
+        //this.m_HumanCenterPositions.setData(points);
+        //this.m_IsUpdatedSendData = true;
 
 
         //if (readdata.IsRead)
@@ -274,6 +274,21 @@ public class KinectImporter : ASensorImporter
 
     }
 
+    unsafe private static void Merge(ushort[] from, ushort[] dest)
+    {
+        fixed (ushort* _data1 = &from[0])
+        fixed (ushort* _dest = &dest[0])
+        {
+            for (int i = 0; i < dest.Length; i++)
+            {
+                if (from[i] < dest[i] && from[i] != 0)
+                {
+                    dest[i] = from[i];
+                }
+            }
+        }
+    }
+
     public override void setUpUI()
     {
         (ShadowMediaUIHost.GetUI("Kinect_x_min") as ParameterSlider).ValueChanged += KinectImporter_x_min_ValueChanged;
@@ -284,12 +299,12 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueChanged += KinectImporter_z_max_ValueChanged;
 
 
-        (ShadowMediaUIHost.GetUI("Kinect_pos_x") as ParameterSlider).ValueChanged += KinectImporter_pos_x_ValueChanged;
-        (ShadowMediaUIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueChanged += KinectImporter_pos_y_ValueChanged;
-        (ShadowMediaUIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueChanged += KinectImporter_pos_z_ValueChanged;
+        //(ShadowMediaUIHost.GetUI("Kinect_pos_x") as ParameterSlider).ValueChanged += KinectImporter_pos_x_ValueChanged;
+        //(ShadowMediaUIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueChanged += KinectImporter_pos_y_ValueChanged;
+        //(ShadowMediaUIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueChanged += KinectImporter_pos_z_ValueChanged;
 
-        (ShadowMediaUIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueChanged += KinectImporter_Cut_y_ValueChanged;
-        (ShadowMediaUIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueChanged += KinectImporter_Cut_diff_ValueChanged;
+        //(ShadowMediaUIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueChanged += KinectImporter_Cut_y_ValueChanged;
+        //(ShadowMediaUIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueChanged += KinectImporter_Cut_diff_ValueChanged;
 
         (ShadowMediaUIHost.GetUI("Archive") as ParameterCheckbox).ValueChanged += KinectImporter_ValueChanged;
 
@@ -328,30 +343,30 @@ public class KinectImporter : ASensorImporter
         this.IsArchive = (e as ParameterCheckbox.ChangedValue).Value;
     }
 
-    private void KinectImporter_pos_x_ValueChanged(object sender, EventArgs e)
-    {
-        this.m_kinectPosition.X = (e as ParameterSlider.ChangedValue).Value;
-    }
+    //private void KinectImporter_pos_x_ValueChanged(object sender, EventArgs e)
+    //{
+    //    this.m_kinectPosition.X = (e as ParameterSlider.ChangedValue).Value;
+    //}
 
-    private void KinectImporter_pos_y_ValueChanged(object sender, EventArgs e)
-    {
-        this.m_kinectPosition.Y = (e as ParameterSlider.ChangedValue).Value;
-    }
+    //private void KinectImporter_pos_y_ValueChanged(object sender, EventArgs e)
+    //{
+    //    this.m_kinectPosition.Y = (e as ParameterSlider.ChangedValue).Value;
+    //}
 
-    private void KinectImporter_pos_z_ValueChanged(object sender, EventArgs e)
-    {
-        this.m_kinectPosition.Z = (e as ParameterSlider.ChangedValue).Value;
-    }
+    //private void KinectImporter_pos_z_ValueChanged(object sender, EventArgs e)
+    //{
+    //    this.m_kinectPosition.Z = (e as ParameterSlider.ChangedValue).Value;
+    //}
 
-    private void KinectImporter_Cut_diff_ValueChanged(object sender, EventArgs e)
-    {
-        this.m_gettingHeightDiff = (e as ParameterSlider.ChangedValue).Value;
-    }
+    //private void KinectImporter_Cut_diff_ValueChanged(object sender, EventArgs e)
+    //{
+    //    this.m_gettingHeightDiff = (e as ParameterSlider.ChangedValue).Value;
+    //}
 
-    private void KinectImporter_Cut_y_ValueChanged(object sender, EventArgs e)
-    {
-        this.m_gettingPlaneHeight = (e as ParameterSlider.ChangedValue).Value;
-    }
+    //private void KinectImporter_Cut_y_ValueChanged(object sender, EventArgs e)
+    //{
+    //    this.m_gettingPlaneHeight = (e as ParameterSlider.ChangedValue).Value;
+    //}
 
     private void KinectImporter_x_min_ValueChanged(object sender, EventArgs e)
     {

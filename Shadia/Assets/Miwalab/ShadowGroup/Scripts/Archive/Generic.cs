@@ -11,6 +11,8 @@ namespace Miwalab.ShadowGroup.Archive
 
         Play,
 
+        Robot,
+
         Count,
     }
 }
