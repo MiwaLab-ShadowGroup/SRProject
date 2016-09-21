@@ -11,16 +11,24 @@ public class RemoteShadowImageManager : MonoBehaviour
     NetworkHost _nHost;
     ThreadHost _tHost;
 
-    Mat mat;
-    string _RemoteIP;
+    #region　send
+    Mat _SendMat;
+    string _RemoteIP = "127.0.0.1";
     int _RemotePort;
     IPEndPoint _IPEndPoint;
+    #endregion
+
+    #region receive
+    Mat _ReceivedMat;
+    #endregion
 
     bool _IsSend = false;
     bool _IsReceive = false;
 
-    public readonly NetworkSettings.NetworkSetting SENDID= NetworkSettings.SETTINGS.RemoteShadowImageManager_Sender;
-    public readonly NetworkSettings.NetworkSetting RECEIVEID= NetworkSettings.SETTINGS.RemoteShadowImageManager_Receiver;
+    #region ID
+    public readonly NetworkSettings.NetworkSetting SENDID = NetworkSettings.SETTINGS.RemoteShadowImageManager_Sender;
+    public readonly NetworkSettings.NetworkSetting RECEIVEID = NetworkSettings.SETTINGS.RemoteShadowImageManager_Receiver;
+    #endregion
     // Use this for initialization
     void Start()
     {
@@ -36,17 +44,35 @@ public class RemoteShadowImageManager : MonoBehaviour
 
         _tHost.CreateNewThread(new ContinuouslyThread(
             () => this.ReceiveMethod()
-            ), SENDID.TAG);
+            ), RECEIVEID.TAG);
 
 
         _IPEndPoint = new IPEndPoint(IPAddress.Parse(_RemoteIP), _RemotePort);
+    }
+
+    public void SetIPAddress(string ipAddress)
+    {
+        _IPEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), _RemotePort);
     }
 
     private void ReceiveMethod()
     {
         if (_IsReceive)
         {
-            _nHost.Receive(RECEIVEID);
+            try
+            {
+                int available = 0;
+                byte[] data = _nHost.Receive(RECEIVEID, ref available);
+                _ReceivedMat = Cv2.ImDecode(data, OpenCvSharp.LoadMode.Color);
+
+
+                float time = Time.deltaTime;
+
+            }
+            catch
+            {
+
+            }
         }
     }
 
@@ -54,8 +80,25 @@ public class RemoteShadowImageManager : MonoBehaviour
     {
         if (_IsSend)
         {
-            _nHost.SendTo(SENDID, mat.ToBytes(".png"), _IPEndPoint);
+            try
+            {
+                _nHost.SendTo(SENDID, _SendMat.ToBytes(".png"), _IPEndPoint);
+            }
+            catch
+            {
+
+            }
         }
+    }
+
+    public void SetIsSend(bool value)
+    {
+        _IsSend = value;
+    }
+
+    public void SetIsReceive(bool value)
+    {
+        _IsReceive = value;
     }
 
     // Update is called once per frame
