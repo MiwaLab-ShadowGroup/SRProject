@@ -563,8 +563,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Canny_bgd_R", 255, 0, 0);
         AddFloatUI(parent, "Canny_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "Canny_bgd_B", 255, 0, 0);
-        AddFloatUI(parent, "Canny_Rate", 100, 1, 50);
-        AddFloatUI(parent, "Canny_Speed", 20, 1, 1);
+        AddFloatUI(parent, "Canny_Rate", 200, 50, 100);
+        AddFloatUI(parent, "Canny_Speed", 1, 0.01f, 0.5f);
         AddBooleanUI(parent, "Canny_UseFade", true);
         m_lastUpdatedHeight += 10;
 
