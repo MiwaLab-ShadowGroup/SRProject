@@ -193,6 +193,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingElectrical(m_PanelDictionary[ImageProcesserType.Electrical.ToString()]);
         this.CreateUIsImageporcessingHandsTo(m_PanelDictionary[ImageProcesserType.HandsTo.ToString()]);
         this.CreateUIsImageporcessingHandElbow(m_PanelDictionary[ImageProcesserType.HandElbow.ToString()]);
+        this.CreateUIsImageporcessingMoveShadow(m_PanelDictionary[ImageProcesserType.MoveShadow.ToString()]);
         this.CreateUIsImageporcessingCanny(m_PanelDictionary[ImageProcesserType.Canny.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
         this.CreateUIsImageporcessingFlowParticlesShadow(m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()]);
@@ -266,6 +267,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.HandElbow:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new HandElbow()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.HandElbow.ToString()];
+                break;
+            case ImageProcesserType.MoveShadow:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new MoveShadow()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.MoveShadow.ToString()];
                 break;
             case ImageProcesserType.Canny:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Canny()));
@@ -558,8 +563,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "HandElbow_con_B", 255, 0, 200);
         AddFloatUI(parent, "HandElbow_rot_S", 3, -3 ,0);
         AddFloatUI(parent, "HandElbow_rot_B", 3, -3, 0);
-        AddFloatUI(parent, "HandElbow_bodyThick", 1, 0, 1);
-        AddFloatUI(parent, "HandElbow_Rate", 150, 50, 50);
+        AddFloatUI(parent, "HandElbow_bodyThick", 1, 0, 0.8f);
+        AddFloatUI(parent, "HandElbow_Rate", 21, 1, 5);
         AddBooleanUI(parent, "HandElbow_UseFade", false);
         AddBooleanUI(parent, "HandElbow_UseExa", false);
         AddBooleanUI(parent, "HandElbow_UseBec", false);
@@ -568,6 +573,25 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "HandElbow_speedRate", 50, -50, 10);
         m_lastUpdatedHeight += 10;
     
+    }
+    private void CreateUIsImageporcessingMoveShadow(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "MoveShadow_con_R", 255, 0, 0);
+        AddFloatUI(parent, "MoveShadow_con_G", 255, 0, 0);
+        AddFloatUI(parent, "MoveShadow_con_B", 255, 0, 200);
+        AddFloatUI(parent, "MoveShadow_rot_S", 3, -3, 0);
+        AddFloatUI(parent, "MoveShadow_rot_B", 3, -3, 0);
+        AddFloatUI(parent, "MoveShadow_bodyThick", 1, 0, 0.8f);
+        AddFloatUI(parent, "MoveShadow_Rate", 21, 1, 5);
+        AddBooleanUI(parent, "MoveShadow_UseFade", false);
+        AddBooleanUI(parent, "MoveShadow_UseSwp", false);
+        AddBooleanUI(parent, "MoveShadow_UseRot", false);
+        AddBooleanUI(parent, "MoveShadow_UseAtt", false);
+        AddFloatUI(parent, "MoveShadow_CtlRate", 3, -3, 0);
+        AddFloatUI(parent, "MoveShadow_speedRate", 50, -50, 10);
+        m_lastUpdatedHeight += 10;
+
     }
 
 
