@@ -5,6 +5,7 @@ using Miwalab.ShadowGroup.Thread;
 using System;
 using OpenCvSharp.CPlusPlus;
 using System.Net;
+using System.Threading;
 
 public class RemoteShadowImageManager : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class RemoteShadowImageManager : MonoBehaviour
 
     #region receive
     Mat _ReceivedMat;
+    AutoResetEvent _AutoResetEvent;
     #endregion
 
     bool _IsSend = false;
@@ -64,10 +66,7 @@ public class RemoteShadowImageManager : MonoBehaviour
                 int available = 0;
                 byte[] data = _nHost.Receive(RECEIVEID, ref available);
                 _ReceivedMat = Cv2.ImDecode(data, OpenCvSharp.LoadMode.Color);
-
-
-                float time = Time.deltaTime;
-
+                _AutoResetEvent.WaitOne();
             }
             catch
             {
@@ -104,6 +103,6 @@ public class RemoteShadowImageManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        _AutoResetEvent.Set();
     }
 }

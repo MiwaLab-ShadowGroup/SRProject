@@ -21,7 +21,10 @@ namespace Miwalab.ShadowGroup.Thread
         {
             while (IsContinue)
             {
-                this.m_method();
+                lock (SyncObject)
+                {
+                    this.m_method();
+                }
             }
         }
 
