@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Windows.Kinect;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
@@ -39,6 +40,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 particle.Position = new UnityEngine.Vector2(UnityEngine.Random.Range(0, 512), UnityEngine.Random.Range(0, 424));
                 this.m_particleList.Add(particle);
             }
+
         }
 
         private void BackRenderCamera_PV_Size_Min_ValueChanged(object sender, EventArgs e)
@@ -63,29 +65,35 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             return ImageProcesserType.ParticleVector;
         }
         Mat m_dst;
-        Vector2 m_currentCenter;
-        Vector2 m_pastCenter;
+
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
             var size = src.Size();
-
-            float CenterPositionX = 0;
-            float CenterPositionY = 0;
-            int counter = 0;
-
             m_dst = new Mat(size, MatType.CV_8UC3, new Scalar(0, 0, 0));
+            Vector3 vell = new Vector2(0,0);
+            foreach (var p in BodyDataOnDepthImage)
+            {
+                if (p.IsCaptured)
+                {
+                    if (p.JointDepth[Windows.Kinect.JointType.SpineBase].vellocity.magnitude < 1)
+                    {
+                        vell += p.JointDepth[Windows.Kinect.JointType.SpineBase].vellocity ;
+                    }
+                    m_dst.PutText(p.JointDepth[Windows.Kinect.JointType.SpineBase].ToString()
+                        , new Point(p.JointDepth[Windows.Kinect.JointType.SpineBase].position.x, p.JointDepth[Windows.Kinect.JointType.SpineBase].position.y)
+                        , OpenCvSharp.FontFace.HersheyPlain,
+                        1,
+                        new Scalar(255, 255, 255));
+                }
+            }
+
             unsafe
             {
                 byte* data = src.DataPointer;
                 for (int i = 0; i < this.m_particleList.Count; ++i)
                 {
-                    if(this.m_pastCenter.x ==0 && this.m_pastCenter.y == 0)
-                    {
-
-                        this.m_pastCenter.x = this.m_currentCenter.x;
-                        this.m_pastCenter.y = this.m_currentCenter.y;
-                    }
-                    this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-0.1f, 0.1f) + (this.m_currentCenter.x-this.m_pastCenter.x)/10, UnityEngine.Random.Range(-0.1f, 0.1f) + (this.m_currentCenter.y - this.m_pastCenter.y) / 10));
+                    //this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-0.1f, 0.1f) + (this.m_currentCenter.x-this.m_pastCenter.x)/10, UnityEngine.Random.Range(-0.1f, 0.1f) + (this.m_currentCenter.y - this.m_pastCenter.y) / 10));
+                    this.m_particleList[i].AddForce(vell);
                     this.m_particleList[i].AddForce(this.m_particleList[i].Vellocity * -0.01f);
                     this.m_particleList[i].Update();
                     //this.m_particleList[i].CutOffVellocity(MaxVellocity);
@@ -96,28 +104,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     {
                         continue;
                     }
-
                     if (data[index] > 100)
                     {
                         this.m_particleList[i].Size = MaxSize;
-                        CenterPositionX += this.m_particleList[i].Position.x;
-                        CenterPositionY += this.m_particleList[i].Position.y;
-                        ++counter;
                     }
                     else
                     {
                         this.m_particleList[i].Size = MinSize;
                     }
-                    
                     this.m_particleList[i].DrawShape(ref m_dst);
                 }
             }
-            m_dst.CopyTo(dst);
 
-            this.m_pastCenter.x = this.m_currentCenter.x;
-            this.m_pastCenter.y = this.m_currentCenter.y;
-            this.m_currentCenter.x = CenterPositionX / counter;
-            this.m_currentCenter.y = CenterPositionY / counter;
+            
+            m_dst.CopyTo(dst);
         }
         public override string ToString()
         {

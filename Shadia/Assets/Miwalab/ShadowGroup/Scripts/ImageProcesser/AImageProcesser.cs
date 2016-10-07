@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using UnityEngine;
 using Windows.Kinect;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
@@ -22,14 +23,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
     }
     public class Parameter
     {
-        public Parameter(ParameterType Type, string Name ,Object Value)
+        public Parameter(ParameterType Type, string Name, object Value)
         {
             this.Type = Type;
             this.Value = Value;
             this.Name = Name;
         }
         public ParameterType Type { set; get; }
-        public Object Value { set; get; }
+        public object Value { set; get; }
         public string Name { set; get; }
     }
 
@@ -38,35 +39,102 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         protected class DepthBody
         {
-            public struct DepthJoint
+            public class DepthJoint
             {
 
-                public DepthJoint(DepthSpacePoint dsp, TrackingState ts)
+                public DepthJoint(CameraSpacePoint dsp, TrackingState ts, KinectSensor sensor)
                 {
-                    position = dsp;
+                    InitializePosition = new Vector3(dsp.X, dsp.Y);
+                    localPosition = new Vector3(dsp.X, dsp.Y);
+                    vellocity = new Vector3(dsp.X, dsp.Y);
+                    acceleration = new Vector3(dsp.X, dsp.Y);
+                    vellocity_front = new Vector3(dsp.X, dsp.Y);
+                    position_front = new Vector3(dsp.X, dsp.Y);
                     state = ts;
+
+                    _sensor = sensor;
                 }
 
-                public DepthSpacePoint position;
+                private KinectSensor _sensor;
+                public Vector3 localPosition;
+                public Vector3 position
+                {
+                    get
+                    {
+                        CameraSpacePoint point = new CameraSpacePoint();
+                        point.X = localPosition.x;
+                        point.Y = localPosition.y;
+                        point.Z = localPosition.z;
+                        var position = _sensor.CoordinateMapper.MapCameraPointToDepthSpace(point);
+                        return new Vector3(
+                            position.X,
+                            position.Y
+                            );
+                    }
+                }
                 public TrackingState state;
+                public override string ToString()
+                {
+                    return vellocity.x + ", " + vellocity.y;
+                }
+
+                public Vector3 vellocity;
+                private Vector3 vellocity_front;
+                private Vector3 position_front;
+                public Vector3 acceleration;
+                public bool IsFirstFrame { set; get; }
+                public bool IsSecondFrame { set; get; }
+
+                public readonly Vector3 InitializePosition;
+
+                public void update(CameraSpacePoint dsp, TrackingState ts)
+                {
+                    localPosition = new Vector3(dsp.X, dsp.Y,dsp.Z);
+                    if (position_front != InitializePosition)
+                    {
+                        vellocity = localPosition - position_front;
+                        if (vellocity_front != InitializePosition)
+                        {
+                            acceleration = vellocity - vellocity_front;
+                        }
+                    }
+                    position_front = localPosition;
+                    vellocity_front = vellocity;
+                }
             }
-            private KinectSensor sensor;
-            public Dictionary<Windows.Kinect.JointType,DepthJoint> JointDepth { set; get; }
+
+
+            public bool IsCaptured
+            {
+                get
+                {
+                    return _body.IsTracked;
+                }
+            }
+            private KinectSensor _sensor;
+            private Body _body;
+            public Dictionary<Windows.Kinect.JointType, DepthJoint> JointDepth { set; get; }
             public DepthBody(Body body)
             {
-                sensor = Windows.Kinect.KinectSensor.GetDefault();
+                _sensor = Windows.Kinect.KinectSensor.GetDefault();
                 JointDepth = new Dictionary<JointType, DepthJoint>();
-                
-                foreach(var p in body.Joints)
+                _body = body;
+                foreach (var p in body.Joints)
                 {
 
-                    DepthJoint dj = new DepthJoint(sensor.CoordinateMapper.MapCameraPointToDepthSpace(  p.Value.Position), p.Value.TrackingState);
+                    DepthJoint dj = new DepthJoint(p.Value.Position, p.Value.TrackingState, _sensor);
 
                     JointDepth.Add(p.Key, dj);
                 }
-
-
             }
+            public void Update(Body body)
+            {
+                foreach (var p in body.Joints)
+                {
+                    JointDepth[p.Key].update(p.Value.Position, p.Value.TrackingState);
+                }
+            }
+
         }
 
         private Body[] bodydata;
@@ -89,7 +157,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         public abstract void ImageProcess(ref Mat src, ref Mat dst);
         public void SetBody(Body[] bodyData)
         {
-            if(bodyData == null)
+            if (bodyData == null)
             {
                 return;
             }
@@ -112,7 +180,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             for (int i = 0; i < bodydata.Length; ++i)
             {
-                depthBodyData[i] = new DepthBody(bodydata[i]);
+                if (depthBodyData[i] == null)
+                {
+                    depthBodyData[i] = new DepthBody(bodydata[i]);
+                }
+                else
+                {
+                    depthBodyData[i].Update(bodydata[i]);
+                }
             }
 
         }
