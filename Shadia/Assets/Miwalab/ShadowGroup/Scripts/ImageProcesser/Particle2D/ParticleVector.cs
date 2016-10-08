@@ -98,6 +98,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                         var p = this.m_particleList[i];
                         vell = this.BodyDataOnDepthImage[p.id].JointDepth[p.jointType].vellocity_upperCorrect;
                     }
+                    else
+                    {
+                        vell.Set(0, 0, 0);
+                    }
 
                     this.m_particleList[i].AddForce(vell);
                     this.m_particleList[i].AddForce(this.m_particleList[i].Vellocity * -0.01f);
