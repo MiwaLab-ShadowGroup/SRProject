@@ -106,10 +106,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     {
                         vell.Set(0, 0, 0);
                     }
-                    else
-                    {
-                        vell.Set(0, 0, 0);
-                    }
 
                     this.m_particleList[i].AddForce(vell);
                     this.m_particleList[i].AddForce(this.m_particleList[i].Vellocity * -0.01f);
