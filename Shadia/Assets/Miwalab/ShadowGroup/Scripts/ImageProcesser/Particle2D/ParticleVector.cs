@@ -31,7 +31,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (GUI.BackgroundMediaUIHost.GetUI("PV_Num_Init") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("PV_Reset") as ParameterButton).Clicked += ParticleVector_Clicked;
 
-            for (int i = 0; i < 2000; ++i)
+            for (int i = 0; i < ParticleNum; ++i)
             {
                 var particle = new TaggedCircleParticle();
                 particle.Size = 5;
@@ -93,10 +93,18 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 {
                     //this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-0.1f, 0.1f) + (this.m_currentCenter.x-this.m_pastCenter.x)/10, UnityEngine.Random.Range(-0.1f, 0.1f) + (this.m_currentCenter.y - this.m_pastCenter.y) / 10));
 
-                    if (this.m_particleList[i].Setupped)
+                    if (this.m_particleList[i].Setupped  && this.m_particleList[i].id != -1)
                     {
                         var p = this.m_particleList[i];
-                        vell = this.BodyDataOnDepthImage[p.id].JointDepth[p.jointType].vellocity_upperCorrect;
+                        vell = this.BodyDataOnDepthImage[p.id].JointDepth[p.jointType].vellocity_upperCorrect*2f;
+
+                        if(vell.magnitude > 1f)
+                        {
+                            vell.Set(0, 0, 0);
+                        }
+                    }else
+                    {
+                        vell.Set(0, 0, 0);
                     }
                     else
                     {
@@ -117,10 +125,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     if (data[index] > 100)
                     {
                         this.m_particleList[i].Size = MaxSize;
+                        this.m_particleList[i].GraduallyChangeColorTo(Scalar.White, 0.1);
                     }
                     else
                     {
                         this.m_particleList[i].Size = MinSize;
+                        this.m_particleList[i].GraduallyChangeColorTo(Scalar.Black, 0.02);
                     }
                     this.m_particleList[i].DrawShape(ref m_dst);
                 }
@@ -134,7 +144,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             for (int i = 0; i < this.m_particleList.Count; ++i)
             {
-                this.m_particleList[i].AutoReset(TaggedCircleParticle.ResetType.Simbolic, this.bodyIdList);
+                this.m_particleList[i].AutoReset(TaggedCircleParticle.ResetType.Only, this.bodyIdList);
             }
         }
 

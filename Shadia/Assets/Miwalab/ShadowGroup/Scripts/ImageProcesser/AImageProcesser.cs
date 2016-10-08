@@ -83,6 +83,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     }
                 }
 
+                public Vector3 acceleration_upperCorrect
+                {
+                    get
+                    {
+                        var temp = acceleration;
+                        temp.x *= -1f;
+                        return temp;
+                    }
+                }
+
                 public TrackingState state;
                 public override string ToString()
                 {

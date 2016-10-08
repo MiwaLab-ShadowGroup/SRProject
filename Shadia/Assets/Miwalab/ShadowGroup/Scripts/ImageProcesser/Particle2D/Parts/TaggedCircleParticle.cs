@@ -29,13 +29,18 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
                 default:
                     break;
             }
-            id = bodyIdList[UnityEngine.Random.Range(0, bodyIdList.Count - 1)];
+            if (bodyIdList.Count == 0)
+            {
+                id = -1;
+                return;
+            }
+            id = bodyIdList[UnityEngine.Random.Range(0, bodyIdList.Count)];
 
         }
 
         private void ResetAsSimbolic()
         {
-            int number = UnityEngine.Random.Range(0, 5);
+            int number = UnityEngine.Random.Range(0, 6);
             switch (number)
             {
                 case 0:
