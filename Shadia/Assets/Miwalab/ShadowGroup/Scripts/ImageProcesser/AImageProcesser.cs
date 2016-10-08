@@ -72,6 +72,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                             );
                     }
                 }
+
+                public Vector3 vellocity_upperCorrect
+                {
+                    get
+                    {
+                        var temp = vellocity;
+                        temp.y *= -1f;
+                        return temp;
+                    }
+                }
+
                 public TrackingState state;
                 public override string ToString()
                 {
@@ -177,7 +188,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
 
             UnityEngine.Assertions.Assert.IsTrue(bodydata.Length == depthBodyData.Length);
-
+            bodyIdList.Clear();
             for (int i = 0; i < bodydata.Length; ++i)
             {
                 if (depthBodyData[i] == null)
@@ -188,9 +199,33 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 {
                     depthBodyData[i].Update(bodydata[i]);
                 }
+                if (bodydata[i].IsTracked) this.bodyIdList.Add(i);
+
+                BodyCount = bodyIdList.Count;
+
+                if(BodyCount != BodyCountFront)
+                {
+                    OnChangedHumanCount(BodyCount);
+                }
+
+                BodyCountFront = BodyCount;
+
             }
 
         }
+
+        public List<int> bodyIdList = new List<int>();
+        public int BodyCount;
+        private int BodyCountFront;
+
+        public delegate void ChangedHumanCountHandler(int count);
+        public event ChangedHumanCountHandler ChangeHumanCount;
+        private void OnChangedHumanCount(int count)
+        {
+            if (ChangeHumanCount == null) return;
+            ChangeHumanCount(count);
+        }
+
 
     }
     public abstract class AShadowImageProcesser : AImageProcesser
