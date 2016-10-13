@@ -276,6 +276,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     m_buffer *= 0;
                 }
             }
+         
 
             if (preBodyData == null)
             {

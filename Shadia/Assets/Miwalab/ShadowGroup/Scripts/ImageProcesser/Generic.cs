@@ -96,6 +96,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         MoveShadow,
 
+        /// <summary>
+        /// 二重に影を提示するやつ（B5河野）
+        /// </summary>
+        Twins,
+
 
         /// <summary>
         /// 一定方向に流れるパーティクル

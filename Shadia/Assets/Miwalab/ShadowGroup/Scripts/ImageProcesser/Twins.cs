@@ -11,7 +11,7 @@ using Kinect = Windows.Kinect;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    class MoveShadow : AShadowImageProcesser
+    class Twins : AShadowImageProcesser
     {
 
         public override void ImageProcess(ref Mat src, ref Mat dst)
@@ -51,9 +51,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         Mat bodyRotMat = Mat.Eye(3, 3, MatType.CV_32FC1);
         Mat headRotMat = Mat.Eye(3, 3, MatType.CV_32FC1);
         List<List<BoneMat>> List_BoneMat = new List<List<BoneMat>>();
-        //Dictionary<Kinect.JointType, Point> BoneDictionary = new Dictionary<Kinect.JointType, Point>();
-        //List<Dictionary<Kinect.JointType, Point>> List_BoneDictionary = new List<Dictionary<Kinect.JointType, Point>>();
-        //List<Dictionary<Kinect.JointType, Point>> List_preBoneDictionary = new List<Dictionary<Kinect.JointType, Point>>();
+   
         Dictionary<Kinect.JointType, Mat> SwapBodyMats = new Dictionary<Kinect.JointType, Mat>();
 
         Dictionary<Kinect.JointType, double> BoneRads = new Dictionary<Kinect.JointType, double>();
@@ -94,120 +92,120 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         bool useSwpAcc;
         bool devideCont;
         bool flag = false;
-       // Dictionary<int, float> preBasePosDic = new Dictionary<int, float>();
-   
+        // Dictionary<int, float> preBasePosDic = new Dictionary<int, float>();
+
         List<float> nowBasePos = new List<float>();
         List<List<float>> Tree_BasePos = new List<List<float>>();
         List<float> nowBaseVels = new List<float>();
         List<List<float>> Tree_BaseVel = new List<List<float>>();
 
 
-        public MoveShadow() : base()
+        public Twins() : base()
         {
-            (ShadowMediaUIHost.GetUI("MoveShadow_con_R") as ParameterSlider).ValueChanged += MoveShadow_con_R_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_con_G") as ParameterSlider).ValueChanged += MoveShadow_con_G_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_con_B") as ParameterSlider).ValueChanged += MoveShadow_con_B_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_rot_S") as ParameterSlider).ValueChanged += MoveShadow_rot_S_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_rot_B") as ParameterSlider).ValueChanged += MoveShadow_rot_B_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_bodyThick") as ParameterSlider).ValueChanged += MoveShadow_bodyThick_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_AttRate") as ParameterSlider).ValueChanged += MoveShadow_AttRate_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_CtlRate") as ParameterSlider).ValueChanged += MoveShadow_CtlRate_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_speedRate") as ParameterSlider).ValueChanged += MoveShadow_speedRate_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_UseFade") as ParameterCheckbox).ValueChanged += MoveShadow_UseFade_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_UseSwp") as ParameterCheckbox).ValueChanged += MoveShadow_UseSwp_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_UseSwpAcc") as ParameterCheckbox).ValueChanged += MoveShadow_UseSwpAcc_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_UseRot") as ParameterCheckbox).ValueChanged += MoveShadow_UseRot_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_UseAdd") as ParameterCheckbox).ValueChanged += MoveShadow_UseAdd_ValueChanged;
-            (ShadowMediaUIHost.GetUI("MoveShadow_UseDiv") as ParameterCheckbox).ValueChanged += MoveShadow_UseDiv_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_con_R") as ParameterSlider).ValueChanged += Twins_con_R_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_con_G") as ParameterSlider).ValueChanged += Twins_con_G_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_con_B") as ParameterSlider).ValueChanged += Twins_con_B_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_rot_S") as ParameterSlider).ValueChanged += Twins_rot_S_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_rot_B") as ParameterSlider).ValueChanged += Twins_rot_B_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_bodyThick") as ParameterSlider).ValueChanged += Twins_bodyThick_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_AttRate") as ParameterSlider).ValueChanged += Twins_AttRate_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_CtlRate") as ParameterSlider).ValueChanged += Twins_CtlRate_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_speedRate") as ParameterSlider).ValueChanged += Twins_speedRate_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_UseFade") as ParameterCheckbox).ValueChanged += Twins_UseFade_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_UseSwp") as ParameterCheckbox).ValueChanged += Twins_UseSwp_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_UseSwpAcc") as ParameterCheckbox).ValueChanged += Twins_UseSwpAcc_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_UseRot") as ParameterCheckbox).ValueChanged += Twins_UseRot_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_UseAdd") as ParameterCheckbox).ValueChanged += Twins_UseAdd_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_UseDiv") as ParameterCheckbox).ValueChanged += Twins_UseDiv_ValueChanged;
 
-            (ShadowMediaUIHost.GetUI("MoveShadow_con_R") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_con_G") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_con_B") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_rot_S") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_rot_B") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_bodyThick") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_AttRate") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_CtlRate") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_speedRate") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_UseFade") as ParameterCheckbox).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_UseSwp") as ParameterCheckbox).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_UseSwpAcc") as ParameterCheckbox).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_UseRot") as ParameterCheckbox).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_UseAdd") as ParameterCheckbox).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("MoveShadow_UseDiv") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_con_R") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_con_G") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_con_B") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_rot_S") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_rot_B") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_bodyThick") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_AttRate") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_CtlRate") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_speedRate") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_UseFade") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_UseSwp") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_UseSwpAcc") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_UseRot") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_UseAdd") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_UseDiv") as ParameterCheckbox).ValueUpdate();
         }
 
-        private void MoveShadow_UseFade_ValueChanged(object sender, EventArgs e)
+        private void Twins_UseFade_ValueChanged(object sender, EventArgs e)
         {
             this.m_UseFade = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
-        private void MoveShadow_UseDiv_ValueChanged(object sender, EventArgs e)
+        private void Twins_UseDiv_ValueChanged(object sender, EventArgs e)
         {
             this.devideCont = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
-        private void MoveShadow_UseSwp_ValueChanged(object sender, EventArgs e)
+        private void Twins_UseSwp_ValueChanged(object sender, EventArgs e)
         {
             this.useSwp = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
-        private void MoveShadow_UseSwpAcc_ValueChanged(object sender, EventArgs e)
+        private void Twins_UseSwpAcc_ValueChanged(object sender, EventArgs e)
         {
             this.useSwpAcc = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
-        private void MoveShadow_UseRot_ValueChanged(object sender, EventArgs e)
+        private void Twins_UseRot_ValueChanged(object sender, EventArgs e)
         {
             this.useRot = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
-        private void MoveShadow_UseAdd_ValueChanged(object sender, EventArgs e)
+        private void Twins_UseAdd_ValueChanged(object sender, EventArgs e)
         {
             this.useAdd = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
-        private void MoveShadow_AttRate_ValueChanged(object sender, EventArgs e)
+        private void Twins_AttRate_ValueChanged(object sender, EventArgs e)
         {
             this.attractionRate = (float)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void MoveShadow_CtlRate_ValueChanged(object sender, EventArgs e)
+        private void Twins_CtlRate_ValueChanged(object sender, EventArgs e)
         {
             this.ctlRate = (double)(e as ParameterSlider.ChangedValue).Value;
         }
-        private void MoveShadow_speedRate_ValueChanged(object sender, EventArgs e)
+        private void Twins_speedRate_ValueChanged(object sender, EventArgs e)
         {
             this.speedRate = (double)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void MoveShadow_con_R_ValueChanged(object sender, EventArgs e)
+        private void Twins_con_R_ValueChanged(object sender, EventArgs e)
         {
             this.color.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void MoveShadow_con_G_ValueChanged(object sender, EventArgs e)
+        private void Twins_con_G_ValueChanged(object sender, EventArgs e)
         {
             this.color.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void MoveShadow_con_B_ValueChanged(object sender, EventArgs e)
+        private void Twins_con_B_ValueChanged(object sender, EventArgs e)
         {
             this.color.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void MoveShadow_rot_S_ValueChanged(object sender, EventArgs e)
+        private void Twins_rot_S_ValueChanged(object sender, EventArgs e)
         {
             this.rotShoulder = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void MoveShadow_rot_B_ValueChanged(object sender, EventArgs e)
+        private void Twins_rot_B_ValueChanged(object sender, EventArgs e)
         {
             this.rotBody = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void MoveShadow_bodyThick_ValueChanged(object sender, EventArgs e)
+        private void Twins_bodyThick_ValueChanged(object sender, EventArgs e)
         {
             this.bodyThick = (float)(e as ParameterSlider.ChangedValue).Value;
 
@@ -216,6 +214,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         Mat m_buffer;
         bool m_UseFade;
         Mat m_cont_buffer;
+        Mat m_first_buffer;
+        Mat m_second_buffer;
 
         private void Update(ref Mat src, ref Mat dst)
         {
@@ -237,16 +237,22 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             if (m_buffer == null)
             {
                 m_buffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
+                m_first_buffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
+                m_second_buffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
             }
             else
             {
                 if (this.m_UseFade)
                 {
                     m_buffer *= 0.9;
+                    m_first_buffer *= 0;
+                    m_second_buffer *= 0;
                 }
                 else
                 {
                     m_buffer *= 0;
+                    m_first_buffer *= 0;
+                    m_second_buffer *= 0;
                 }
             }
             if (m_cont_buffer == null)
@@ -264,7 +270,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                 for (int i = 0; i < BodyData.Length; i++)
                 {
-                   
+
                     if (BodyData[i].IsTracked)
                     {
                         if (CheckBodyInSCreen(i, src))
@@ -337,8 +343,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
 
             //輪郭の描画
-            //var _contour = List_Contours.ToArray();
-            //Cv2.DrawContours(m_buffer, _contour, -1, color, -1, OpenCvSharp.LineType.Link8);
+            var _contour = List_Contours.ToArray();
+            Cv2.DrawContours(m_first_buffer, _contour, -1, new Scalar(200,200,200), -1, OpenCvSharp.LineType.Link8);
 
 
 
@@ -469,8 +475,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             //SpineBase位置情報ツリーを更新
             if (this.Tree_BasePos.Count == 0) this.Tree_BasePos.Insert(0, new List<float>(this.nowBasePos));
-            //this.Tree_BasePos.Insert(0, new Dictionary<int, float>(this.nowBasePos));   //形式変更のためとりあえず消す
-            this.Tree_BasePos.Insert(0, new List< float>(this.nowBasePos));
+            this.Tree_BasePos.Insert(0, new List<float>(this.nowBasePos));
             if (this.Tree_BasePos.Count > 15) this.Tree_BasePos.RemoveAt(this.Tree_BasePos.Count - 1);
 
 
@@ -484,9 +489,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     if (this.Tree_BoneRads[0][i].ContainsKey(Kinect.JointType.ElbowLeft) && this.Tree_BoneRads[1][i].ContainsKey(Kinect.JointType.ElbowLeft))
                     {
                         this.BoneVels.Add(Kinect.JointType.ElbowLeft, this.Tree_BoneRads[0][i][Kinect.JointType.ElbowLeft] - this.Tree_BoneRads[1][i][Kinect.JointType.ElbowLeft]);
-                        //Debug.Log("baserad2 ;  " + this.Tree_BoneRads[0][i][Kinect.JointType.ElbowLeft]);
-                        //Debug.Log("basepre2 ;  " + this.Tree_BoneRads[1][i][Kinect.JointType.ElbowLeft]);
-                        //Debug.Log("Elbowvel ;  " + (this.Tree_BoneRads[0][i][Kinect.JointType.ElbowLeft] - this.Tree_BoneRads[1][i][Kinect.JointType.ElbowLeft]));
                     }
 
                     if (this.Tree_BoneRads[0][i].ContainsKey(Kinect.JointType.ShoulderLeft) && this.Tree_BoneRads[1][i].ContainsKey(Kinect.JointType.ShoulderLeft))
@@ -624,20 +626,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     this.nowBaseVels.Add(0);
                 }
             }
-            //for (int i = 0; i < 6; ++i)
-            //{
-            //    if (this.Tree_BasePos[0].ContainsKey(i) == true && this.Tree_BasePos[1].ContainsKey(i))
-            //    {
-            //        this.nowBaseVels.Add(i, this.Tree_BasePos[0][i] - this.Tree_BasePos[1][i]);
-            //    }
-            //    else
-            //    {
-            //        //this.nowBaseVels.Add(i, 0);
-            //    }
-            //}
-
+           
             //SpineBase速度ツリーを作成
-            //this.Tree_BaseVel.Insert(0, new Dictionary<int, float>(this.nowBaseVels));
             this.Tree_BaseVel.Insert(0, new List<float>(this.nowBaseVels));
 
 
@@ -820,13 +810,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 //Debug.Log("add ; " + this.useAdd);
                 if (this.useAdd)
                 {
-                    
-                    this.radAverage = GetBaseMoveAve(this.Tree_BaseVel,this.targetAttContNum, 5);
+
+                    this.radAverage = GetBaseMoveAve(this.Tree_BaseVel, this.targetAttContNum, 5);
                     //Debug.Log("body ; " + i);
                     //Debug.Log("MoveAmount  ; " + GetBaseMoveAve(this.Tree_BaseVel, this.targetAttContNum, 5));
                     if (this.radAverage > attractionRate) this.radAverage = attractionRate;
                     if (this.radAverage < -attractionRate) this.radAverage = -attractionRate;
-                  
+
 
                     this.bodyRotMat = GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, this.radAverage / attractionRate * Math.PI / 4);
                     //SpinBase
@@ -1000,7 +990,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
 
 
-            var _contour = List_Contours.ToArray();
+            //var _contour = List_Contours.ToArray();
+             _contour = List_Contours.ToArray();
             Cv2.DrawContours(m_cont_buffer, _contour, -1, color, -1, OpenCvSharp.LineType.Link8);
 
 
@@ -1013,20 +1004,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             this.List_Contours_Buffer = this.List_Contours;
 
-            //ここでプレを更新してみる
-            this.List_PreBoneRads.Clear();
-            this.List_PreBoneRads = this.List_BoneRads;
-            //this.List_PreBoneRads.Clear();
-            //this.List_PreBoneRads = this.List_BoneRads;
-            this.List_PreBoneVels.Clear();
-            this.List_PreBoneVels = this.List_BoneVels;
-
-
-
-            //preBodyData = BodyDataOnDepthImage;
-            //10個溜まったら10個目を消す
-            //if (this.preBodyList.Count > bodyListLength) this.preBodyList.RemoveAt(bodyListLength-1);
-            //this.preBodyList.Insert(0, new DepthBody[](BodyDataOnDepthImage));
             this.count += (0.01 * this.speedRate);
             if (this.count > 2 * Math.PI) this.count = 0;
 
@@ -1038,7 +1015,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
 
             //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
-            dst += m_buffer;
+            //dst += m_buffer;
+
+            m_second_buffer += m_buffer;
+            OpenCvSharp.CPlusPlus.Rect rect = new OpenCvSharp.CPlusPlus.Rect(0, 0, m_second_buffer.Width, m_second_buffer.Height);
+            Mat ROIMat = new Mat(m_second_buffer, rect);
+            m_first_buffer.CopyTo(ROIMat, m_first_buffer);
+
+            dst += m_second_buffer;
+
+
         }
 
 
@@ -1376,7 +1362,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             return Average / (AveNum - count);
         }
 
-        float GetBaseMoveAve(List<List< float>> baseTree, int bodyNum, int AveNum)
+        float GetBaseMoveAve(List<List<float>> baseTree, int bodyNum, int AveNum)
         {
             float Average = 0;
             int count = 0;
@@ -1543,12 +1529,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         public override string ToString()
         {
-            return "MoveShadow";
+            return "Twins";
         }
 
         public override ImageProcesserType getImageProcesserType()
         {
-            return ImageProcesserType.MoveShadow;
+            return ImageProcesserType.Twins;
         }
 
         public bool IsFirstFrame { get; private set; }
