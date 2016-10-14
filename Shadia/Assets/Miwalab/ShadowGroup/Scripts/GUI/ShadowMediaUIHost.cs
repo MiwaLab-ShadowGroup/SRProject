@@ -606,18 +606,19 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Twins_con_R", 255, 0, 0);
         AddFloatUI(parent, "Twins_con_G", 255, 0, 0);
         AddFloatUI(parent, "Twins_con_B", 255, 0, 200);
-        AddFloatUI(parent, "Twins_rot_S", 3, -3, 0);
-        AddFloatUI(parent, "Twins_rot_B", 3, -3, 0);
         AddFloatUI(parent, "Twins_bodyThick", 1, 0, 0.8f);
         AddFloatUI(parent, "Twins_AttRate", 20, 1, 5);
+        AddFloatUI(parent, "Twins_AccRate", 10, 0.5f, 1);
         AddBooleanUI(parent, "Twins_UseFade", false);
-        AddBooleanUI(parent, "Twins_UseSwp", false);
+        AddBooleanUI(parent, "Twins_UseDiv", false);
+        AddBooleanUI(parent, "Twins_UseAve", false);
+        AddBooleanUI(parent, "Twins_UseSwpRot", false);
         AddBooleanUI(parent, "Twins_UseSwpAcc", false);
         AddBooleanUI(parent, "Twins_UseRot", false);
-        AddBooleanUI(parent, "Twins_UseAdd", false);
-        AddBooleanUI(parent, "Twins_UseDiv", false);
-        AddFloatUI(parent, "Twins_CtlRate", 10, 0.5f, 1);
-        AddFloatUI(parent, "Twins_speedRate", 50, -50, 10);
+        AddBooleanUI(parent, "Twins_UseAtt", false);
+        AddBooleanUI(parent, "Twins_Reverce", false);
+        AddBooleanUI(parent, "Twins_Bright", false);
+        AddBooleanUI(parent, "Twins_AddImg", false);
         m_lastUpdatedHeight += 10;
 
     }

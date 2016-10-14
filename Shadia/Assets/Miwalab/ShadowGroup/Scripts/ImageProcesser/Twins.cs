@@ -22,7 +22,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         }
 
         int sharpness = 100;
-        double ctlRate = 0;
+        double accRate;
         int blurRate;
         float attractionRate;
         private Mat grayimage = new Mat();
@@ -44,14 +44,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         Windows.Kinect.JointType nearBone;
 
         List<List<BodyContor>> bodyContList = new List<List<BodyContor>>();
-        double rotShoulder;
-        double rotBody;
+
 
         Mat preMat = Mat.Eye(3, 3, MatType.CV_32FC1);
         Mat bodyRotMat = Mat.Eye(3, 3, MatType.CV_32FC1);
         Mat headRotMat = Mat.Eye(3, 3, MatType.CV_32FC1);
         List<List<BoneMat>> List_BoneMat = new List<List<BoneMat>>();
-   
+
         Dictionary<Kinect.JointType, Mat> SwapBodyMats = new Dictionary<Kinect.JointType, Mat>();
 
         Dictionary<Kinect.JointType, double> BoneRads = new Dictionary<Kinect.JointType, double>();
@@ -84,13 +83,18 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         int frameCount = 0;
         double speedRate;
         double radAverage;
+       
 
         double count = 0;
-        bool useSwp;
+        bool useSwpRot;
         bool useRot;
-        bool useAdd;
+        bool useAtt;
         bool useSwpAcc;
         bool devideCont;
+        bool reverceCheck;
+        bool brightCheck;
+        bool addImg;
+        bool useAve;
         bool flag = false;
         // Dictionary<int, float> preBasePosDic = new Dictionary<int, float>();
 
@@ -105,34 +109,36 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Twins_con_R") as ParameterSlider).ValueChanged += Twins_con_R_ValueChanged;
             (ShadowMediaUIHost.GetUI("Twins_con_G") as ParameterSlider).ValueChanged += Twins_con_G_ValueChanged;
             (ShadowMediaUIHost.GetUI("Twins_con_B") as ParameterSlider).ValueChanged += Twins_con_B_ValueChanged;
-            (ShadowMediaUIHost.GetUI("Twins_rot_S") as ParameterSlider).ValueChanged += Twins_rot_S_ValueChanged;
-            (ShadowMediaUIHost.GetUI("Twins_rot_B") as ParameterSlider).ValueChanged += Twins_rot_B_ValueChanged;
             (ShadowMediaUIHost.GetUI("Twins_bodyThick") as ParameterSlider).ValueChanged += Twins_bodyThick_ValueChanged;
             (ShadowMediaUIHost.GetUI("Twins_AttRate") as ParameterSlider).ValueChanged += Twins_AttRate_ValueChanged;
-            (ShadowMediaUIHost.GetUI("Twins_CtlRate") as ParameterSlider).ValueChanged += Twins_CtlRate_ValueChanged;
-            (ShadowMediaUIHost.GetUI("Twins_speedRate") as ParameterSlider).ValueChanged += Twins_speedRate_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_AccRate") as ParameterSlider).ValueChanged += Twins_AccRate_ValueChanged;
             (ShadowMediaUIHost.GetUI("Twins_UseFade") as ParameterCheckbox).ValueChanged += Twins_UseFade_ValueChanged;
-            (ShadowMediaUIHost.GetUI("Twins_UseSwp") as ParameterCheckbox).ValueChanged += Twins_UseSwp_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_UseDiv") as ParameterCheckbox).ValueChanged += Twins_UseDiv_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_UseAve") as ParameterCheckbox).ValueChanged += Twins_UseAve_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_UseSwpRot") as ParameterCheckbox).ValueChanged += Twins_UseSwpRot_ValueChanged;
             (ShadowMediaUIHost.GetUI("Twins_UseSwpAcc") as ParameterCheckbox).ValueChanged += Twins_UseSwpAcc_ValueChanged;
             (ShadowMediaUIHost.GetUI("Twins_UseRot") as ParameterCheckbox).ValueChanged += Twins_UseRot_ValueChanged;
-            (ShadowMediaUIHost.GetUI("Twins_UseAdd") as ParameterCheckbox).ValueChanged += Twins_UseAdd_ValueChanged;
-            (ShadowMediaUIHost.GetUI("Twins_UseDiv") as ParameterCheckbox).ValueChanged += Twins_UseDiv_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_UseAtt") as ParameterCheckbox).ValueChanged += Twins_UseAtt_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_Reverce") as ParameterCheckbox).ValueChanged += Twins_Reverce_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_Bright") as ParameterCheckbox).ValueChanged += Twins_Bright_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Twins_AddImg") as ParameterCheckbox).ValueChanged += Twins_AddImg_ValueChanged;
 
             (ShadowMediaUIHost.GetUI("Twins_con_R") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Twins_con_G") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Twins_con_B") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("Twins_rot_S") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("Twins_rot_B") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Twins_bodyThick") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Twins_AttRate") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("Twins_CtlRate") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("Twins_speedRate") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_AccRate") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Twins_UseFade") as ParameterCheckbox).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("Twins_UseSwp") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_UseDiv") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_UseAve") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_UseSwpRot") as ParameterCheckbox).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Twins_UseSwpAcc") as ParameterCheckbox).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Twins_UseRot") as ParameterCheckbox).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("Twins_UseAdd") as ParameterCheckbox).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("Twins_UseDiv") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_UseAtt") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_Reverce") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_Bright") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Twins_AddImg") as ParameterCheckbox).ValueUpdate();
         }
 
         private void Twins_UseFade_ValueChanged(object sender, EventArgs e)
@@ -144,9 +150,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             this.devideCont = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
-        private void Twins_UseSwp_ValueChanged(object sender, EventArgs e)
+        private void Twins_UseAve_ValueChanged(object sender, EventArgs e)
         {
-            this.useSwp = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+            this.useAve = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+        }
+        private void Twins_UseSwpRot_ValueChanged(object sender, EventArgs e)
+        {
+            this.useSwpRot = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
         private void Twins_UseSwpAcc_ValueChanged(object sender, EventArgs e)
         {
@@ -156,9 +166,21 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             this.useRot = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
-        private void Twins_UseAdd_ValueChanged(object sender, EventArgs e)
+        private void Twins_UseAtt_ValueChanged(object sender, EventArgs e)
         {
-            this.useAdd = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+            this.useAtt = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+        }
+        private void Twins_Reverce_ValueChanged(object sender, EventArgs e)
+        {
+            this.reverceCheck = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+        }
+        private void Twins_Bright_ValueChanged(object sender, EventArgs e)
+        {
+            this.brightCheck = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+        }
+        private void Twins_AddImg_ValueChanged(object sender, EventArgs e)
+        {
+            this.addImg = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
         private void Twins_AttRate_ValueChanged(object sender, EventArgs e)
@@ -166,14 +188,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.attractionRate = (float)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void Twins_CtlRate_ValueChanged(object sender, EventArgs e)
+        private void Twins_AccRate_ValueChanged(object sender, EventArgs e)
         {
-            this.ctlRate = (double)(e as ParameterSlider.ChangedValue).Value;
+            this.accRate = (double)(e as ParameterSlider.ChangedValue).Value;
         }
-        private void Twins_speedRate_ValueChanged(object sender, EventArgs e)
-        {
-            this.speedRate = (double)(e as ParameterSlider.ChangedValue).Value;
-        }
+
 
         private void Twins_con_R_ValueChanged(object sender, EventArgs e)
         {
@@ -193,17 +212,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         }
 
-        private void Twins_rot_S_ValueChanged(object sender, EventArgs e)
-        {
-            this.rotShoulder = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void Twins_rot_B_ValueChanged(object sender, EventArgs e)
-        {
-            this.rotBody = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
 
         private void Twins_bodyThick_ValueChanged(object sender, EventArgs e)
         {
@@ -220,19 +228,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private void Update(ref Mat src, ref Mat dst)
         {
             this.List_Contours.Clear();
-
-            //this.List_BoneRads.CopyTo(this.List_PreBoneRads());
-
             this.contour_Center.Clear();
             this.bodyContList.Clear();
             this.List_BoneRads.Clear();
             this.List_BoneVels.Clear();
             this.List_BoneAccs.Clear();
-            //this.baseMoveX.Clear();
-            //this.baseAttractRad.Clear();
-
-
-
 
             if (m_buffer == null)
             {
@@ -279,14 +279,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                         }
                     }
                 }
-                //Tree_boneRadsに空のリストを入れておく
 
                 this.flag = true;
             }
 
 
 
-            //if (count > 2 * Math.PI) count = 0;
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
 
             //輪郭を分けるか分けないか
@@ -344,7 +342,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             //輪郭の描画
             var _contour = List_Contours.ToArray();
-            Cv2.DrawContours(m_first_buffer, _contour, -1, new Scalar(200,200,200), -1, OpenCvSharp.LineType.Link8);
+            if (this.brightCheck)  //明るさの変化
+            {
+                Cv2.DrawContours(m_first_buffer, _contour, -1, new Scalar(20, 200, 20), -1, OpenCvSharp.LineType.Link8);
+
+            }
+            else
+            {
+                Cv2.DrawContours(m_first_buffer, _contour, -1, new Scalar(200, 200, 200), -1, OpenCvSharp.LineType.Link8);
+
+            }
 
 
 
@@ -414,7 +421,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
 
                         //spineBase位置新しくツリーで格納
-                        //this.nowBasePos.Add(i, BodyDataOnDepthImage[i].JointDepth[Kinect.JointType.SpineBase].position.X);
                         this.nowBasePos.Add(BodyDataOnDepthImage[i].JointDepth[Kinect.JointType.SpineBase].position.X);
 
 
@@ -490,7 +496,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     {
                         this.BoneVels.Add(Kinect.JointType.ElbowLeft, this.Tree_BoneRads[0][i][Kinect.JointType.ElbowLeft] - this.Tree_BoneRads[1][i][Kinect.JointType.ElbowLeft]);
                     }
-
                     if (this.Tree_BoneRads[0][i].ContainsKey(Kinect.JointType.ShoulderLeft) && this.Tree_BoneRads[1][i].ContainsKey(Kinect.JointType.ShoulderLeft))
                     {
                         this.BoneVels.Add(Kinect.JointType.ShoulderLeft, this.Tree_BoneRads[0][i][Kinect.JointType.ShoulderLeft] - this.Tree_BoneRads[1][i][Kinect.JointType.ShoulderLeft]);
@@ -626,11 +631,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     this.nowBaseVels.Add(0);
                 }
             }
-           
+
             //SpineBase速度ツリーを作成
             this.Tree_BaseVel.Insert(0, new List<float>(this.nowBaseVels));
-
-
 
 
 
@@ -661,237 +664,54 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 if (targetAttContNum >= Tree_BaseVel[0].Count) targetAttContNum = 0;
 
                 this.SwapBodyMats.Clear();
-                //相手と入れ替えて動かすmatを作成 useSwp時
-                #region make swaping mat
-                if (this.useSwp)
+
+                //ノーマル
+                if (!this.useAve)
                 {
-                    //SpinBase
-                    if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true && this.List_BoneRads[targetContNum].ContainsKey(Kinect.JointType.SpineBase) == true)
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, -this.List_BoneRads[targetContNum][Kinect.JointType.SpineBase] + this.List_BoneRads[i][Kinect.JointType.SpineBase]));
-                    }
-                    else
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.SpineBase, Mat.Eye(3, 3, MatType.CV_32FC1));
-                    }
-                    //LeftShoulder
-                    if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ShoulderLeft) == true && this.List_BoneRads[targetContNum].ContainsKey(Kinect.JointType.ShoulderLeft) == true)
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderLeft, -this.List_BoneRads[targetContNum][Kinect.JointType.ShoulderLeft] + this.List_BoneRads[i][Kinect.JointType.ShoulderLeft], this.SwapBodyMats[Kinect.JointType.SpineBase]));
-                    }
-                    else
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, this.SwapBodyMats[Kinect.JointType.SpineBase]);
-                    }
-                    //LeftElbow
-                    if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ElbowLeft) == true && this.List_BoneRads[targetContNum].ContainsKey(Kinect.JointType.ElbowLeft) == true)
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowLeft, -this.List_BoneRads[targetContNum][Kinect.JointType.ElbowLeft] + this.List_BoneRads[i][Kinect.JointType.ElbowLeft], this.SwapBodyMats[Kinect.JointType.ShoulderLeft]));
-                    }
-                    else
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, this.SwapBodyMats[Kinect.JointType.ShoulderLeft]);
-                    }
-                    //RightShoulder
-                    if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ShoulderRight) == true && this.List_BoneRads[targetContNum].ContainsKey(Kinect.JointType.ShoulderRight) == true)
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderRight, -this.List_BoneRads[targetContNum][Kinect.JointType.ShoulderRight] + this.List_BoneRads[i][Kinect.JointType.ShoulderRight], this.SwapBodyMats[Kinect.JointType.SpineBase]));
-                    }
-                    else
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, this.SwapBodyMats[Kinect.JointType.SpineBase]);
-                    }
-                    //RightElbow
-                    if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ElbowRight) == true && this.List_BoneRads[targetContNum].ContainsKey(Kinect.JointType.ElbowRight) == true)
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowRight, -this.List_BoneRads[targetContNum][Kinect.JointType.ElbowRight] + this.List_BoneRads[i][Kinect.JointType.ElbowRight], this.SwapBodyMats[Kinect.JointType.ShoulderRight]));
-                    }
-                    else
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, this.SwapBodyMats[Kinect.JointType.ShoulderRight]);
-                    }
-                    //LeftHip
-                    this.SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
-                    //RightHip
-                    this.SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
-                }
-                #endregion
-                //回転の動きを大きくする影
-                #region make rot mat
-                if (this.useRot)
-                {
-
-                    //SpinBase
-                    if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, this.List_BoneRads[i][Kinect.JointType.SpineBase] * -2));
-                        //Debug.Log("countNum : " + this.List_BoneRads[i].Count);
-
-                    }
-                    else
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.SpineBase, Mat.Eye(3, 3, MatType.CV_32FC1));
-                    }
-                    //LeftShoulder
-                    if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ShoulderLeft) == true && List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
-                    {
-                        if (-this.List_BoneRads[i][Kinect.JointType.SpineBase] > 0)
-                        {
-                            this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderLeft, -this.List_BoneRads[i][Kinect.JointType.SpineBase], SwapBodyMats[Kinect.JointType.SpineBase]));
-
-                        }
-                        else
-                        {
-                            this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, SwapBodyMats[Kinect.JointType.SpineBase]);
-                        }
-
-                    }
-                    else
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, this.SwapBodyMats[Kinect.JointType.SpineBase]);
-                    }
-                    //LeftElbow
-                    this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, this.SwapBodyMats[Kinect.JointType.ShoulderLeft]);
-                    //RightShoulder
-                    if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ShoulderRight) == true && this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
-                    {
-                        if (-this.List_BoneRads[i][Kinect.JointType.SpineBase] <= 0)
-                        {
-                            this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderRight, -this.List_BoneRads[i][Kinect.JointType.SpineBase], SwapBodyMats[Kinect.JointType.SpineBase]));
-                        }
-                        else
-                        {
-                            this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, this.SwapBodyMats[Kinect.JointType.SpineBase]);
-                        }
-                    }
-                    else
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, this.SwapBodyMats[Kinect.JointType.SpineBase]);
-                    }
-                    //RightElbow
-                    this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, this.SwapBodyMats[Kinect.JointType.ShoulderRight]);
-                    //LeftHip
-                    if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.HipLeft) == true && this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
-                    {
-                        if (-this.List_BoneRads[i][Kinect.JointType.SpineBase] > 0) //状況を見て符号は変える
-                        {
-                            this.SwapBodyMats.Add(Kinect.JointType.HipLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.HipLeft, -2 * this.List_BoneRads[i][Kinect.JointType.SpineBase]));
-                        }
-                        else
-                        {
-                            this.SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
-                        }
-                    }
-                    else
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
-                    }
-                    //RightHip
-                    if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.HipRight) == true && this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
-                    {
-                        if (-this.List_BoneRads[i][Kinect.JointType.SpineBase] <= 0) //状況を見て符号は変える
-                        {
-                            this.SwapBodyMats.Add(Kinect.JointType.HipRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.HipRight, -2 * this.List_BoneRads[i][Kinect.JointType.SpineBase]));
-                        }
-                        else
-                        {
-                            this.SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
-                        }
-                    }
-                    else
-                    {
-                        this.SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
-                    }
-                }
-                #endregion
-                //動きが傾きになって表れるもーど↓
-                //移動によって体が回転する影 
-                #region make Add mat
-                //Debug.Log("add ; " + this.useAdd);
-                if (this.useAdd)
-                {
-
-                    this.radAverage = GetBaseMoveAve(this.Tree_BaseVel, this.targetAttContNum, 5);
-                    //Debug.Log("body ; " + i);
-                    //Debug.Log("MoveAmount  ; " + GetBaseMoveAve(this.Tree_BaseVel, this.targetAttContNum, 5));
-                    if (this.radAverage > attractionRate) this.radAverage = attractionRate;
-                    if (this.radAverage < -attractionRate) this.radAverage = -attractionRate;
-
-
-                    this.bodyRotMat = GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, this.radAverage / attractionRate * Math.PI / 4);
-                    //SpinBase
-                    SwapBodyMats.Add(Kinect.JointType.SpineBase, bodyRotMat);
-                    //LeftShoulder
-                    SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, bodyRotMat);
-                    //LeftElbow
-                    SwapBodyMats.Add(Kinect.JointType.ElbowLeft, bodyRotMat);
-                    //RightShoulder
-                    SwapBodyMats.Add(Kinect.JointType.ShoulderRight, bodyRotMat);
-                    //RightElbow
-                    SwapBodyMats.Add(Kinect.JointType.ElbowRight, bodyRotMat);
-                    //LeftHip
-                    SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
-                    //RightHip
-                    SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
-                }
-                #endregion
-                //加速度をほかの人間と入れ替える
-                #region make SwapAcc mat
-                if (this.useSwpAcc)
-                {
-                    if (this.List_BoneAccs.Count != 0)
+                    //相手と入れ替えて動かすmatを作成 useSwp時　　　　
+                    #region make swaping mat
+                    if (this.useSwpRot)
                     {
                         //SpinBase
-                        //Debug.Log("ElbowLeftAccExist ; " + this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.SpineBase));
-
-                        if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.SpineBase) == true)
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true && this.List_BoneRads[targetContNum].ContainsKey(Kinect.JointType.SpineBase) == true)
                         {
-                            //this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, this.List_BoneAccs[targetAccContNum][Kinect.JointType.SpineBase] * ctlRate));
-                            this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.SpineBase, 5) * ctlRate));
+                            this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, -this.List_BoneRads[targetContNum][Kinect.JointType.SpineBase] + this.List_BoneRads[i][Kinect.JointType.SpineBase]));
                         }
                         else
                         {
                             this.SwapBodyMats.Add(Kinect.JointType.SpineBase, Mat.Eye(3, 3, MatType.CV_32FC1));
                         }
                         //LeftShoulder
-                        if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.ShoulderLeft) == true)
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ShoulderLeft) == true && this.List_BoneRads[targetContNum].ContainsKey(Kinect.JointType.ShoulderLeft) == true)
                         {
-                            //this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderLeft, this.List_BoneAccs[targetAccContNum][Kinect.JointType.ShoulderLeft] * ctlRate));
-                            this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderLeft, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.ShoulderLeft, 5) * ctlRate));
-
+                            this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderLeft, -this.List_BoneRads[targetContNum][Kinect.JointType.ShoulderLeft] + this.List_BoneRads[i][Kinect.JointType.ShoulderLeft], this.SwapBodyMats[Kinect.JointType.SpineBase]));
                         }
                         else
                         {
                             this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, this.SwapBodyMats[Kinect.JointType.SpineBase]);
                         }
                         //LeftElbow
-                        if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.ElbowLeft) == true)
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ElbowLeft) == true && this.List_BoneRads[targetContNum].ContainsKey(Kinect.JointType.ElbowLeft) == true)
                         {
-                            //this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowLeft, this.List_BoneAccs[targetAccContNum][Kinect.JointType.ElbowLeft] * ctlRate));
-                            this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowLeft, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.ElbowLeft, 5) * ctlRate));
-
+                            this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowLeft, -this.List_BoneRads[targetContNum][Kinect.JointType.ElbowLeft] + this.List_BoneRads[i][Kinect.JointType.ElbowLeft], this.SwapBodyMats[Kinect.JointType.ShoulderLeft]));
                         }
                         else
                         {
                             this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, this.SwapBodyMats[Kinect.JointType.ShoulderLeft]);
                         }
                         //RightShoulder
-                        if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.ShoulderRight) == true)
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ShoulderRight) == true && this.List_BoneRads[targetContNum].ContainsKey(Kinect.JointType.ShoulderRight) == true)
                         {
-                            //this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderRight, this.List_BoneAccs[targetAccContNum][Kinect.JointType.ShoulderRight] * ctlRate));
-                            this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderRight, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.ShoulderRight, 5) * ctlRate));
-
+                            this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderRight, -this.List_BoneRads[targetContNum][Kinect.JointType.ShoulderRight] + this.List_BoneRads[i][Kinect.JointType.ShoulderRight], this.SwapBodyMats[Kinect.JointType.SpineBase]));
                         }
                         else
                         {
                             this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, this.SwapBodyMats[Kinect.JointType.SpineBase]);
                         }
                         //RightElbow
-                        if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.ElbowRight) == true)
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ElbowRight) == true && this.List_BoneRads[targetContNum].ContainsKey(Kinect.JointType.ElbowRight) == true)
                         {
-                            //this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowRight, this.List_BoneAccs[targetAccContNum][Kinect.JointType.ElbowRight] * ctlRate));
-                            this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowRight, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.ElbowRight, 5) * ctlRate));
-
+                            this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowRight, -this.List_BoneRads[targetContNum][Kinect.JointType.ElbowRight] + this.List_BoneRads[i][Kinect.JointType.ElbowRight], this.SwapBodyMats[Kinect.JointType.ShoulderRight]));
                         }
                         else
                         {
@@ -902,29 +722,456 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                         //RightHip
                         this.SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
                     }
-                }
-                #endregion
-                //何もしないとき、空のmatを作成
-                #region make empty mat
-                if (SwapBodyMats.Count == 0)
-                {
-                    //SpinBase
-                    SwapBodyMats.Add(Kinect.JointType.SpineBase, Mat.Eye(3, 3, MatType.CV_32FC1));
-                    //LeftShoulder
-                    SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
-                    //LeftElbow
-                    SwapBodyMats.Add(Kinect.JointType.ElbowLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
-                    //RightShoulder
-                    SwapBodyMats.Add(Kinect.JointType.ShoulderRight, Mat.Eye(3, 3, MatType.CV_32FC1));
-                    //RightElbow
-                    SwapBodyMats.Add(Kinect.JointType.ElbowRight, Mat.Eye(3, 3, MatType.CV_32FC1));
-                    //LeftHip
-                    SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
-                    //RightHip
-                    SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
-                }
-                #endregion
+                    #endregion
+                    //回転の動きを大きくする影　　　　　　
+                    #region make rot mat
+                    if (this.useRot)
+                    {
 
+                        //SpinBase
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
+                        {
+                            this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, this.List_BoneRads[i][Kinect.JointType.SpineBase] * -2));
+                            //Debug.Log("countNum : " + this.List_BoneRads[i].Count);
+
+                        }
+                        else
+                        {
+                            this.SwapBodyMats.Add(Kinect.JointType.SpineBase, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        }
+                        //LeftShoulder
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ShoulderLeft) == true && List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
+                        {
+                            if (-this.List_BoneRads[i][Kinect.JointType.SpineBase] > 0)
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderLeft, -this.List_BoneRads[i][Kinect.JointType.SpineBase], SwapBodyMats[Kinect.JointType.SpineBase]));
+
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, SwapBodyMats[Kinect.JointType.SpineBase]);
+                            }
+
+                        }
+                        else
+                        {
+                            this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, this.SwapBodyMats[Kinect.JointType.SpineBase]);
+                        }
+                        //LeftElbow
+                        this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, this.SwapBodyMats[Kinect.JointType.ShoulderLeft]);
+                        //RightShoulder
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ShoulderRight) == true && this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
+                        {
+                            if (-this.List_BoneRads[i][Kinect.JointType.SpineBase] <= 0)
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderRight, -this.List_BoneRads[i][Kinect.JointType.SpineBase], SwapBodyMats[Kinect.JointType.SpineBase]));
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, this.SwapBodyMats[Kinect.JointType.SpineBase]);
+                            }
+                        }
+                        else
+                        {
+                            this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, this.SwapBodyMats[Kinect.JointType.SpineBase]);
+                        }
+                        //RightElbow
+                        this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, this.SwapBodyMats[Kinect.JointType.ShoulderRight]);
+                        //LeftHip
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.HipLeft) == true && this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
+                        {
+                            if (-this.List_BoneRads[i][Kinect.JointType.SpineBase] > 0) //状況を見て符号は変える
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.HipLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.HipLeft, -2 * this.List_BoneRads[i][Kinect.JointType.SpineBase]));
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                            }
+                        }
+                        else
+                        {
+                            this.SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        }
+                        //RightHip
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.HipRight) == true && this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
+                        {
+                            if (-this.List_BoneRads[i][Kinect.JointType.SpineBase] <= 0) //状況を見て符号は変える
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.HipRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.HipRight, -2 * this.List_BoneRads[i][Kinect.JointType.SpineBase]));
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                            }
+                        }
+                        else
+                        {
+                            this.SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        }
+                    }
+                    #endregion
+                    //他の人の移動によって体が傾く影 　　
+                    #region make Att mat
+                    //Debug.Log("add ; " + this.useAdd);
+                    if (this.useAtt)
+                    {
+
+                        this.radAverage = GetBaseMoveAve(this.Tree_BaseVel, this.targetAttContNum, 5);
+                        //Debug.Log("body ; " + i);
+                        //Debug.Log("MoveAmount  ; " + GetBaseMoveAve(this.Tree_BaseVel, this.targetAttContNum, 5));
+                        if (this.radAverage > attractionRate) this.radAverage = attractionRate;
+                        if (this.radAverage < -attractionRate) this.radAverage = -attractionRate;
+
+
+                        this.bodyRotMat = GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, this.radAverage / attractionRate * Math.PI / 4);
+                        //SpinBase
+                        SwapBodyMats.Add(Kinect.JointType.SpineBase, bodyRotMat);
+                        //LeftShoulder
+                        SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, bodyRotMat);
+                        //LeftElbow
+                        SwapBodyMats.Add(Kinect.JointType.ElbowLeft, bodyRotMat);
+                        //RightShoulder
+                        SwapBodyMats.Add(Kinect.JointType.ShoulderRight, bodyRotMat);
+                        //RightElbow
+                        SwapBodyMats.Add(Kinect.JointType.ElbowRight, bodyRotMat);
+                        //LeftHip
+                        SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //RightHip
+                        SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                    }
+                    #endregion
+                    //加速度をほかの人間と入れ替える　
+                    #region make SwapAcc mat
+                    if (this.useSwpAcc)
+                    {
+                        if (this.List_BoneAccs.Count != 0)
+                        {
+                            //SpinBase
+                            //Debug.Log("ElbowLeftAccExist ; " + this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.SpineBase));
+
+                            if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.SpineBase) == true)
+                            {
+                                //this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, this.List_BoneAccs[targetAccContNum][Kinect.JointType.SpineBase] * ctlRate));
+                                this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.SpineBase, 5) * accRate));
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.SpineBase, Mat.Eye(3, 3, MatType.CV_32FC1));
+                            }
+                            //LeftShoulder
+                            if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.ShoulderLeft) == true)
+                            {
+                                //this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderLeft, this.List_BoneAccs[targetAccContNum][Kinect.JointType.ShoulderLeft] * ctlRate));
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderLeft, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.ShoulderLeft, 5) * accRate));
+
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, this.SwapBodyMats[Kinect.JointType.SpineBase]);
+                            }
+                            //LeftElbow
+                            if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.ElbowLeft) == true)
+                            {
+                                //this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowLeft, this.List_BoneAccs[targetAccContNum][Kinect.JointType.ElbowLeft] * ctlRate));
+                                this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowLeft, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.ElbowLeft, 5) * accRate));
+
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, this.SwapBodyMats[Kinect.JointType.ShoulderLeft]);
+                            }
+                            //RightShoulder
+                            if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.ShoulderRight) == true)
+                            {
+                                //this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderRight, this.List_BoneAccs[targetAccContNum][Kinect.JointType.ShoulderRight] * ctlRate));
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderRight, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.ShoulderRight, 5) * accRate));
+
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, this.SwapBodyMats[Kinect.JointType.SpineBase]);
+                            }
+                            //RightElbow
+                            if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.ElbowRight) == true)
+                            {
+                                //this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowRight, this.List_BoneAccs[targetAccContNum][Kinect.JointType.ElbowRight] * ctlRate));
+                                this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowRight, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.ElbowRight, 5) * accRate));
+
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, this.SwapBodyMats[Kinect.JointType.ShoulderRight]);
+                            }
+                            //LeftHip
+                            this.SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                            //RightHip
+                            this.SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        }
+                    }
+                    #endregion
+                    //何もしないとき、空のmatを作成
+                    #region make empty mat
+                    if (SwapBodyMats.Count == 0)
+                    {
+                        //SpinBase
+                        SwapBodyMats.Add(Kinect.JointType.SpineBase, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //LeftShoulder
+                        SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //LeftElbow
+                        SwapBodyMats.Add(Kinect.JointType.ElbowLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //RightShoulder
+                        SwapBodyMats.Add(Kinect.JointType.ShoulderRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //RightElbow
+                        SwapBodyMats.Add(Kinect.JointType.ElbowRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //LeftHip
+                        SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //RightHip
+                        SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                    }
+                    #endregion
+                }
+                //全員の動きの平均を入れるモード
+                else
+                {
+                    //＜平均＞　相手と入れ替えて動かすmatを作成 useSwp時　
+                    #region make swaping mat
+                    if (this.useSwpRot)
+                    {
+                        //SpinBase
+                        this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, -GetBoneRadAve(this.List_BoneRads, Kinect.JointType.SpineBase)));
+                        //LeftShoulder
+                        this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderLeft, -GetBoneRadAve(this.List_BoneRads, Kinect.JointType.ShoulderLeft), this.SwapBodyMats[Kinect.JointType.SpineBase]));
+                        //LeftElbow
+                        this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowLeft, -GetBoneRadAve(this.List_BoneRads, Kinect.JointType.ElbowLeft), this.SwapBodyMats[Kinect.JointType.ShoulderLeft]));
+                        //RightShoulder
+                        this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderRight, -GetBoneRadAve(this.List_BoneRads, Kinect.JointType.ShoulderRight), this.SwapBodyMats[Kinect.JointType.SpineBase]));
+                        //RightElbow
+                        this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowRight, -GetBoneRadAve(this.List_BoneRads, Kinect.JointType.ElbowRight) , this.SwapBodyMats[Kinect.JointType.ShoulderLeft]));
+                        //LeftHip
+                        this.SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //RightHip
+                        this.SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                    }
+                    #endregion
+                    //＜平均＞　回転の動きを大きくする影　　　　　　     //もしかしたら動かすときの起点となる二つの骨格点の存在確認はいらないかも...
+                    #region make rot mat
+                    if (this.useRot)
+                    {
+                        //全員のSpineBaseの回転の平均を取得
+                        this.radAverage =  GetBoneRadAve(this.List_BoneRads,Kinect.JointType.SpineBase );
+
+
+                        //SpinBase
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
+                        {
+                            this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, this.radAverage * -2));
+                        }
+                        else
+                        {
+                            this.SwapBodyMats.Add(Kinect.JointType.SpineBase, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        }
+                        //LeftShoulder
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ShoulderLeft) == true && List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
+                        {
+                            if (- this.radAverage > 0)
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderLeft, -this.radAverage, SwapBodyMats[Kinect.JointType.SpineBase]));
+
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, SwapBodyMats[Kinect.JointType.SpineBase]);
+                            }
+
+                        }
+                        else
+                        {
+                            this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, this.SwapBodyMats[Kinect.JointType.SpineBase]);
+                        }
+                        //LeftElbow
+                        this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, this.SwapBodyMats[Kinect.JointType.ShoulderLeft]);
+                        //RightShoulder
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.ShoulderRight) == true && this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
+                        {
+                            if (- this.radAverage <= 0)
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderRight, -this.radAverage, SwapBodyMats[Kinect.JointType.SpineBase]));
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, this.SwapBodyMats[Kinect.JointType.SpineBase]);
+                            }
+                        }
+                        else
+                        {
+                            this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, this.SwapBodyMats[Kinect.JointType.SpineBase]);
+                        }
+                        //RightElbow
+                        this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, this.SwapBodyMats[Kinect.JointType.ShoulderRight]);
+                        //LeftHip
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.HipLeft) == true && this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
+                        {
+                            if (-this.radAverage > 0) //状況を見て符号は変える
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.HipLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.HipLeft, -2 * this.radAverage));
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                            }
+                        }
+                        else
+                        {
+                            this.SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        }
+                        //RightHip
+                        if (this.List_BoneRads[i].ContainsKey(Kinect.JointType.HipRight) == true && this.List_BoneRads[i].ContainsKey(Kinect.JointType.SpineBase) == true)
+                        {
+                            if (-this.radAverage <= 0) //状況を見て符号は変える
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.HipRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.HipRight, -2 * this.radAverage));
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                            }
+                        }
+                        else
+                        {
+                            this.SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        }
+
+
+
+
+
+                    }
+                    #endregion
+                    //＜平均＞　他の人の移動によって体が傾く影 
+                    #region make Att mat
+                    if (this.useAtt)
+                    {
+                        //各人の5フレーム分の移動量の平均　を　平均したもの　を作る
+                        for (int j = 0;j < this.Tree_BaseVel[0].Count; ++j)
+                        {
+                            this.radAverage += (GetBaseMoveAve(this.Tree_BaseVel, j, 5)  / this.Tree_BaseVel[0].Count);
+                        }
+
+                        //Debug.Log("body ; " + i);
+                        //Debug.Log("MoveAmount  ; " + GetBaseMoveAve(this.Tree_BaseVel, this.targetAttContNum, 5));
+                        if (this.radAverage > attractionRate) this.radAverage = attractionRate;
+                        if (this.radAverage < -attractionRate) this.radAverage = -attractionRate;
+
+
+                        this.bodyRotMat = GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, this.radAverage / attractionRate * Math.PI / 4);
+                        //SpinBase
+                        SwapBodyMats.Add(Kinect.JointType.SpineBase, bodyRotMat);
+                        //LeftShoulder
+                        SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, bodyRotMat);
+                        //LeftElbow
+                        SwapBodyMats.Add(Kinect.JointType.ElbowLeft, bodyRotMat);
+                        //RightShoulder
+                        SwapBodyMats.Add(Kinect.JointType.ShoulderRight, bodyRotMat);
+                        //RightElbow
+                        SwapBodyMats.Add(Kinect.JointType.ElbowRight, bodyRotMat);
+                        //LeftHip
+                        SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //RightHip
+                        SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                    }
+                    #endregion
+                    //＜平均＞　加速度をほかの人間と入れ替える　　
+                    #region make SwapAcc mat
+                    if (this.useSwpAcc)
+                    {
+                        if (this.List_BoneAccs.Count != 0)
+                        {
+                            //SpinBase
+                            //Debug.Log("ElbowLeftAccExist ; " + this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.SpineBase));
+
+                            if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.SpineBase) == true)
+                            {
+                                //this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, this.List_BoneAccs[targetAccContNum][Kinect.JointType.SpineBase] * ctlRate));
+                               
+                                this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.SpineBase, 5) * accRate));
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.SpineBase, Mat.Eye(3, 3, MatType.CV_32FC1));
+                            }
+                            //LeftShoulder
+                            if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.ShoulderLeft) == true)
+                            {
+                                //this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderLeft, this.List_BoneAccs[targetAccContNum][Kinect.JointType.ShoulderLeft] * ctlRate));
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderLeft, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.ShoulderLeft, 5) * accRate));
+
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, this.SwapBodyMats[Kinect.JointType.SpineBase]);
+                            }
+                            //LeftElbow
+                            if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.ElbowLeft) == true)
+                            {
+                                //this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowLeft, this.List_BoneAccs[targetAccContNum][Kinect.JointType.ElbowLeft] * ctlRate));
+                                this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowLeft, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.ElbowLeft, 5) * accRate));
+
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ElbowLeft, this.SwapBodyMats[Kinect.JointType.ShoulderLeft]);
+                            }
+                            //RightShoulder
+                            if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.ShoulderRight) == true)
+                            {
+                                //this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderRight, this.List_BoneAccs[targetAccContNum][Kinect.JointType.ShoulderRight] * ctlRate));
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ShoulderRight, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.ShoulderRight, 5) * accRate));
+
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ShoulderRight, this.SwapBodyMats[Kinect.JointType.SpineBase]);
+                            }
+                            //RightElbow
+                            if (this.List_BoneAccs[targetAccContNum].ContainsKey(Kinect.JointType.ElbowRight) == true)
+                            {
+                                //this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowRight, this.List_BoneAccs[targetAccContNum][Kinect.JointType.ElbowRight] * ctlRate));
+                                this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.ElbowRight, GetBoneAccAve(this.Tree_BoneAccs, targetAccContNum, Kinect.JointType.ElbowRight, 5) * accRate));
+
+                            }
+                            else
+                            {
+                                this.SwapBodyMats.Add(Kinect.JointType.ElbowRight, this.SwapBodyMats[Kinect.JointType.ShoulderRight]);
+                            }
+                            //LeftHip
+                            this.SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                            //RightHip
+                            this.SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        }
+                    }
+                    #endregion
+                    //何もしないとき、空のmatを作成
+                    #region make empty mat
+                    if (SwapBodyMats.Count == 0)
+                    {
+                        //SpinBase
+                        SwapBodyMats.Add(Kinect.JointType.SpineBase, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //LeftShoulder
+                        SwapBodyMats.Add(Kinect.JointType.ShoulderLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //LeftElbow
+                        SwapBodyMats.Add(Kinect.JointType.ElbowLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //RightShoulder
+                        SwapBodyMats.Add(Kinect.JointType.ShoulderRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //RightElbow
+                        SwapBodyMats.Add(Kinect.JointType.ElbowRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //LeftHip
+                        SwapBodyMats.Add(Kinect.JointType.HipLeft, Mat.Eye(3, 3, MatType.CV_32FC1));
+                        //RightHip
+                        SwapBodyMats.Add(Kinect.JointType.HipRight, Mat.Eye(3, 3, MatType.CV_32FC1));
+                    }
+                    #endregion
+                }
 
                 //輪郭"点"について1つずつ処理
                 for (int j = 0; j < this.bodyContList[i].Count; j++)  //順番
@@ -991,7 +1238,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
 
             //var _contour = List_Contours.ToArray();
-             _contour = List_Contours.ToArray();
+            _contour = List_Contours.ToArray();
             Cv2.DrawContours(m_cont_buffer, _contour, -1, color, -1, OpenCvSharp.LineType.Link8);
 
 
@@ -1004,7 +1251,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             this.List_Contours_Buffer = this.List_Contours;
 
-            this.count += (0.01 * this.speedRate);
+            this.count += (0.01 );
             if (this.count > 2 * Math.PI) this.count = 0;
 
             //チェック用
@@ -1017,24 +1264,37 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
             //dst += m_buffer;
 
-            m_second_buffer += m_buffer;
-            OpenCvSharp.CPlusPlus.Rect rect = new OpenCvSharp.CPlusPlus.Rect(0, 0, m_second_buffer.Width, m_second_buffer.Height);
-            Mat ROIMat = new Mat(m_second_buffer, rect);
-            m_first_buffer.CopyTo(ROIMat, m_first_buffer);
+            //m_second_buffer += m_buffer;
+            m_second_buffer = m_buffer.Clone();
+            //どっちかが表になるver.　　影の重ね合わせ　マスク処理ROI
+            if (!this.addImg)
+            {
+                //処理ありが表
+                if (this.reverceCheck)
+                {
+                    OpenCvSharp.CPlusPlus.Rect rect = new OpenCvSharp.CPlusPlus.Rect(0, 0, m_second_buffer.Width, m_second_buffer.Height);
+                    Mat ROIMat = new Mat(m_first_buffer, rect);
+                    m_second_buffer.CopyTo(ROIMat, m_second_buffer);
 
-            dst += m_second_buffer;
+                    dst += m_first_buffer;
+                }
+                //処理なしが表
+                else
+                {
+                    OpenCvSharp.CPlusPlus.Rect rect = new OpenCvSharp.CPlusPlus.Rect(0, 0, m_second_buffer.Width, m_second_buffer.Height);
+                    Mat ROIMat = new Mat(m_second_buffer, rect);
+                    m_first_buffer.CopyTo(ROIMat, m_first_buffer);
 
-
+                    dst += m_second_buffer;
+                }
+            }
+            //加算合成ver.
+            else
+            {
+                m_first_buffer += m_second_buffer;
+                dst += m_first_buffer;
+            }
         }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1361,6 +1621,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             if (count == AveNum) count--;
             return Average / (AveNum - count);
         }
+        
 
         float GetBaseMoveAve(List<List<float>> baseTree, int bodyNum, int AveNum)
         {
@@ -1381,24 +1642,34 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             return Average / (AveNum - count);
         }
 
-        /*
-        public double GetBoneRad(int bodyNum, Kinect.JointType farJt, Kinect.JointType pivotJt, Kinect.JointType nearJt)
+        double GetBoneRadAve(List<Dictionary<Kinect.JointType, double >> boneRadList , Kinect.JointType jt)
         {
-            //内積から角度を計算
-           
-            double boneRad = Math.Acos(((JointToDepthPoint(bodyNum, farJt).X - JointToDepthPoint(bodyNum, pivotJt).X) * (JointToDepthPoint(bodyNum, pivotJt).X - JointToDepthPoint(bodyNum, nearJt).X) +
-                                        (JointToDepthPoint(bodyNum, farJt).Y - JointToDepthPoint(bodyNum, pivotJt).Y) * (JointToDepthPoint(bodyNum, pivotJt).Y - JointToDepthPoint(bodyNum, nearJt).Y)) /
-                                          PointsLength(JointToDepthPoint(bodyNum, farJt), JointToDepthPoint(bodyNum, pivotJt)) / PointsLength(JointToDepthPoint(bodyNum, pivotJt), JointToDepthPoint(bodyNum, nearJt)));
-
-            //det = ax * by - ay * bx = - or +  どっち向きかの判断
-            if ((JointToDepthPoint(bodyNum, farJt).X - JointToDepthPoint(bodyNum, pivotJt).X) * (JointToDepthPoint(bodyNum, pivotJt).Y - JointToDepthPoint(bodyNum, nearJt).Y) -
-                (JointToDepthPoint(bodyNum, farJt).Y - JointToDepthPoint(bodyNum, pivotJt).Y) * (JointToDepthPoint(bodyNum, pivotJt).X - JointToDepthPoint(bodyNum, nearJt).X) < 0)
+            double Average = 0;
+            int count = 0;
+            if (boneRadList.Count != 0)
             {
-                boneRad *= -1;   // これで左曲がりがマイナス　右曲がりがプラス
+                for (int a = 0; a < boneRadList.Count; a++)
+                {
+                    if (boneRadList[a].ContainsKey(jt))
+                    {
+                        Average += boneRadList[a][jt];
+                    }
+                    else
+                    {
+                        count++;
+                    }
+                }
+                if (count == boneRadList.Count) count--;
+                return Average / (boneRadList.Count - count);
+
             }
-            return boneRad;
+            else
+            {
+                return 0;
+            }
+
         }
-        */
+
         public double GetBoneRad(int bodyNum, Kinect.JointType farJtTop, Kinect.JointType nearJtTop)
         {
             //内積から角度を計算
@@ -1469,11 +1740,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             return bl;
         }
 
-        //bool CheckBoneAvailable(int BodyNum,Kinect.JointType jt1, Kinect.JointType jt2, Kinect.JointType jt3)
-        //{
-
-        //}
-
 
         public class BodyContor   //すべての輪郭点のクラス
         {
@@ -1539,8 +1805,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         public bool IsFirstFrame { get; private set; }
     }
-
-
-
-
 }
+
+
