@@ -96,7 +96,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     if (this.m_particleList[i].Setupped  && this.m_particleList[i].id != -1)
                     {
                         var p = this.m_particleList[i];
-                        vell = this.BodyDataOnDepthImage[p.id].JointDepth[p.jointType].vellocity_upperCorrect*2f;
+                        vell = this.BodyDataOnDepthImage[p.id].JointDepth[p.jointType].vellocity_upperCorrect;
 
                         if(vell.magnitude > 1f)
                         {
@@ -126,7 +126,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     else
                     {
                         this.m_particleList[i].Size = MinSize;
-                        this.m_particleList[i].GraduallyChangeColorTo(Scalar.Black, 0.02);
+                        this.m_particleList[i].GraduallyChangeColorTo(Scalar.Black, 0.07);
                     }
                     this.m_particleList[i].DrawShape(ref m_dst);
                 }
@@ -140,7 +140,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             for (int i = 0; i < this.m_particleList.Count; ++i)
             {
-                this.m_particleList[i].AutoReset(TaggedCircleParticle.ResetType.Only, this.bodyIdList);
+                this.m_particleList[i].AutoReset(TaggedCircleParticle.ResetType.Simbolic6, this.bodyIdList);
             }
         }
 

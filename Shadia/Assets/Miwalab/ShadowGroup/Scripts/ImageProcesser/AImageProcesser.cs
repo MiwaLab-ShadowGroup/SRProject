@@ -73,6 +73,22 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     }
                 }
 
+                public Vector3 velocity_transformed
+                {
+                    get
+                    {
+                        CameraSpacePoint point = new CameraSpacePoint();
+                        point.X = vellocity.x;
+                        point.Y = vellocity.y;
+                        point.Z = vellocity.z;
+                        var position = _sensor.CoordinateMapper.MapCameraPointToDepthSpace(point);
+                        return new Vector3(
+                            position.X,
+                            position.Y
+                            );
+                    }
+                }
+
                 public Vector3 vellocity_upperCorrect
                 {
                     get

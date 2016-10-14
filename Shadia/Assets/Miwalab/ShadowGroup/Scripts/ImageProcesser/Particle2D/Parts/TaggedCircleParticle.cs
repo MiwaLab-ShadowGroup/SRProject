@@ -23,8 +23,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
                 case ResetType.Only:
                     this.ResetAsSpineBase();
                     break;
-                case ResetType.Simbolic:
-                    this.ResetAsSimbolic();
+                case ResetType.Simbolic6:
+                    this.ResetAsSimbolic6();
+                    break;
+                case ResetType.Simbolic3:
+                    this.ResetAsSimbolic3();
                     break;
                 default:
                     break;
@@ -38,7 +41,23 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
 
         }
 
-        private void ResetAsSimbolic()
+        private void ResetAsSimbolic3()
+        {
+            int number = UnityEngine.Random.Range(0, 3);
+            switch (number)
+            {
+                case 1:
+                    jointType = JointType.HandLeft;
+                    break;
+                case 2:
+                    jointType = JointType.HandRight;
+                    break;
+                case 0:
+                    jointType = JointType.SpineBase;
+                    break;;
+            }
+        }
+        private void ResetAsSimbolic6()
         {
             int number = UnityEngine.Random.Range(0, 6);
             switch (number)
@@ -79,7 +98,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
             /// <summary>
             /// 6個　手　足　頭　腰
             /// </summary>
-            Simbolic,
+            Simbolic6,
+
+            /// <summary>
+            /// 手　腰
+            /// </summary>
+            Simbolic3,
             /// <summary>
             /// すべて
             /// </summary>
