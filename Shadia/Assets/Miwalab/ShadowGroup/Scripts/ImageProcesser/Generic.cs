@@ -91,6 +91,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         Canny,
 
+        /// <summary>
+        /// ボーンで影を動かす（B5河野）
+        /// </summary>
+        MoveShadow,
+
+        /// <summary>
+        /// 二重に影を提示するやつ（B5河野）
+        /// </summary>
+        Twins,
 
 
         /// <summary>

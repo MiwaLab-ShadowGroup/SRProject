@@ -21,8 +21,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         }
 
-        int sharpness = 6;
+        int sharpness = 100;
         double ctlRate = 0;
+        int blurRate;
         private Mat grayimage = new Mat();
         private Mat dstMat = new Mat();
         // Mat dstMat = new Mat()
@@ -199,7 +200,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void HandElbow_Rate_ValueChanged(object sender, EventArgs e)
         {
-            this.sharpness = (int)(e as ParameterSlider.ChangedValue).Value;
+            this.blurRate = (int)(e as ParameterSlider.ChangedValue).Value;
+
         }
 
         private void HandElbow_CtlRate_ValueChanged(object sender, EventArgs e)
@@ -274,6 +276,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     m_buffer *= 0;
                 }
             }
+         
 
             if (preBodyData == null)
             {
@@ -311,7 +314,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             //if (count > 2 * Math.PI) count = 0;
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
-            Cv2.MedianBlur(grayimage, grayimage, 21);
+            Cv2.MedianBlur(grayimage, grayimage, 11);
+            Cv2.Dilate(grayimage,grayimage,new Mat(),null,1); //←適宜
+
             //dstMat = new Mat(dst.Height, dst.Width, MatType.CV_8UC4,colorBack);
             dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
 
@@ -1091,56 +1096,3 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
 
 }
-/*
-if (LineToPointLength(new Vec2f(BodyDataOnDepthImage[TrackedBodyNum[k]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.X,
-                                                            BodyDataOnDepthImage[TrackedBodyNum[k]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.Y),
-                                                            elbowBisector[k],contour[i][j])  < sharpness ){
-
-                                circlePoint.Add(contour[i][j]);
-                            }
-
-    */
-
-/*
-inCircle = InCircleCheck(contour[i][j], new Vec2f(BodyDataOnDepthImage[TrackedBodyNum[k]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.X,
-                                                  BodyDataOnDepthImage[TrackedBodyNum[k]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.Y),
-                                         new Vec2f(BodyDataOnDepthImage[TrackedBodyNum[k]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.X + elbowBisector[k].Item0,
-                                                   BodyDataOnDepthImage[TrackedBodyNum[k]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.Y + elbowBisector[k].Item1),
-                                         20.0f);
-if(inCircle)
-{
-    if (nearestContour == null)
-    {
-        nearestContour = contour[i][j];
-        nearestNum = j;
-    }
-    //もっと近い点が見つかったら
-    if(VecLength(new Vec2f(nearestContour.Value.X - BodyDataOnDepthImage[TrackedBodyNum[k]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.X,
-                           nearestContour.Value.Y - BodyDataOnDepthImage[TrackedBodyNum[k]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.Y)) >
-       VecLength(new Vec2f(contour[i][j].X - BodyDataOnDepthImage[TrackedBodyNum[k]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.X,
-                           contour[i][j].Y - BodyDataOnDepthImage[TrackedBodyNum[k]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.Y))) {
-
-        nearestContour = contour[i][j];
-        nearestNum = j;
-    }
-    */
-
-/* 一番近い点　これは危険
-//for (int k=0;k< elbowToHand.Count; k++) {
-                    //    if (nearElbow[0] == null) nearElbow.Add(contour[i][j]);
-                    //    if (VecLength(new Vec2f(nearElbow[0].X - BodyDataOnDepthImage[TrackedBodyNum[k]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.X,
-                    //                            nearElbow[0].X - BodyDataOnDepthImage[TrackedBodyNum[k]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.Y)　>
-
-
-
-                    //        nearElbow.Add(contour[i][j]);
-                    //}
-*/
-/*
-
-                //Cv2.Circle(m_buffer, new Point(BodyDataOnDepthImage[TrackedBodyNum[i]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.X + elbowBisector[i].Item0,
-                //                               BodyDataOnDepthImage[TrackedBodyNum[i]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.Y + elbowBisector[i].Item1), 5, new Scalar(255, 255, 255), 2);
-                //Cv2.Circle(m_buffer, new Point(BodyDataOnDepthImage[TrackedBodyNum[i]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.X,
-                //                               BodyDataOnDepthImage[TrackedBodyNum[i]].JointDepth[Windows.Kinect.JointType.ElbowLeft].position.Y), 5, new Scalar(0, 255, 255), 2);
-
-    */
