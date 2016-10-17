@@ -409,7 +409,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                         //spineBase位置新しくツリーで格納
                         //this.nowBasePos.Add(i, BodyDataOnDepthImage[i].JointDepth[Kinect.JointType.SpineBase].position.X);
-                        this.nowBasePos.Add(BodyDataOnDepthImage[i].JointDepth[Kinect.JointType.SpineBase].position.X);
+                        this.nowBasePos.Add(BodyDataOnDepthImage[i].JointDepth[Kinect.JointType.SpineBase].position.x);
 
 
 
@@ -1148,7 +1148,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private Point JointToDepthPoint(int bodyNum, Windows.Kinect.JointType jt)
         {
-            return new Point(BodyDataOnDepthImage[bodyNum].JointDepth[jt].position.X, BodyDataOnDepthImage[bodyNum].JointDepth[jt].position.Y);
+            return new Point(BodyDataOnDepthImage[bodyNum].JointDepth[jt].position.x, BodyDataOnDepthImage[bodyNum].JointDepth[jt].position.y);
         }
 
         private Point ContourRotate(BodyContor bc, double rad)
@@ -1304,37 +1304,37 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private Mat GetBoneMoveMat(int bodyNum, Kinect.JointType nearJt, Kinect.JointType farJt, DepthBody[] preBody)
         {
 
-            float[,] transMatArr = {{ 1,0, JointToDepthPoint(bodyNum, nearJt).X - preBody[bodyNum].JointDepth[nearJt].position.X },
-                                    { 0,1, JointToDepthPoint(bodyNum, nearJt).Y - preBody[bodyNum].JointDepth[nearJt].position.Y },
+            float[,] transMatArr = {{ 1,0, JointToDepthPoint(bodyNum, nearJt).X - preBody[bodyNum].JointDepth[nearJt].position.x },
+                                    { 0,1, JointToDepthPoint(bodyNum, nearJt).Y - preBody[bodyNum].JointDepth[nearJt].position.y },
                                     { 0,0,1 }};
             Mat transMat = new Mat(3, 3, MatType.CV_32FC1, transMatArr);
 
             float scaleRate = PointsLength(JointToDepthPoint(bodyNum, nearJt), JointToDepthPoint(bodyNum, farJt)) /
-                              PointsLength(new Point(preBody[bodyNum].JointDepth[nearJt].position.X - preBody[bodyNum].JointDepth[farJt].position.X, preBody[bodyNum].JointDepth[nearJt].position.Y - preBody[bodyNum].JointDepth[farJt].position.Y));
+                              PointsLength(new Point(preBody[bodyNum].JointDepth[nearJt].position.x - preBody[bodyNum].JointDepth[farJt].position.x, preBody[bodyNum].JointDepth[nearJt].position.y - preBody[bodyNum].JointDepth[farJt].position.y));
             float[,] scaleMatArr = { { scaleRate, 0, 0   },
                                      { 0,scaleRate, 0 },
                                      { 0, 0, 1 } };
             Mat scaleMat = new Mat(3, 3, MatType.CV_32FC1, scaleMatArr);
 
 
-            float[,] goOriMatArr = { {1,0, - preBody[bodyNum].JointDepth[nearJt].position.X },
-                                     {0,1, - preBody[bodyNum].JointDepth[nearJt].position.Y },
+            float[,] goOriMatArr = { {1,0, - preBody[bodyNum].JointDepth[nearJt].position.x },
+                                     {0,1, - preBody[bodyNum].JointDepth[nearJt].position.y },
                                      {0,0,1 } };
             Mat goOriMat = new Mat(3, 3, MatType.CV_32FC1, goOriMatArr);
 
-            float[,] backOriMatArr = { {1, 0, preBody[bodyNum].JointDepth[nearJt].position.X  },
-                                       {0, 1, preBody[bodyNum].JointDepth[nearJt].position.Y  },
+            float[,] backOriMatArr = { {1, 0, preBody[bodyNum].JointDepth[nearJt].position.x  },
+                                       {0, 1, preBody[bodyNum].JointDepth[nearJt].position.y  },
                                        {0, 0, 1 } };
             Mat backOriMat = new Mat(3, 3, MatType.CV_32FC1, backOriMatArr);
 
             //内積から角度を計算
-            double boneRad = Math.Acos((double)((JointToDepthPoint(bodyNum, farJt).X - JointToDepthPoint(bodyNum, nearJt).X) * (preBody[bodyNum].JointDepth[farJt].position.X - preBody[bodyNum].JointDepth[nearJt].position.X) +
-                                                (JointToDepthPoint(bodyNum, farJt).Y - JointToDepthPoint(bodyNum, nearJt).Y) * (preBody[bodyNum].JointDepth[farJt].position.Y - preBody[bodyNum].JointDepth[nearJt].position.Y)) /
-                                                 PointsLength(JointToDepthPoint(bodyNum, farJt), JointToDepthPoint(bodyNum, nearJt)) * PointsLength(new Point(preBody[bodyNum].JointDepth[farJt].position.X - preBody[bodyNum].JointDepth[nearJt].position.X, preBody[bodyNum].JointDepth[farJt].position.Y - preBody[bodyNum].JointDepth[nearJt].position.Y)));
+            double boneRad = Math.Acos((double)((JointToDepthPoint(bodyNum, farJt).X - JointToDepthPoint(bodyNum, nearJt).X) * (preBody[bodyNum].JointDepth[farJt].position.x - preBody[bodyNum].JointDepth[nearJt].position.x) +
+                                                (JointToDepthPoint(bodyNum, farJt).Y - JointToDepthPoint(bodyNum, nearJt).Y) * (preBody[bodyNum].JointDepth[farJt].position.y - preBody[bodyNum].JointDepth[nearJt].position.y)) /
+                                                 PointsLength(JointToDepthPoint(bodyNum, farJt), JointToDepthPoint(bodyNum, nearJt)) * PointsLength(new Point(preBody[bodyNum].JointDepth[farJt].position.x - preBody[bodyNum].JointDepth[nearJt].position.x, preBody[bodyNum].JointDepth[farJt].position.y - preBody[bodyNum].JointDepth[nearJt].position.y)));
 
             //det = ax * by - ay * bx = - or +  どっち向きかの判断
-            if ((JointToDepthPoint(bodyNum, farJt).X - JointToDepthPoint(bodyNum, nearJt).X) * (preBody[bodyNum].JointDepth[farJt].position.Y - preBody[bodyNum].JointDepth[nearJt].position.Y) -
-                (JointToDepthPoint(bodyNum, farJt).Y - JointToDepthPoint(bodyNum, nearJt).Y) * (preBody[bodyNum].JointDepth[farJt].position.X - preBody[bodyNum].JointDepth[nearJt].position.X) < 0)
+            if ((JointToDepthPoint(bodyNum, farJt).X - JointToDepthPoint(bodyNum, nearJt).X) * (preBody[bodyNum].JointDepth[farJt].position.y - preBody[bodyNum].JointDepth[nearJt].position.y) -
+                (JointToDepthPoint(bodyNum, farJt).Y - JointToDepthPoint(bodyNum, nearJt).Y) * (preBody[bodyNum].JointDepth[farJt].position.x - preBody[bodyNum].JointDepth[nearJt].position.x) < 0)
             {
                 boneRad *= -1;   //ちょっとここはやってみてから判断笑
             }
@@ -1453,20 +1453,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             for (int i = 0; i < this._TrackigBoneList.Count; ++i)
             {
 
-                if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.X > srcMat.Width) bl = false;
+                if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.x > srcMat.Width) bl = false;
                 //if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.X > srcMat.Width) Debug.Log("OverNum : "  + this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.X); 
-                if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.X < 0) bl = false;
+                if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.x < 0) bl = false;
                 //if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.X < 0 ) Debug.Log("OverNum : " + this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.X);
-                if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.Y > srcMat.Height) bl = false;
+                if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.y > srcMat.Height) bl = false;
                 //if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.Y > srcMat.Height) Debug.Log("OverNum : " + this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.Y);
-                if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.Y < 0) bl = false;
+                if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.y < 0) bl = false;
                 //if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.Y < 0) Debug.Log("OverNum : " + this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.Y);
-                if (double.IsInfinity(this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.X))
+                if (double.IsInfinity(this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.x))
                 {
                     //    Debug.Log("lostBonex : " + _TrackigBoneList[i]);
                     bl = false;
                 }
-                if (double.IsInfinity(this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.Y))
+                if (double.IsInfinity(this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.y))
                 {
                     //    Debug.Log("lostBoney : " + _TrackigBoneList[i]);
                     bl = false;
