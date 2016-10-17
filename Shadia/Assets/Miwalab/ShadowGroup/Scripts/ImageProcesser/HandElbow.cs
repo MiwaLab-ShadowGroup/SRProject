@@ -532,6 +532,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                             break;
 
                         case Kinect.JointType.WristLeft:
+                            bodyContList[i][j].center = ContourRotate(bodyContList[i][j], 0, preMat);
+
                             if (List_BoneRads[i].ContainsKey(Kinect.JointType.ElbowLeft) == true && List_BoneRads[targetContNum].ContainsKey(Kinect.JointType.ElbowLeft) == true)
                             {
                                 //Debug.Log("elbow.x : " + BodyDataOnDepthImage[i].JointDepth[Kinect.JointType.ElbowLeft].position.X);
