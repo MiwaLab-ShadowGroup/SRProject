@@ -43,6 +43,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
         {
             Accell += f;
         }
+
+        public void SetVelocity(Vector2 vel)
+        {
+            Vellocity = vel;
+        }
         public void Update()
         {
             if (Alive)

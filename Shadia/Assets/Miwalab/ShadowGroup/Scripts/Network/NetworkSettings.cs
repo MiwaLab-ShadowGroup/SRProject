@@ -5,14 +5,37 @@ using System.Text;
 
 namespace Miwalab.ShadowGroup.Network
 {
-    public static class NetworkSettings
+    public class NetworkSettings
     {
-        #region PORT
-        public const int KinectImporter_PositionSendPort = 15000;
-        public const int HumanPointReceiver_PositionReceive1 = 15001;
-        public const int HumanPointReceiver_PositionReceive2 = 15002;
-        public const int HumanPointReceiver_PositionReceive3 = 15003;
-        public const int HumanPointReceiver_PositionReceive4 = 15004;
+        #region 
+        public struct NetworkSetting
+        {
+            public NetworkSetting(string TAG, int PORT)
+            {
+                this.TAG = TAG;
+                this.PORT = PORT;
+            }
+
+            public string TAG;
+            public int PORT;
+        }
+        #endregion
+
+        #region SETTINGS
+        public class SETTINGS
+        {
+            public readonly static NetworkSetting RemoteShadowImageManager_Sender
+                = new NetworkSetting(
+                    "RemoteShadowImageManager_Sender",
+                    15000
+                    );
+
+            public readonly static NetworkSetting RemoteShadowImageManager_Receiver
+                = new NetworkSetting(
+                    "RemoteShadowImageManager_Receiver",
+                    15001
+                );
+        }
         #endregion
     }
 }

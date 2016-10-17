@@ -13,6 +13,8 @@ namespace Miwalab.ShadowGroup.Thread
 
         private bool IsFinish { set; get; }
 
+        public object SyncObject { set; get; }
+
         protected ThreadMethod m_method;
         private int m_num;
 
@@ -35,6 +37,7 @@ namespace Miwalab.ShadowGroup.Thread
             m_thread = new System.Threading.Thread(new System.Threading.ThreadStart(this.Task));
             m_num = num;
             IsFinish = false;
+            this.SyncObject = new object();
         }
 
         public void Start()
@@ -59,6 +62,22 @@ namespace Miwalab.ShadowGroup.Thread
         public bool IsFinished()
         {
             return this.IsFinish;
+        }
+
+        public void Sync()
+        {
+            lock (this.SyncObject)
+            {
+
+            }
+        }
+
+        public void Sync(SyncMethod method)
+        {
+            lock (this.SyncObject)
+            {
+                method();
+            }
         }
     }
 }

@@ -18,7 +18,6 @@ public class ParticlesHost : MonoBehaviour
 
     public float time;
 
-    private HumanPointReceiver m_humanPointReceiver;
 
     public Camera renderCamera;
 
@@ -27,7 +26,6 @@ public class ParticlesHost : MonoBehaviour
     void Start()
     {
         time = 0;
-        m_humanPointReceiver = HumanPointReceiver.GetInstance();
 
         (BackgroundMediaUIHost.GetUI("Butterfly_R") as ParameterSlider).ValueChanged += Butterfly_R_ValueChanged;
         (BackgroundMediaUIHost.GetUI("Butterfly_G") as ParameterSlider).ValueChanged += Butterfly_G_ValueChanged;
@@ -63,7 +61,7 @@ public class ParticlesHost : MonoBehaviour
         (BackgroundMediaUIHost.GetUI("Butterfly_B") as ParameterSlider).m_slider.value = 0;
     }
 
-    Vector3 m_particleSize = new Vector3(0.5f,0.5f,0.5f);
+    Vector3 m_particleSize = new Vector3(0.5f, 0.5f, 0.5f);
     private void Particle_Size_ValueChanged(object sender, EventArgs e)
     {
         float size = (e as ParameterSlider.ChangedValue).Value;
@@ -131,50 +129,10 @@ public class ParticlesHost : MonoBehaviour
     {
         for (int i = 0; i < num; ++i)
         {
-            HumanPoints humanpoints = new HumanPoints();
-            switch (UnityEngine.Random.Range(0, 3))
-            {
-                case 0:
-                    if (this.m_humanPointReceiver.HumanPointList1 != null)
-                    {
-                        humanpoints = this.m_humanPointReceiver.HumanPointList1;
-                    }
-                    break;
-                case 1:
-                    if (this.m_humanPointReceiver.HumanPointList2 != null)
-                    {
-                        humanpoints = this.m_humanPointReceiver.HumanPointList2;
-                    }
-                    break;
-                case 2:
-                    if (this.m_humanPointReceiver.HumanPointList3 != null)
-                    {
-                        humanpoints = this.m_humanPointReceiver.HumanPointList3;
-                    }
-                    break;
-                case 3:
-                    if (this.m_humanPointReceiver.HumanPointList4 != null)
-                    {
-                        humanpoints = this.m_humanPointReceiver.HumanPointList4;
-                    }
-                    break;
-                default:
-                    break;
-            }
 
-            if (humanpoints.Count > 0)
-            {
-                int index = UnityEngine.Random.Range(0, humanpoints.Count - 1);
-                CreatePosition = new Vector3(UnityEngine.Random.value - 1 / 2 + humanpoints[index].X,
-                                                UnityEngine.Random.value * usingBox.y - usingBox.y / 2,
-                                                UnityEngine.Random.value - 1 / 2 + humanpoints[index].Z);
-            }
-            else
-            {
-                CreatePosition = new Vector3(UnityEngine.Random.value * usingBox.x - usingBox.x / 2,
-                                                UnityEngine.Random.value * usingBox.y - usingBox.y / 2,
-                                                UnityEngine.Random.value * usingBox.z - usingBox.z / 2);
-            }
+            CreatePosition = new Vector3(UnityEngine.Random.value * usingBox.x - usingBox.x / 2,
+                                            UnityEngine.Random.value * usingBox.y - usingBox.y / 2,
+                                            UnityEngine.Random.value * usingBox.z - usingBox.z / 2);
             CreateQuaternion = Quaternion.Euler(90, 0, UnityEngine.Random.value * 360);
             var item = Instantiate(Paricle, CreatePosition, CreateQuaternion) as AParticle;
             item.transform.localScale = m_particleSize;
@@ -190,9 +148,9 @@ public class ParticlesHost : MonoBehaviour
 
         }
 
-        
+
     }
-    private Color m_backGroundColor = new Color(0,0,0,0);
-    private Color m_particleColor = new Color(1f,1f,1f,0);
+    private Color m_backGroundColor = new Color(0, 0, 0, 0);
+    private Color m_particleColor = new Color(1f, 1f, 1f, 0);
 
 }

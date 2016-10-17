@@ -108,6 +108,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         FlowParticlesShadow,
 
         /// <summary>
+        /// 描画する影メディア
+        /// </summary>
+        PainterShadow,
+
+        /// <summary>
         /// 個数を数えるためのもの．消したら処刑
         /// </summary>
         Count,
