@@ -685,6 +685,9 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Polygon_bgd_R", 255, 0, 0);
         AddFloatUI(parent, "Polygon_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "Polygon_bgd_B", 255, 0, 0);
+        AddFloatUI(parent, "Polygon_change_x", 100, -100, 0);
+        AddFloatUI(parent, "Polygon_change_y", 100, -100, 0);
+        AddFloatUI(parent, "Polygon_change_Rate", 3, 0, 0);
         AddFloatUI(parent, "Polygon_Rate", 40, 1, 6);
         AddBooleanUI(parent, "Polygon_UseFade", true);
         m_lastUpdatedHeight += 10;
