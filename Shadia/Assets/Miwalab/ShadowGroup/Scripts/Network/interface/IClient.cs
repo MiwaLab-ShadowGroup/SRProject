@@ -12,7 +12,10 @@ namespace Miwalab.ShadowGroup.Network
         /// </summary>
         /// <param name="name"></param>
         /// <param name="port"></param>
-        void BindPort(int port);
+        void Bind(int port, string CIPCServerIP, int CIPCServerPort, int fps, string clientName);
+
+        void Connect(CIPC_CS_Unity.CLIENT.MODE mode);
+
         /// <summary>
         /// ファイナライズ
         /// </summary>

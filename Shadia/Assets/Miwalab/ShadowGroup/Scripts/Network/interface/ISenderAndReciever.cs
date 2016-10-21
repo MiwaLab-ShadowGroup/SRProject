@@ -7,6 +7,5 @@ namespace Miwalab.ShadowGroup.Network
 {
     public interface ISenderAndReciever : ISender, IReceiver
     {
-        void SendRemote(byte[] data);
     }
 }
