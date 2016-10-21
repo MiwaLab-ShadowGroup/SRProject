@@ -4,48 +4,39 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using CIPC_CS_Unity.CLIENT;
 using UnityEngine;
 
 namespace Miwalab.ShadowGroup.Network
 {
-    public class Client : ISenderAndReciever
+    public class CIPCClient : ISenderAndReciever
     {
-        private UdpClient m_client;
-        private IPEndPoint m_remoteEP;
+        private CIPC_CS_Unity.CLIENT.CLIENT m_client;
         private int? portNum { set; get; }
         /// <summary>
         /// IPAdressを指定して初期化
         /// </summary>
         /// <param name="port"></param>
-        public Client(int port)
+        public CIPCClient(int port, string CIPCServerIP, int CIPCServerPort, int fps, string clientName )
         {
-            BindPort(port);
+            Bind(port, CIPCServerIP, CIPCServerPort, fps, clientName);
             portNum = port;
         }
 
-        /// <summary>
-        /// IPAdressを指定せずに初期化
-        /// </summary>
-        public Client()
-        {
-            BindPortRandomly();
-            portNum = null;
-        }
+       
 
         /// <summary>
         /// バインド すべてのリモートから受信
         /// </summary>
         /// <param name="port"></param>
-        public void BindPort(int port)
+        public void Bind(int port, string CIPCServerIP, int CIPCServerPort, int fps, string clientName)
         {
-            m_client = new UdpClient(port);
-            m_remoteEP = new IPEndPoint(IPAddress.Any, 0);
+            m_client = new CIPC_CS_Unity.CLIENT.CLIENT(port,CIPCServerIP, CIPCServerPort, clientName, fps);
         }
 
-        public void BindPortRandomly()
+        public void Connect(MODE mode)
         {
-            m_client = new UdpClient();
-            m_remoteEP = new IPEndPoint(IPAddress.Any, 0);
+            m_client.Setup(mode);
         }
 
 
@@ -64,9 +55,10 @@ namespace Miwalab.ShadowGroup.Network
         /// <returns></returns>
         public byte[] Receive()
         {
+            byte[] data = new byte[0];
             //毎度初期化しないと限定されてしまう．なんという危険物
-            m_remoteEP = new IPEndPoint(IPAddress.Any, 0);
-            return m_client.Receive(ref m_remoteEP);
+            m_client.Update(ref data);
+            return data;
         }
 
         /// <summary>
@@ -76,7 +68,7 @@ namespace Miwalab.ShadowGroup.Network
         /// <returns></returns>
         public byte[] Receive(ref int availe)
         {
-            availe = this.m_client.Available;
+            availe = this.m_client.IsAvailable;
             if (availe > 0)
             {
                 return this.Receive();
@@ -84,32 +76,12 @@ namespace Miwalab.ShadowGroup.Network
             return null;
         }
 
-        public void SendRemote(byte[] data)
+        public void Send(byte[] data)
         {
-            this.m_client.Send(data, data.Length, m_remoteEP);
+            this.m_client.Update(ref data);
         }
+        
 
-        public void SendTo(byte[] data, List<IPEndPoint> to)
-        {
-            foreach(var p in to)
-            {
-                this.SendTo(data, p);
-            }
-
-        }
-
-        public void SendTo(byte[] data, IPEndPoint[] to)
-        {
-            foreach (var p in to)
-            {
-                this.SendTo(data, p);
-            }
-        }
-
-        public void SendTo(byte[] data, IPEndPoint to)
-        {
-            this.m_client.Send(data, data.Length, to);
-        }
-
+        
     }
 }

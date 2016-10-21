@@ -37,8 +37,10 @@ public class RemoteShadowImageManager : MonoBehaviour
         _nHost = NetworkHost.GetInstance();
         _tHost = ThreadHost.GetInstance();
 
-        _nHost.AddClient(SENDID);
-        _nHost.AddClient(RECEIVEID);
+        _nHost.AddClient(SENDID, 30);
+        _nHost.AddClient(RECEIVEID, -1);
+
+        _AutoResetEvent = new AutoResetEvent(true);
 
         _tHost.CreateNewThread(new ContinuouslyThread(
             () => this.SendMethod()
@@ -81,7 +83,7 @@ public class RemoteShadowImageManager : MonoBehaviour
         {
             try
             {
-                _nHost.SendTo(SENDID, _SendMat.ToBytes(".png"), _IPEndPoint);
+                _nHost.Send(SENDID, _SendMat.ToBytes(".png"));
             }
             catch
             {
