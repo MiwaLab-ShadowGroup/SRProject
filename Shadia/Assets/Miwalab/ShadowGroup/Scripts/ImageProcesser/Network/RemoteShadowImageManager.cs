@@ -12,10 +12,20 @@ public class RemoteShadowImageManager : MonoBehaviour
     NetworkHost _nHost;
     ThreadHost _tHost;
 
+    #region CIPCServerSetting
+    [SerializeField]
+    public string CIPCServerIP;
+    [SerializeField]
+    public int CIPCServerPort;
+
+    public bool _IsSend = false;
+    public bool _IsReceive = false;
+
+    #endregion
+
     #region　send
     Mat _SendMat;
-    string _RemoteIP = "127.0.0.1";
-    int _RemotePort;
+    
     IPEndPoint _IPEndPoint;
     #endregion
 
@@ -24,8 +34,6 @@ public class RemoteShadowImageManager : MonoBehaviour
     AutoResetEvent _AutoResetEvent;
     #endregion
 
-    bool _IsSend = false;
-    bool _IsReceive = false;
 
     #region ID
     public readonly NetworkSettings.NetworkSetting SENDID = NetworkSettings.SETTINGS.RemoteShadowImageManager_Sender;
@@ -34,29 +42,29 @@ public class RemoteShadowImageManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        _nHost = NetworkHost.GetInstance();
+        _nHost = NetworkHost.GetInstance(CIPCServerIP, CIPCServerPort);
         _tHost = ThreadHost.GetInstance();
 
         _nHost.AddClient(SENDID, 30);
         _nHost.AddClient(RECEIVEID, -1);
+
+        _nHost.Connect(SENDID, CIPC_CS_Unity.CLIENT.MODE.Sender);
+        _nHost.Connect(RECEIVEID, CIPC_CS_Unity.CLIENT.MODE.Receiver);
 
         _AutoResetEvent = new AutoResetEvent(true);
 
         _tHost.CreateNewThread(new ContinuouslyThread(
             () => this.SendMethod()
             ), SENDID.TAG);
-
         _tHost.CreateNewThread(new ContinuouslyThread(
             () => this.ReceiveMethod()
             ), RECEIVEID.TAG);
-
-
-        _IPEndPoint = new IPEndPoint(IPAddress.Parse(_RemoteIP), _RemotePort);
     }
-
-    public void SetIPAddress(string ipAddress)
+    
+    public void OnApplicationQuit()
     {
-        _IPEndPoint = new IPEndPoint(IPAddress.Parse(ipAddress), _RemotePort);
+        this._nHost.RemoveClient(SENDID);
+        this._nHost.RemoveClient(RECEIVEID);
     }
 
     private void ReceiveMethod()
