@@ -113,6 +113,7 @@ public class RemoteShadowImageManager : MonoBehaviour
 
     public void OnApplicationQuit()
     {
+        if (_nHost == null) return;
         this._nHost.RemoveClient(SENDID);
         this._nHost.RemoveClient(RECEIVEID);
     }
