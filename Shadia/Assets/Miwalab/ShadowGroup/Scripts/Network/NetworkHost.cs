@@ -70,7 +70,7 @@ namespace Miwalab.ShadowGroup.Network
             Debug.Log("port番号:" + port + "が初期化されます.");
             try
             {
-                CIPCClient client = new CIPCClient(port, CIPCServerIP, CIPCServerPort, fps, tag + port.ToString());
+                CIPCClient client = new CIPCClient(port, CIPCServerIP, CIPCServerPort, fps, tag);
                 //タグをつけて記憶
                 m_clientList.Add(tag, client);
                 m_portList.Add(port);

@@ -24,13 +24,13 @@ public class RemoteShadowImageManager : MonoBehaviour
     #endregion
 
     #region　send
-    Mat _SendMat;
+    public Mat _SendMat;
     
     IPEndPoint _IPEndPoint;
     #endregion
 
     #region receive
-    Mat _ReceivedMat;
+    public Mat _ReceivedMat;
     AutoResetEvent _AutoResetEvent;
     #endregion
 
@@ -51,6 +51,9 @@ public class RemoteShadowImageManager : MonoBehaviour
         _nHost.Connect(SENDID, CIPC_CS_Unity.CLIENT.MODE.Sender);
         _nHost.Connect(RECEIVEID, CIPC_CS_Unity.CLIENT.MODE.Receiver);
 
+        CIPC_CS_Unity.CLIENT.CLIENT.ConnectByClientName(SENDID.TAG, RECEIVEID.TAG, CIPCServerIP
+            , CIPCServerPort, 50050);
+
         _AutoResetEvent = new AutoResetEvent(true);
 
         _tHost.CreateNewThread(new ContinuouslyThread(
@@ -59,10 +62,15 @@ public class RemoteShadowImageManager : MonoBehaviour
         _tHost.CreateNewThread(new ContinuouslyThread(
             () => this.ReceiveMethod()
             ), RECEIVEID.TAG);
+
+        _tHost.ThreadStart(SENDID.TAG);
+        _tHost.ThreadStart(RECEIVEID.TAG);
     }
     
     public void OnApplicationQuit()
     {
+        CIPC_CS_Unity.CLIENT.CLIENT.DisconnectByClientName(SENDID.TAG, RECEIVEID.TAG, CIPCServerIP
+            , CIPCServerPort, 50050);
         this._nHost.RemoveClient(SENDID);
         this._nHost.RemoveClient(RECEIVEID);
     }
@@ -75,7 +83,11 @@ public class RemoteShadowImageManager : MonoBehaviour
             {
                 int available = 0;
                 byte[] data = _nHost.Receive(RECEIVEID, ref available);
-                _ReceivedMat = Cv2.ImDecode(data, OpenCvSharp.LoadMode.Color);
+                if (data != null)
+                {
+
+                    _ReceivedMat = Cv2.ImDecode(data, OpenCvSharp.LoadMode.Color);
+                }
                 _AutoResetEvent.WaitOne();
             }
             catch
@@ -91,7 +103,10 @@ public class RemoteShadowImageManager : MonoBehaviour
         {
             try
             {
-                _nHost.Send(SENDID, _SendMat.ToBytes(".png"));
+                if (_SendMat != null)
+                {
+                    _nHost.Send(SENDID, _SendMat.ToBytes(".png"));
+                }
             }
             catch
             {
@@ -113,6 +128,8 @@ public class RemoteShadowImageManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        
         _AutoResetEvent.Set();
     }
 }
