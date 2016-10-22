@@ -251,6 +251,13 @@ public class KinectImporter : ASensorImporter
         foreach (var imageProcesser in this.m_ImagerProcesserList)
         {
             imageProcesser.SetBody(_bodyManager.GetData());
+
+            this.RSIM.SetSendSkeletons(ref imageProcesser.depthBodyData,_bodyManager.GetData());
+            this.RSIM.GetReceivedSkeletons(ref imageProcesser.depthBodyData,_bodyManager.GetData());
+
+
+            imageProcesser.UpdateBodyIndexList();
+
             imageProcesser.ImageProcess(ref this.m_mat, ref this.m_mat);
 
         }

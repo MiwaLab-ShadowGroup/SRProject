@@ -35,6 +35,17 @@ namespace Miwalab.ShadowGroup.Network
                     "RemoteShadowImageManager_Receiver",
                     15001
                 );
+            public readonly static NetworkSetting RemoteShadowImageManager_Sender_Bone
+                = new NetworkSetting(
+                    "RemoteShadowImageManager_Sender_Bone",
+                    15002
+                    );
+
+            public readonly static NetworkSetting RemoteShadowImageManager_Receiver_Bone
+                = new NetworkSetting(
+                    "RemoteShadowImageManager_Receiver_Bone",
+                    15003
+                );
         }
         #endregion
     }

@@ -17,6 +17,11 @@ public class ShadowMediaUIHost : MonoBehaviour
     private static Dictionary<string, AParameterUI> m_ParameterUI = new Dictionary<string, AParameterUI>();
     protected static float m_lastUpdatedHeight;
 
+    public static void setDebugText(string text)
+    {
+        GameObject.FindObjectOfType<ShadowMediaUIHost>()._debugText.text = text;
+    }
+
     public static Dictionary<string, AParameterUI> GetInstance()
     {
         return m_ParameterUI;
@@ -92,6 +97,8 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     public GameObject SettingPanel;
     public Canvas MainCanvas;
+
+    public Text _debugText;
 
     protected List<Dropdown> m_MenuList;
     protected Dictionary<string, GameObject> m_PanelDictionary;
@@ -547,6 +554,12 @@ public class ShadowMediaUIHost : MonoBehaviour
 
         AddFloatUI(parent, "PV_Size_Max", 20, -1, 1);
         AddFloatUI(parent, "PV_Size_Min", 20, -1, 0);
+
+        AddBooleanUI(parent, "PV_UseShadowImage", false);
+        AddBooleanUI(parent, "PV_UseAvarage", false);
+        AddBooleanUI(parent, "PV_UseFade", false);
+
+        AddBooleanUI(parent, "PV_DebugMode", false);
 
         AddButtonUI(parent, "PV_Reset");
     }
