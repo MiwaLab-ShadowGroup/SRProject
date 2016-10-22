@@ -153,11 +153,18 @@ public class ShadowMediaUIHost : MonoBehaviour
 
 
         this.CreateUIsImportKinectv2(m_PanelDictionary[ImportSettingType.Kinect.ToString()]);
+        this.CreateUIsImportNetwork(m_PanelDictionary[ImportSettingType.Network.ToString()]);
 
         this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()], 1);
         this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport1.ToString()], 1);
         this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport2.ToString()], 2);
         this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport2.ToString()], 2);
+        this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport3.ToString()], 3);
+        this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport3.ToString()], 3);
+        this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport4.ToString()], 4);
+        this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport4.ToString()], 4);
+
+
 
         this.CreateUIsAffterEffectFade(m_PanelDictionary[AfterEffectSettingType.Fade.ToString()]);
 
@@ -175,6 +182,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.m_Sensor.AddImageProcesser(new Normal());
 
     }
+
+    
 
     private void SetupUIsImageprocess()
     {
@@ -311,10 +320,14 @@ public class ShadowMediaUIHost : MonoBehaviour
         switch (type)
         {
             case ImportSettingType.Kinect:
-                //一回作って使いまわす
                 this.m_currentImportSettingPanel = this.m_PanelDictionary[ImportSettingType.Kinect.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentImportSettingPanel);
                 break;
+            case ImportSettingType.Network:
+                this.m_currentImportSettingPanel = this.m_PanelDictionary[ImportSettingType.Network.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentImportSettingPanel);
+                break;
+
             case ImportSettingType.Camera:
                 this.m_currentImportSettingPanel = this.m_PanelDictionary[ImportSettingType.Camera.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentImportSettingPanel);
@@ -331,7 +344,6 @@ public class ShadowMediaUIHost : MonoBehaviour
         switch (type)
         {
             case CallibrationSettingType.CallibrationImport1:
-                //一回作って使いまわす
                 this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
                 break;
@@ -340,12 +352,27 @@ public class ShadowMediaUIHost : MonoBehaviour
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
                 break;
             case CallibrationSettingType.CallibrationImport2:
-                //一回作って使いまわす
                 this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport2.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
                 break;
             case CallibrationSettingType.CallibrationExport2:
                 this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport2.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
+                break;
+            case CallibrationSettingType.CallibrationImport3:
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport3.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
+                break;
+            case CallibrationSettingType.CallibrationExport3:
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport3.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
+                break;
+            case CallibrationSettingType.CallibrationImport4:
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport4.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
+                break;
+            case CallibrationSettingType.CallibrationExport4:
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport4.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
                 break;
 
@@ -762,6 +789,17 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "Kinect_Depth", false);
 
     }
+
+    private void CreateUIsImportNetwork(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddTextUI(parent, "Network_CIPCServerIP");
+        AddTextUI(parent, "Network_CIPCServerPort");
+        AddButtonUI(parent, "Network_CIPCServerConnect");
+        AddBooleanUI(parent, "Network_Send", false);
+        AddBooleanUI(parent, "Network_Receive", false);
+    }
+
     /// <summary>
     /// normal shadow
     /// </summary>

@@ -9,6 +9,7 @@ namespace Miwalab.ShadowGroup.Scripts.Sensors
     {
         Kinect,
         Camera,
+        Network,
         Count
     }
 }

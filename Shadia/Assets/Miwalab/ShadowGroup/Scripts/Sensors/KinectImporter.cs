@@ -37,34 +37,18 @@ public class KinectImporter : ASensorImporter
     public BodyImage3D BodyImage3D;
     public CameraMatAttacher CameraAttacher;
     #endregion
-    //public ColorSourceManager _colormanager;
-    //ColorImageFormat colorImageFormat;
-    //ColorFrameReader colorFrameReader;
-    //FrameDescription colorFrameDescription;
-    //byte[] colordata;
-    //public ushort[] colors;
-    //int imageWidth;
-    //int imageHeight;
-    //public Mat Colorimagemat;
 
-    #region 送信用
-    //private NetworkHost m_networkHost;
-    //private ThreadHost m_threadHost;
-    //private bool m_isGettingData = false;
-    //private float m_gettingPlaneHeight = 0;
-    //private float m_gettingHeightDiff = 0.01f;
-    //private const string clientName = "Importer_Sender";
-    //private HumanPoints m_HumanCenterPositions;
-    //private bool m_IsUpdatedSendData;
-    //public TextAsset RemoteEPSettings;
-    //private RemoteManager m_remoteManager;
-    //private CameraSpacePoint m_kinectPosition = new CameraSpacePoint();
+
+    #region 送受信用
+
+    public RemoteShadowImageManager RSIM;
 
     #endregion
 
     // Use this for initialization
     void Start()
     {
+        if (this.RSIM == null) return;
         this.InitializeNetwork();
         this.InitializeField();
         m_sensor = KinectSensor.GetDefault();
@@ -246,6 +230,13 @@ public class KinectImporter : ASensorImporter
 
 
             }
+        }
+
+        this.RSIM.SetSendMat(m_mat);
+        Mat mat = this.RSIM.GetReceiveMat();
+        if (mat != null)
+        {
+            m_mat += mat;
         }
 
         //this.m_HumanCenterPositions.setData(points);
