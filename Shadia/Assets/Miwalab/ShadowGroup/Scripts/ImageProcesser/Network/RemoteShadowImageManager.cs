@@ -51,9 +51,6 @@ public class RemoteShadowImageManager : MonoBehaviour
         _nHost.Connect(SENDID, CIPC_CS_Unity.CLIENT.MODE.Sender);
         _nHost.Connect(RECEIVEID, CIPC_CS_Unity.CLIENT.MODE.Receiver);
 
-        CIPC_CS_Unity.CLIENT.CLIENT.ConnectByClientName(SENDID.TAG, RECEIVEID.TAG, CIPCServerIP
-            , CIPCServerPort, 50050);
-
         _AutoResetEvent = new AutoResetEvent(true);
 
         _tHost.CreateNewThread(new ContinuouslyThread(
@@ -69,8 +66,6 @@ public class RemoteShadowImageManager : MonoBehaviour
     
     public void OnApplicationQuit()
     {
-        CIPC_CS_Unity.CLIENT.CLIENT.DisconnectByClientName(SENDID.TAG, RECEIVEID.TAG, CIPCServerIP
-            , CIPCServerPort, 50050);
         this._nHost.RemoveClient(SENDID);
         this._nHost.RemoveClient(RECEIVEID);
     }
