@@ -22,16 +22,18 @@ namespace Miwalab.ShadowGroup.Network
         /// <summary>
         /// クライアントのリスト
         /// </summary>
-        private Dictionary<string, Client> m_clientList;
+        private Dictionary<string, CIPCClient> m_clientList;
         private List<int> m_portList;
 
+        string CIPCServerIP;
+        int CIPCServerPort;
 
         /// <summary>
         /// sinleton
         /// </summary>
         private NetworkHost()
         {
-            m_clientList = new Dictionary<string, Client>();
+            m_clientList = new Dictionary<string, CIPCClient>();
             m_portList = new List<int>();
         }
 
@@ -49,23 +51,23 @@ namespace Miwalab.ShadowGroup.Network
             return m_actual;
         }
 
-        public void AddClient(int port, string tag)
+        public void AddClient(int port, string tag, int fps)
         {
             if (m_clientList.ContainsKey(tag))
             {
-                Debug.Log("tag:" + tag +"は存在します．");
+                Debug.Log("tag:" + tag + "は存在します．");
                 return;
             }
             if (m_portList.Contains(port))
             {
                 ++port;
                 //再設定
-                AddClient(port, tag);
+                AddClient(port, tag, fps);
             }
             Debug.Log("port番号:" + port + "が初期化されます.");
             try
             {
-                Client client = new Client(port);
+                CIPCClient client = new CIPCClient(port, CIPCServerIP, CIPCServerPort, -1, tag + port.ToString());
                 //タグをつけて記憶
                 m_clientList.Add(tag, client);
                 m_portList.Add(port);
@@ -77,9 +79,9 @@ namespace Miwalab.ShadowGroup.Network
             return;
         }
 
-        public void AddClient(NetworkSettings.NetworkSetting setting)
+        public void AddClient(NetworkSettings.NetworkSetting setting, int fps)
         {
-            this.AddClient(setting.PORT, setting.TAG);
+            this.AddClient(setting.PORT, setting.TAG, fps);
         }
 
         /// <summary>
@@ -87,57 +89,20 @@ namespace Miwalab.ShadowGroup.Network
         /// </summary>
         /// <param name="tag"></param>
         /// <param name="data"></param>
-        public void SendRemote(string tag, byte[] data)
+        public void Send(string tag, byte[] data)
         {
             if (!this.m_clientList.ContainsKey(tag))
             {
                 return;
             }
-            this.m_clientList[tag].SendRemote(data);
+            this.m_clientList[tag].Send(data);
         }
 
-        public void SendRemote(NetworkSettings.NetworkSetting setting, byte[] data)
+        public void Send(NetworkSettings.NetworkSetting setting, byte[] data)
         {
-            this.SendRemote(setting.TAG, data);
+            this.Send(setting.TAG, data);
         }
 
-        /// <summary>
-        /// 送りたい先にデータをぶんなげる
-        /// </summary>
-        /// <param name="tag"></param>
-        /// <param name="data"></param>
-        public void SendTo(string tag, byte[] data, IPEndPoint to)
-        {
-            if (!this.m_clientList.ContainsKey(tag))
-            {
-                return;
-            }
-            this.m_clientList[tag].SendTo(data,to);
-        }
-        public void SendTo(NetworkSettings.NetworkSetting setting, byte[] data,IPEndPoint to)
-        {
-            this.SendTo(setting.TAG, data, to);
-        }
-
-        /// <summary>
-        /// 複数の送信先にデータを投げる
-        /// </summary>
-        /// <param name="tag"></param>
-        /// <param name="data"></param>
-        /// <param name="to"></param>
-        public void SendTo(string tag, byte[] data, List<IPEndPoint> to)
-        {
-            if (!this.m_clientList.ContainsKey(tag))
-            {
-                return;
-            }
-            this.m_clientList[tag].SendTo(data, to);
-        }
-        
-        public void SendTo(NetworkSettings.NetworkSetting setting, byte[] data, List<IPEndPoint> to)
-        {
-            this.SendTo(setting.TAG, data, to);
-        }
 
         public void RemoveClient(string tag)
         {
@@ -154,7 +119,7 @@ namespace Miwalab.ShadowGroup.Network
         }
 
 
-        public Client GetClient(string tag)
+        public CIPCClient GetClient(string tag)
         {
             if (!this.m_clientList.ContainsKey(tag))
             {
@@ -163,7 +128,7 @@ namespace Miwalab.ShadowGroup.Network
             }
             return this.m_clientList[tag];
         }
-        public Client GetClient(NetworkSettings.NetworkSetting setting)
+        public CIPCClient GetClient(NetworkSettings.NetworkSetting setting)
         {
             return this.GetClient(setting.TAG);
         }
@@ -198,7 +163,7 @@ namespace Miwalab.ShadowGroup.Network
 
         public void Reset()
         {
-            foreach(var p in this.m_clientList)
+            foreach (var p in this.m_clientList)
             {
                 p.Value.Close();
             }

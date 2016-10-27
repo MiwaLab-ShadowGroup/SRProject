@@ -8,10 +8,6 @@ namespace Miwalab.ShadowGroup.Network
 {
     public interface ISender: IClient
     {
-        void SendTo(byte[] data, IPEndPoint to);
-        void SendTo(byte[] data, IPEndPoint[] to);
-        void SendTo(byte[] data, List<IPEndPoint> to);
-
-        void BindPortRandomly();
+        void Send(byte[] data);
     }
 }
