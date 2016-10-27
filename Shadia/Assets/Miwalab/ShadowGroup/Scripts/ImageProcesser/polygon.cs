@@ -143,6 +143,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         }
 
+        private void Polygon_bgd_B_ValueChanged(object sender, EventArgs e)
+        {
+            this.colorBack.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
         private void Polygon_change_x_ValueChanged(object sender, EventArgs e)
         {
             this.changeX = (double)(e as ParameterSlider.ChangedValue).Value;
@@ -158,12 +164,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private void Polygon_change_rate_ValueChanged(object sender, EventArgs e)
         {
             this.changeRate = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void Polygon_bgd_B_ValueChanged(object sender, EventArgs e)
-        {
-            this.colorBack.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 

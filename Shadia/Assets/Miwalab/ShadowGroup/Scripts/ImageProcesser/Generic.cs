@@ -86,6 +86,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// 線が出るやつ（B5河野）
         /// </summary>
         Electrical,
+
         /// <summary>
         /// 輪郭線のやつ（B5河野）
         /// </summary>
@@ -100,6 +101,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// 二重に影を提示するやつ（B5河野）
         /// </summary>
         Twins,
+
+        /// <summary>
+        /// 先行して動く影（B5河野）
+        /// </summary>
+        Ahead,
 
 
         /// <summary>

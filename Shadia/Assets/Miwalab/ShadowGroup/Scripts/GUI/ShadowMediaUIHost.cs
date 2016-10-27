@@ -195,6 +195,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingHandElbow(m_PanelDictionary[ImageProcesserType.HandElbow.ToString()]);
         this.CreateUIsImageporcessingMoveShadow(m_PanelDictionary[ImageProcesserType.MoveShadow.ToString()]);
         this.CreateUIsImageporcessingTwins(m_PanelDictionary[ImageProcesserType.Twins.ToString()]);
+        this.CreateUIsImageporcessingAhead(m_PanelDictionary[ImageProcesserType.Ahead.ToString()]);
         this.CreateUIsImageporcessingCanny(m_PanelDictionary[ImageProcesserType.Canny.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
         this.CreateUIsImageporcessingFlowParticlesShadow(m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()]);
@@ -280,6 +281,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.Twins:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Twins()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Twins.ToString()];
+                break;
+            case ImageProcesserType.Ahead:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Ahead()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Ahead.ToString()];
                 break;
             case ImageProcesserType.Canny:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Canny()));
@@ -635,6 +640,27 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "Twins_Bright", false);
         AddBooleanUI(parent, "Twins_AddImg", false);
         m_lastUpdatedHeight += 10;
+
+    }
+
+    private void CreateUIsImageporcessingAhead(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Ahead_con_R", 255, 0, 0);
+        AddFloatUI(parent, "Ahead_con_G", 255, 0, 0);         
+        AddFloatUI(parent, "Ahead_con_B", 255, 0, 200);
+        AddFloatUI(parent, "Ahead_bgd_R", 255, 0, 255);
+        AddFloatUI(parent, "Ahead_bgd_G", 255, 0, 255);
+        AddFloatUI(parent, "Ahead_bgd_B", 255, 0, 255);
+        AddFloatUI(parent, "Ahead_preRotRate", 5, 1, 2);
+        AddFloatUI(parent, "Ahead_preMoveRate", 5, 0, 1);
+        AddBooleanUI(parent, "Ahead_UseFade", false);
+        AddBooleanUI(parent, "Ahead_UseDiv", false);
+        AddBooleanUI(parent, "Ahead_UseRot", false);
+        AddBooleanUI(parent, "Ahead_UsePre", false);
+        AddBooleanUI(parent, "Ahead_AddImg", true);
+        m_lastUpdatedHeight += 10;
+
 
     }
 
