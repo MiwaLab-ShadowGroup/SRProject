@@ -654,6 +654,9 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Ahead_bgd_B", 255, 0, 255);
         AddFloatUI(parent, "Ahead_preRotRate", 5, 1, 2);
         AddFloatUI(parent, "Ahead_preMoveRate", 5, 0, 1);
+        AddBooleanUI(parent, "Ahead_MoveMax", false);
+        AddBooleanUI(parent, "Ahead_Fill", true);
+        AddBooleanUI(parent, "Ahead_Skelton", false);
         AddBooleanUI(parent, "Ahead_UseFade", false);
         AddBooleanUI(parent, "Ahead_UseDiv", false);
         AddBooleanUI(parent, "Ahead_UseRot", false);
