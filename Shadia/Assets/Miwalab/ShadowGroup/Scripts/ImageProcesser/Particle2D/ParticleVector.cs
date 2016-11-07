@@ -9,7 +9,7 @@ using Windows.Kinect;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
- 
+
     public class ParticleVector : AShadowImageProcesser
     {
         public List<Particle2D.TaggedCircleParticle> m_particleList = new List<Particle2D.TaggedCircleParticle>();
@@ -27,7 +27,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             : base()
         {
 
-            
+
 
             (GUI.BackgroundMediaUIHost.GetUI("PV_Num_Init") as ParameterSlider).ValueChanged += BackRenderCamera_PV_Num_Init_ValueChanged;
             (GUI.BackgroundMediaUIHost.GetUI("PV_Size_Max") as ParameterSlider).ValueChanged += BackRenderCamera_PV_Size_Max_ValueChanged;
@@ -58,7 +58,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void PV_UseFade_Changed(object sender, EventArgs e)
         {
-            UseFade  = (e as ParameterCheckbox.ChangedValue).Value;
+            UseFade = (e as ParameterCheckbox.ChangedValue).Value;
         }
 
         private void PV_UseAvarage_Changed(object sender, EventArgs e)
@@ -68,17 +68,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void PV_UseShadowImage_Changed(object sender, EventArgs e)
         {
-            UseOwnShadow= (e as ParameterCheckbox.ChangedValue).Value;
+            UseOwnShadow = (e as ParameterCheckbox.ChangedValue).Value;
         }
 
         private void PV_DebugMode_Changed(object sender, EventArgs e)
         {
-            IsDebugMode  = (e as ParameterCheckbox.ChangedValue).Value;
+            IsDebugMode = (e as ParameterCheckbox.ChangedValue).Value;
         }
         private void ParticleVector_ChangeHumanCount(int count)
         {
             this.ResetCircles();
-            string ids= count.ToString() + ":";
+            string ids = count.ToString() + ":";
             foreach (var id in this.bodyIdList)
             {
                 ids += id.ToString() + ",";
@@ -121,21 +121,21 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             var size = src.Size();
 
-            
-            m_dst = this.UseOwnShadow? src.Clone() :  new Mat(size, MatType.CV_8UC3, new Scalar(0, 0, 0));
-            
+
+            m_dst = this.UseOwnShadow ? src.Clone() : new Mat(size, MatType.CV_8UC3, new Scalar(0, 0, 0));
+
 
             Vector3 vell = new Vector2(0, 0);
 
-            Vector3 Avarage = new Vector3(0,0,0);
+            Vector3 Avarage = new Vector3(0, 0, 0);
             int counter = 0;
             if (UseAvarage)
             {
-                foreach(var p in this.BodyDataOnDepthImage)
+                foreach (var p in this.BodyDataOnDepthImage)
                 {
-                    foreach(var q in p.JointDepth)
+                    foreach (var q in p.JointDepth)
                     {
-                        if(q.Value.state == TrackingState.Tracked)
+                        if (q.Value.state == TrackingState.Tracked)
                         {
                             Avarage += q.Value.vellocity_upperCorrect;
                             ++counter;
@@ -174,13 +174,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     }
                     else
                     {
-                        if (Avarage.magnitude > 5f)
+                        if (this.m_particleList[i].Setupped && this.m_particleList[i].id != -1)
+                        {
+                            if (Avarage.magnitude > 5f)
+                            {
+                                vell.Set(0, 0, 0);
+                            }
+                        }
+                        else
                         {
                             vell.Set(0, 0, 0);
                         }
                         this.m_particleList[i].AddForce(Avarage);
                     }
-                    
+
 
                     this.m_particleList[i].AddForce(this.m_particleList[i].Vellocity * -0.01f);
                     this.m_particleList[i].Update();
@@ -200,7 +207,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     else
                     {
                         this.m_particleList[i].Size = MinSize;
-                        if(UseFade) this.m_particleList[i].GraduallyChangeColorTo(Scalar.Black, 0.07);
+                        if (UseFade) this.m_particleList[i].GraduallyChangeColorTo(Scalar.Black, 0.07);
                     }
                     if (this.IsDebugMode == false)
                     {
@@ -212,7 +219,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     }
                 }
             }
-            
+
 
             m_dst.CopyTo(dst);
         }
