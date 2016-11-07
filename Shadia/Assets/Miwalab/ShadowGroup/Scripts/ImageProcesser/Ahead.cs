@@ -107,7 +107,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         double maxRad = 0.1;
         int recBaseFrame = 20;
-
+        Scalar pix;
 
 
         public Ahead() : base()
@@ -243,6 +243,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         Mat m_cont_buffer;
         Mat m_first_buffer;
         Mat m_second_buffer;
+        Mat m_Bmask_buffer;
+        Mat m_Wmask_buffer;
+        Mat m_blend_buffer;
 
         private void Update(ref Mat src, ref Mat dst)
         {
@@ -258,21 +261,27 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 m_buffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, new Scalar(0, 0, 0));
                 m_first_buffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, new Scalar(0, 0, 0));
                 m_second_buffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, new Scalar(0, 0, 0));
+                m_Bmask_buffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, new Scalar(0, 0, 0));
+                m_Wmask_buffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, new Scalar(0, 0, 0));
+                m_blend_buffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, new Scalar(0, 0, 0));
             }
             else
             {
                 if (this.m_UseFade)
                 {
                     m_buffer *= 0.9;
-                    m_first_buffer *= 0;
-                    m_second_buffer *= 0;
+
                 }
                 else
                 {
                     m_buffer *= 0;
-                    m_first_buffer *= 0;
-                    m_second_buffer *= 0;
+
                 }
+                m_first_buffer *= 0;
+                m_second_buffer *= 0;
+                m_Bmask_buffer *= 0;
+                m_Wmask_buffer *= 0;
+                m_blend_buffer *= 0;
             }
             if (m_cont_buffer == null)
             {
@@ -677,7 +686,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 {
                     this.Tree_BaseVel.Insert(0, new List<float>(this.nowBaseVels));
                 }
-                
+
             }
             this.Tree_BaseVel.Insert(0, new List<float>(this.nowBaseVels));
             if (this.Tree_BaseVel.Count > this.recBaseFrame) this.Tree_BaseVel.RemoveAt(this.Tree_BaseVel.Count - 1);
@@ -820,7 +829,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                         if (this.Tree_BoneVels[0][i].ContainsKey(Kinect.JointType.SpineBase) == true)
                         {
                             //this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, this.Tree_BoneVels[0][i][Kinect.JointType.SpineBase] * this.preRotRate));
-                            this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, GetBoneAccAve(this.Tree_BoneVels, i, Kinect.JointType.SpineBase, 5) * this.preRotRate));
+                            this.SwapBodyMats.Add(Kinect.JointType.SpineBase, GetRotateMat(this.bodyContList[i][0].bodyNum, Kinect.JointType.SpineBase, -GetBoneAccAve(this.Tree_BoneVels, i, Kinect.JointType.SpineBase, 5) * this.preRotRate));
                         }
                         else
                         {
@@ -1078,7 +1087,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             //Cv2.MedianBlur(m_buffer, m_buffer, 3);
             //Cv2.BilateralFilter(m_buffer, m_buffer, 20, 90.0, 40.0);
-            Cv2.GaussianBlur(m_buffer, m_buffer, new Size(7, 7), 0f);
+            //Cv2.GaussianBlur(m_buffer, m_buffer, new Size(7, 7), 0f);
 
 
             if (this.useSkl)
@@ -1132,14 +1141,52 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             m_second_buffer = m_buffer.Clone();
             if (this.addImg)
             {
+                //Cv2.CvtColor(m_first_buffer, m_Bmask_buffer, OpenCvSharp.ColorConversion.BgrToGray);
+                //Cv2.CvtColor(m_second_buffer, m_Wmask_buffer, OpenCvSharp.ColorConversion.BgrToGray);
+
+
+                
+                //グラデーションになる↓
+                //Cv2.BitwiseAnd(m_Bmask_buffer,m_Wmask_buffer,m_Bmask_buffer);
+
+                //白黒はっきり出る↓こっちの方がいい
+                m_Bmask_buffer = m_first_buffer.Mul(m_second_buffer);
+
+                Cv2.CvtColor(m_Bmask_buffer, m_Bmask_buffer, OpenCvSharp.ColorConversion.BgrToGray);
+                Cv2.Threshold(m_Bmask_buffer, m_Wmask_buffer, 1, 255, OpenCvSharp.ThresholdType.BinaryInv);
+                Cv2.Threshold(m_Bmask_buffer, m_Bmask_buffer, 1, 255, OpenCvSharp.ThresholdType.Binary);
+                Cv2.CvtColor(m_Wmask_buffer, m_Wmask_buffer, OpenCvSharp.ColorConversion.GrayToBgr);
+                Cv2.CvtColor(m_Bmask_buffer, m_Bmask_buffer, OpenCvSharp.ColorConversion.GrayToBgr);
+
+
+                //アルファブレンドver
+                Cv2.AddWeighted(m_first_buffer, 0.5f, m_second_buffer, 0.5f, 0, m_blend_buffer);
+
+                //普通の加算合成
                 m_first_buffer += m_second_buffer;
+
+                m_first_buffer -= m_Bmask_buffer;
+                m_blend_buffer -= m_Wmask_buffer;
+
                 dst += m_first_buffer;
+                dst += m_blend_buffer;
+
+
+                //普通に重ねる場合ははこれだけ
+                //dst += m_first_buffer;
+
+
+
             }
             //加算合成ver.
             else
             {
                 dst += m_buffer;
             }
+
+            Cv2.GaussianBlur(dst,dst, new Size(5, 5), 0f);
+
+
         }
 
 
@@ -1206,7 +1253,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             { 13,Windows.Kinect.JointType.Neck},
         };
 
-        //骨を作る際に仕様
+        //骨を作る際に使用
         private Dictionary<Kinect.JointType, Kinect.JointType> _BoneConectMap = new Dictionary<Kinect.JointType, Kinect.JointType>()
     {
         //{ Kinect.JointType.FootLeft, Kinect.JointType.AnkleLeft },

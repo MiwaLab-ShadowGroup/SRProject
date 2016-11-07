@@ -107,6 +107,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         Ahead,
 
+        /// <summary>
+        /// いろんな色が出る影（B5河野）
+        /// </summary>
+        Colorful,
+
 
         /// <summary>
         /// 一定方向に流れるパーティクル

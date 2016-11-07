@@ -196,6 +196,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingMoveShadow(m_PanelDictionary[ImageProcesserType.MoveShadow.ToString()]);
         this.CreateUIsImageporcessingTwins(m_PanelDictionary[ImageProcesserType.Twins.ToString()]);
         this.CreateUIsImageporcessingAhead(m_PanelDictionary[ImageProcesserType.Ahead.ToString()]);
+        this.CreateUIsImageporcessingColorful(m_PanelDictionary[ImageProcesserType.Colorful.ToString()]);
         this.CreateUIsImageporcessingCanny(m_PanelDictionary[ImageProcesserType.Canny.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
         this.CreateUIsImageporcessingFlowParticlesShadow(m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()]);
@@ -285,6 +286,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.Ahead:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Ahead()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Ahead.ToString()];
+                break;
+            case ImageProcesserType.Colorful:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Colorful()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Colorful.ToString()];
                 break;
             case ImageProcesserType.Canny:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Canny()));
@@ -653,7 +658,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Ahead_bgd_G", 255, 0, 255);
         AddFloatUI(parent, "Ahead_bgd_B", 255, 0, 255);
         AddFloatUI(parent, "Ahead_preRotRate", 5, 1, 2);
-        AddFloatUI(parent, "Ahead_preMoveRate", 5, 0, 1);
+        AddFloatUI(parent, "Ahead_preMoveRate", 10, 0, 1);
         AddBooleanUI(parent, "Ahead_MoveMax", false);
         AddBooleanUI(parent, "Ahead_Fill", true);
         AddBooleanUI(parent, "Ahead_Skelton", false);
@@ -664,6 +669,29 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "Ahead_AddImg", true);
         m_lastUpdatedHeight += 10;
 
+
+    }
+
+    private void CreateUIsImageporcessingColorful(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Colorful_con_R", 255, 0, 0);
+        AddFloatUI(parent, "Colorful_con_G", 255, 0, 0);
+        AddFloatUI(parent, "Colorful_con_B", 255, 0, 200);
+        AddFloatUI(parent, "Colorful_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "Colorful_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "Colorful_bgd_B", 255, 0, 0);
+        AddFloatUI(parent, "Colorful_change_x", 100, -100, 0);
+        AddFloatUI(parent, "Colorful_change_y", 100, -100, 0);
+        AddFloatUI(parent, "Colorful_Rate", 40, 1, 6);
+        AddBooleanUI(parent, "Colorful_UseFade", true);
+        m_lastUpdatedHeight += 10;
+
+        AddButtonUI(parent, "Colorful_CC_Blue");
+        AddButtonUI(parent, "Colorful_CC_Orange");
+        AddButtonUI(parent, "Colorful_CC_Yellow");
+        AddButtonUI(parent, "Colorful_CC_Pink");
+        AddButtonUI(parent, "Colorful_CC_Green");
 
     }
 
@@ -716,7 +744,6 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Polygon_bgd_B", 255, 0, 0);
         AddFloatUI(parent, "Polygon_change_x", 100, -100, 0);
         AddFloatUI(parent, "Polygon_change_y", 100, -100, 0);
-        AddFloatUI(parent, "Polygon_change_Rate", 3, 0, 0);
         AddFloatUI(parent, "Polygon_Rate", 40, 1, 6);
         AddBooleanUI(parent, "Polygon_UseFade", true);
         m_lastUpdatedHeight += 10;
