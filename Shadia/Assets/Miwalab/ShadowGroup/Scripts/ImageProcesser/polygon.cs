@@ -30,8 +30,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         double changeX;
         double changeY;
-        double changeRate;
-        Point dist;
 
 
         public Polygon() : base()
@@ -44,7 +42,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueChanged += Polygon_bgd_B_ValueChanged;
             (ShadowMediaUIHost.GetUI("Polygon_change_x") as ParameterSlider).ValueChanged += Polygon_change_x_ValueChanged;
             (ShadowMediaUIHost.GetUI("Polygon_change_y") as ParameterSlider).ValueChanged += Polygon_change_y_ValueChanged;
-            (ShadowMediaUIHost.GetUI("Polygon_change_rate") as ParameterSlider).ValueChanged += Polygon_change_rate_ValueChanged;
             (ShadowMediaUIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueChanged += Polygon_Rate_ValueChanged;
             (ShadowMediaUIHost.GetUI("Polygon_UseFade") as ParameterCheckbox).ValueChanged += Polygon_UseFade_ValueChanged;
 
@@ -63,7 +60,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Polygon_bgd_B") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Polygon_change_x") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Polygon_change_y") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("Polygon_change_rate") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Polygon_Rate") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Polygon_UseFade") as ParameterCheckbox).ValueUpdate();
         }
@@ -161,11 +157,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         }
 
-        private void Polygon_change_rate_ValueChanged(object sender, EventArgs e)
-        {
-            this.changeRate = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
+       
 
         Mat m_buffer;
         bool m_UseFade;
@@ -214,7 +206,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                         //絶対五回のはず
                         //CvPoints.Add(contour[i][j]);
-                        dist = contour[i][j] - new Point(changeX, changeY);
 
                         CvPoints.Add(new Point(contour[i][j].X + changeX, contour[i][j].Y + changeY));
 
