@@ -176,33 +176,6 @@ public class KinectImporter : ASensorImporter
                             data[i + 1] = 255;
                             data[i + 2] = 255;
                         }
-                        //断面取得
-                        #region 断面
-                        //if (this.m_isGettingData)
-                        //{
-                        //    if (point.Y > m_gettingPlaneHeight && point.Y < m_gettingPlaneHeight + m_gettingHeightDiff)
-                        //    {
-                        //        if (_flag == false)
-                        //        {
-                        //            points.Add(point);
-                        //            counts.Add(0);
-                        //        }
-                        //        _count = counts[counts.Count - 1];
-                        //        _point = points[points.Count - 1];
-                        //        point.X = ((point.X + m_kinectPosition.X) + _point.X * _count) / (_count + 1);
-                        //        point.Y = ((point.Y + m_kinectPosition.Y) + _point.Y * _count) / (_count + 1);
-                        //        point.Z = ((point.Z + m_kinectPosition.Z) + _point.Z * _count) / (_count + 1);
-                        //        points[points.Count - 1] = point;
-                        //        counts[counts.Count - 1]++;
-
-                        //        _flag = true;
-                        //    }
-                        //    else
-                        //    {
-                        //        _flag = false;
-                        //    }
-                        //}
-                        #endregion
                     }
                     else
                     {
@@ -211,22 +184,7 @@ public class KinectImporter : ASensorImporter
                         data[i + 2] = 0;
                     }
                 }
-
-                //if (_colormanager == null)
-                //{
-                //    Debug.Log("null");
-                //    return;
-                //}
-                //byte* colormatdata = (byte*)Colorimagemat.Data;
-                //int colorlength = 1920 * 1080 * 3;
-                //for (int i = 0; i < colorlength; i += 3)
-                //{
-
-                //    colormatdata[i] = colordata[i];
-                //    colormatdata[i + 1] = colordata[i + 1];
-                //    colormatdata[i + 2] = colordata[i + 2];
-
-                //}
+                
 
 
             }
