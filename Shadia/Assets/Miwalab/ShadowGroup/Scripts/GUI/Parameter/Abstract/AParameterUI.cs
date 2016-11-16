@@ -31,6 +31,7 @@ public abstract class AParameterUI : MonoBehaviour {
         Single,
         Boolean,
         String,
+        Enum,
         Other
     }
 }

@@ -33,6 +33,12 @@ public class KinectImporter : ASensorImporter
 
     public bool IsDepthStream { get; private set; }
 
+    /// <summary>
+    /// 仮想光源の位置
+    /// 変更することで画面を変更可能
+    /// </summary>
+    public CameraSpacePoint VirtualLightResource { set; get; }
+
     #region 3D
     public BodyImage3D BodyImage3D;
     public CameraMatAttacher CameraAttacher;
@@ -140,54 +146,15 @@ public class KinectImporter : ASensorImporter
         }
         m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
 
-        if (Miwalab.ShadowGroup.Core.ApplicationSettings.CurrentMode == Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia3D)
+        switch (Miwalab.ShadowGroup.Core.ApplicationSettings.CurrentMode)
         {
-            this.BodyImage3D.SetupVertices(m_cameraSpacePoints);
-            this.CameraAttacher.Attach(ref m_mat);
-        }
-        else
-        {
-
-            //List<CameraSpacePoint> points = new List<CameraSpacePoint>();
-            //List<int> counts = new List<int>();
-            //接続しているか否かのフラグ
-            //bool _flag = false;
-            unsafe
-            {
-                byte* data = (byte*)m_mat.Data;
-                int length = this.m_depthData.Length * 3;
-                //CameraSpacePoint _point;
-                //int _count;
-                for (int i = 0; i < length; i += 3)
-                {
-                    CameraSpacePoint point = this.m_cameraSpacePoints[i / 3];
-                    if (point.X > m_left && point.X < m_right && point.Y > m_bottom && point.Y < m_top && point.Z > m_rear && point.Z < m_front)
-                    {
-                        if (IsDepthStream)
-                        {
-                            byte s = (byte)(point.Z / 8f * 255);
-                            data[i] = s;
-                            data[i + 1] = s;
-                            data[i + 2] = s;
-                        }
-                        else
-                        {
-                            data[i] = 255;
-                            data[i + 1] = 255;
-                            data[i + 2] = 255;
-                        }
-                    }
-                    else
-                    {
-                        data[i] = 0;
-                        data[i + 1] = 0;
-                        data[i + 2] = 0;
-                    }
-                }
-                
-
-
-            }
+            case Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia3D:
+                this.BodyImage3D.SetupVertices(m_cameraSpacePoints);
+                this.CameraAttacher.Attach(ref m_mat);
+                break;
+            case Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia2D:
+                this.ConvertDepthToMat();
+                break;
         }
 
         this.RSIM.SetSendMat(m_mat);
@@ -197,21 +164,12 @@ public class KinectImporter : ASensorImporter
             m_mat += mat;
         }
 
-        //this.m_HumanCenterPositions.setData(points);
-        //this.m_IsUpdatedSendData = true;
-
-
-        //if (readdata.IsRead)
-        //{
-        //    m_mat = readdata.playmat;
-        //}
-
         foreach (var imageProcesser in this.m_ImagerProcesserList)
         {
             imageProcesser.SetBody(_bodyManager.GetData());
 
-            this.RSIM.SetSendSkeletons(ref imageProcesser.depthBodyData,_bodyManager.GetData());
-            this.RSIM.GetReceivedSkeletons(ref imageProcesser.depthBodyData,_bodyManager.GetData());
+            this.RSIM.SetSendSkeletons(ref imageProcesser.depthBodyData, _bodyManager.GetData());
+            this.RSIM.GetReceivedSkeletons(ref imageProcesser.depthBodyData, _bodyManager.GetData());
 
 
             imageProcesser.UpdateBodyIndexList();
@@ -225,9 +183,46 @@ public class KinectImporter : ASensorImporter
             var afterEffect = this.m_AfterEffectList[i];
             afterEffect.ImageProcess(ref this.m_mat, ref this.m_mat);
         }
+    }
+
+    private void ConvertDepthToMat()
+    {
+        unsafe
+        {
+            byte* data = (byte*)m_mat.Data;
+            int length = this.m_depthData.Length * 3;
+            //CameraSpacePoint _point;
+            //int _count;
+            for (int i = 0; i < length; i += 3)
+            {
+                CameraSpacePoint point = this.m_cameraSpacePoints[i / 3];
+                if (point.X > m_left && point.X < m_right && point.Y > m_bottom && point.Y < m_top && point.Z > m_rear && point.Z < m_front)
+                {
+                    if (IsDepthStream)
+                    {
+                        byte s = (byte)(point.Z / 8f * 255);
+                        data[i] = s;
+                        data[i + 1] = s;
+                        data[i + 2] = s;
+                    }
+                    else
+                    {
+                        data[i] = 255;
+                        data[i + 1] = 255;
+                        data[i + 2] = 255;
+                    }
+                }
+                else
+                {
+                    data[i] = 0;
+                    data[i + 1] = 0;
+                    data[i + 2] = 0;
+                }
+            }
 
 
 
+        }
     }
 
     unsafe private static void Merge(ushort[] from, ushort[] dest)
