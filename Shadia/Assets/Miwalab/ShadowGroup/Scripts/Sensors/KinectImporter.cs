@@ -10,6 +10,17 @@ using Miwalab.ShadowGroup.Thread;
 
 public class KinectImporter : ASensorImporter
 {
+    public enum LightSourceMode
+    {
+        Normal,
+        CanMoveOne,
+        CanMoveCircle,
+    }
+
+    private CameraSpacePoint _position;
+    private LightSourceMode _lightMode;
+
+
     public DepthSourceManager _depthManager;
     public BodySourceManager _bodyManager;
     private KinectSensor m_sensor;
@@ -250,10 +261,14 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueChanged += KinectImporter_z_max_ValueChanged;
 
 
-        //(ShadowMediaUIHost.GetUI("Kinect_pos_x") as ParameterSlider).ValueChanged += KinectImporter_pos_x_ValueChanged;
-        //(ShadowMediaUIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueChanged += KinectImporter_pos_y_ValueChanged;
-        //(ShadowMediaUIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueChanged += KinectImporter_pos_z_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_pos_x") as ParameterSlider).ValueChanged += KinectImporter_pos_x_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueChanged += KinectImporter_pos_y_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueChanged += KinectImporter_pos_z_ValueChanged;
 
+        (ShadowMediaUIHost.GetUI("Kinect_LightMode") as ParameterDropdown).ValueChanged += KinectImporter_LightModeChanged;
+
+
+        
         //(ShadowMediaUIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueChanged += KinectImporter_Cut_y_ValueChanged;
         //(ShadowMediaUIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueChanged += KinectImporter_Cut_diff_ValueChanged;
 
@@ -274,14 +289,19 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueUpdate();
 
-        (ShadowMediaUIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueUpdate();
+        //(ShadowMediaUIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueUpdate();
+        //(ShadowMediaUIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueUpdate();
 
         (ShadowMediaUIHost.GetUI("Archive") as ParameterCheckbox).ValueUpdate();
 
         (ShadowMediaUIHost.GetUI("Kinect_Depth") as ParameterCheckbox).ValueUpdate();
 
 
+    }
+
+    private void KinectImporter_LightModeChanged(object sender, EventArgs e)
+    {
+        _lightMode = (LightSourceMode)(e as ParameterDropdown.ChangedValue).Value;
     }
 
     private void KinectImporter_KinectDepth_ValueChanged(object sender, EventArgs e)
@@ -294,20 +314,20 @@ public class KinectImporter : ASensorImporter
         this.IsArchive = (e as ParameterCheckbox.ChangedValue).Value;
     }
 
-    //private void KinectImporter_pos_x_ValueChanged(object sender, EventArgs e)
-    //{
-    //    this.m_kinectPosition.X = (e as ParameterSlider.ChangedValue).Value;
-    //}
+    private void KinectImporter_pos_x_ValueChanged(object sender, EventArgs e)
+    {
+        this._position.X = (e as ParameterSlider.ChangedValue).Value;
+    }
 
-    //private void KinectImporter_pos_y_ValueChanged(object sender, EventArgs e)
-    //{
-    //    this.m_kinectPosition.Y = (e as ParameterSlider.ChangedValue).Value;
-    //}
+    private void KinectImporter_pos_y_ValueChanged(object sender, EventArgs e)
+    {
+        this._position.Y = (e as ParameterSlider.ChangedValue).Value;
+    }
 
-    //private void KinectImporter_pos_z_ValueChanged(object sender, EventArgs e)
-    //{
-    //    this.m_kinectPosition.Z = (e as ParameterSlider.ChangedValue).Value;
-    //}
+    private void KinectImporter_pos_z_ValueChanged(object sender, EventArgs e)
+    {
+        this._position.Z = (e as ParameterSlider.ChangedValue).Value;
+    }
 
     //private void KinectImporter_Cut_diff_ValueChanged(object sender, EventArgs e)
     //{

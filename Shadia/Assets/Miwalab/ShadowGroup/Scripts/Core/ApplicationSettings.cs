@@ -21,12 +21,16 @@ namespace Miwalab.ShadowGroup.Core
             }
         }
 
-
+        [Header("OnOffを切り替えられる対象")]
+        public List<GameObject> Objects = new List<GameObject>();
 
         public void Start()
         {
 
             CurrentMode = ShadowMediaMode.ShadowMedia2D;
+
+            (ShadowMediaUIHost.GetUI("core_shadow_media_mode") as ParameterDropdown).ValueChanged += ShadowMediaModeChanged;
+            (ShadowMediaUIHost.GetUI("core_switch_objects") as ParameterCheckbox).ValueChanged += SwitchObjectsSwitched;
 
             Debug.Log("displays connected: " + Display.displays.Length);
             // Display.displays[0] is the primary, default display and is always ON.
@@ -38,7 +42,20 @@ namespace Miwalab.ShadowGroup.Core
             if (Display.displays.Length > 3)
                 Display.displays[3].Activate();
         }
-       
+
+        private void SwitchObjectsSwitched(object sender, EventArgs e)
+        {
+            var value = (e as ParameterCheckbox.ChangedValue).Value;
+            foreach(var p in this.Objects)
+            {
+                p.SetActive(value);
+            }
+        }
+
+        private void ShadowMediaModeChanged(object sender, EventArgs e)
+        {
+            CurrentMode = (ShadowMediaMode)(e as ParameterDropdown.ChangedValue).Value;
+        }
 
         public void Update()
         {
@@ -57,21 +74,21 @@ namespace Miwalab.ShadowGroup.Core
         {
             ShadowMediaUIHost.LoadAllSettings();
         }
+
+        public enum GenericSettingOption
+        {
+            /// <summary>
+            /// 再生するモードの設定
+            /// </summary>
+            Mode,
+            /// <summary>
+            /// 数を数える用　消したら処刑
+            /// </summary>
+            Count
+        }
         
 
-        public void SetShadowMediaMode(int i)
-        {
-            switch (i)
-            {
-                case 0:
-                    CurrentMode = ShadowMediaMode.ShadowMedia2D;
-                    break;
-                case 1:
-                    CurrentMode = ShadowMediaMode.ShadowMedia3D;
-                    break;
-                default:
-                    break;
-            }
-        }
+
+
     }
 }
