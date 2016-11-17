@@ -198,13 +198,14 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingAhead(m_PanelDictionary[ImageProcesserType.Ahead.ToString()]);
         this.CreateUIsImageporcessingColorful(m_PanelDictionary[ImageProcesserType.Colorful.ToString()]);
         this.CreateUIsImageporcessingCanny(m_PanelDictionary[ImageProcesserType.Canny.ToString()]);
+        this.CreateUIsImageporcessingLeastSquare(m_PanelDictionary[ImageProcesserType.LeastSquare.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
         this.CreateUIsImageporcessingFlowParticlesShadow(m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()]);
         this.CreateUIsImageporcessingPainterShadow(m_PanelDictionary[ImageProcesserType.PainterShadow.ToString()]);
 
     }
 
-    
+
 
     public void ChangeImageProcessingOptionTo(int number)
     {
@@ -294,6 +295,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.Canny:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Canny()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Canny.ToString()];
+                break;
+            case ImageProcesserType.LeastSquare:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new LeastSquare()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.LeastSquare.ToString()];
                 break;
             case ImageProcesserType.EachMoveParticle:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.EachMoveParticle()));
@@ -426,7 +431,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsImageporcessingPainterShadow(GameObject gameObject)
     {
         m_lastUpdatedHeight = 0;
-        
+
     }
 
     private void CreateUIsArchiveSave(GameObject parent)
@@ -591,7 +596,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "HandElbow_con_R", 255, 0, 0);
         AddFloatUI(parent, "HandElbow_con_G", 255, 0, 0);
         AddFloatUI(parent, "HandElbow_con_B", 255, 0, 200);
-        AddFloatUI(parent, "HandElbow_rot_S", 3, -3 ,0);
+        AddFloatUI(parent, "HandElbow_rot_S", 3, -3, 0);
         AddFloatUI(parent, "HandElbow_rot_B", 20, 5, 5);
         AddFloatUI(parent, "HandElbow_bodyThick", 1, 0, 0.8f);
         AddFloatUI(parent, "HandElbow_Rate", 21, 1, 5);
@@ -602,7 +607,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "HandElbow_UseBec", false);
         AddBooleanUI(parent, "HandElbow_UseAtt", false);
         m_lastUpdatedHeight += 10;
-    
+
     }
     private void CreateUIsImageporcessingMoveShadow(GameObject parent)
     {
@@ -652,7 +657,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "Ahead_con_R", 255, 0, 0);
-        AddFloatUI(parent, "Ahead_con_G", 255, 0, 0);         
+        AddFloatUI(parent, "Ahead_con_G", 255, 0, 0);
         AddFloatUI(parent, "Ahead_con_B", 255, 0, 200);
         AddFloatUI(parent, "Ahead_bgd_R", 255, 0, 255);
         AddFloatUI(parent, "Ahead_bgd_G", 255, 0, 255);
@@ -683,7 +688,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Colorful_bgd_B", 255, 0, 0);
         AddFloatUI(parent, "Colorful_change_x", 100, -100, 0);
         AddFloatUI(parent, "Colorful_change_y", 100, -100, 0);
-        AddFloatUI(parent, "Colorful_Rate", 40, 1, 6);
+        AddFloatUI(parent, "Colorful_Rate", 200, 1, 100);
         AddBooleanUI(parent, "Colorful_UseFade", true);
         m_lastUpdatedHeight += 10;
 
@@ -777,6 +782,28 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     }
 
+    private void CreateUIsImageporcessingLeastSquare(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "LeastSquare_con_R", 255, 0, 0);
+        AddFloatUI(parent, "LeastSquare_con_G", 255, 0, 0);
+        AddFloatUI(parent, "LeastSquare_con_B", 255, 0, 200);
+        AddFloatUI(parent, "LeastSquare_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "LeastSquare_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "LeastSquare_bgd_B", 255, 0, 0);
+        AddFloatUI(parent, "LeastSquare_Rate", 200, 50, 100);
+        AddFloatUI(parent, "LeastSquare_Speed", 1, 0.01f, 0.5f);
+        AddBooleanUI(parent, "LeastSquare_UseFade", true);
+        m_lastUpdatedHeight += 10;
+
+        AddButtonUI(parent, "LeastSquare_CC_Blue");
+        AddButtonUI(parent, "LeastSquare_CC_Orange");
+        AddButtonUI(parent, "LeastSquare_CC_Yellow");
+        AddButtonUI(parent, "LeastSquare_CC_Pink");
+        AddButtonUI(parent, "LeastSquare_CC_Green");
+
+    }
+
     private void CreateUIsImageporcessingSpike(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
@@ -839,6 +866,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     protected void CreateUIsCallibrationImport(GameObject parent, int num)
     {
         m_lastUpdatedHeight = 0;
+
         AddFloatUI(parent, "Clb_I_TL_X" + num, 2, -1, 0);
         AddFloatUI(parent, "Clb_I_TL_Y" + num, 2, -1, 0);
         AddFloatUI(parent, "Clb_I_BL_X" + num, 2, -1, 0);
@@ -847,6 +875,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Clb_I_BR_Y" + num, 2, -1, 1);
         AddFloatUI(parent, "Clb_I_TR_X" + num, 2, -1, 1);
         AddFloatUI(parent, "Clb_I_TR_Y" + num, 2, -1, 0);
+
         m_lastUpdatedHeight += 10;
         AddButtonUI(parent, "Clb_I_Save" + num);
         AddButtonUI(parent, "Clb_I_Load" + num);
@@ -856,13 +885,13 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "Clb_E_TL_X" + num, 2000, -1000, 0);
-        AddFloatUI(parent, "Clb_E_TL_Y" + num, 2000, -1000, Screen.height);
+        AddFloatUI(parent, "Clb_E_TL_Y" + num, 2000, -1000, 0);
         AddFloatUI(parent, "Clb_E_BL_X" + num, 2000, -1000, 0);
-        AddFloatUI(parent, "Clb_E_BL_Y" + num, 2000, -1000, 0);
+        AddFloatUI(parent, "Clb_E_BL_Y" + num, 2000, -1000, Screen.height);
         AddFloatUI(parent, "Clb_E_BR_X" + num, 2000, -1000, Screen.width);
-        AddFloatUI(parent, "Clb_E_BR_Y" + num, 2000, -1000, 0);
+        AddFloatUI(parent, "Clb_E_BR_Y" + num, 2000, -1000, Screen.height);
         AddFloatUI(parent, "Clb_E_TR_X" + num, 2000, -1000, Screen.width);
-        AddFloatUI(parent, "Clb_E_TR_Y" + num, 2000, -1000, Screen.height);
+        AddFloatUI(parent, "Clb_E_TR_Y" + num, 2000, -1000, 0);
 
         AddBooleanUI(parent, "Clb_E_Vsbl" + num, true);
 

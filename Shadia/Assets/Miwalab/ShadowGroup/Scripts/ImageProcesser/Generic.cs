@@ -112,6 +112,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         Colorful,
 
+        /// <summary>
+        /// 最小二乗法二次曲線近似先行（B5河野）
+        /// </summary>
+        LeastSquare,
+
 
         /// <summary>
         /// 一定方向に流れるパーティクル
