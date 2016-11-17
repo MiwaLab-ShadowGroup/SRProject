@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
+using CIPC_CS_Unity.CLIENT;
 
 namespace Miwalab.ShadowGroup.Network
 {
@@ -31,10 +32,12 @@ namespace Miwalab.ShadowGroup.Network
         /// <summary>
         /// sinleton
         /// </summary>
-        private NetworkHost()
+        private NetworkHost(string CIPCServerIP, int CIPCServerPort)
         {
             m_clientList = new Dictionary<string, CIPCClient>();
             m_portList = new List<int>();
+            this.CIPCServerIP = CIPCServerIP;
+            this.CIPCServerPort = CIPCServerPort;
         }
 
         /// <summary>
@@ -42,11 +45,11 @@ namespace Miwalab.ShadowGroup.Network
         /// それ以降は同一の実態を使用
         /// </summary>
         /// <returns></returns>
-        public static NetworkHost GetInstance()
+        public static NetworkHost GetInstance(string CIPCServerIP, int CIPCServerPort)
         {
             if (m_actual == null)
             {
-                m_actual = new NetworkHost();
+                m_actual = new NetworkHost(CIPCServerIP, CIPCServerPort);
             }
             return m_actual;
         }
@@ -67,7 +70,7 @@ namespace Miwalab.ShadowGroup.Network
             Debug.Log("port番号:" + port + "が初期化されます.");
             try
             {
-                CIPCClient client = new CIPCClient(port, CIPCServerIP, CIPCServerPort, -1, tag + port.ToString());
+                CIPCClient client = new CIPCClient(port, CIPCServerIP, CIPCServerPort, fps, tag);
                 //タグをつけて記憶
                 m_clientList.Add(tag, client);
                 m_portList.Add(port);
@@ -82,6 +85,20 @@ namespace Miwalab.ShadowGroup.Network
         public void AddClient(NetworkSettings.NetworkSetting setting, int fps)
         {
             this.AddClient(setting.PORT, setting.TAG, fps);
+        }
+
+        public void Connect(NetworkSettings.NetworkSetting setting, CIPC_CS_Unity.CLIENT.MODE mode)
+        {
+            this.Connect(setting.TAG, mode);
+        }
+
+        private void Connect(string tag, MODE mode)
+        {
+            if (!this.m_clientList.ContainsKey(tag))
+            {
+                return;
+            }
+            this.m_clientList[tag].Connect(mode);
         }
 
         /// <summary>

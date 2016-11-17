@@ -10,6 +10,17 @@ using Miwalab.ShadowGroup.Thread;
 
 public class KinectImporter : ASensorImporter
 {
+    public enum LightSourceMode
+    {
+        Normal,
+        CanMoveOne,
+        CanMoveCircle,
+    }
+
+    private CameraSpacePoint _position;
+    private LightSourceMode _lightMode;
+
+
     public DepthSourceManager _depthManager;
     public BodySourceManager _bodyManager;
     private KinectSensor m_sensor;
@@ -33,38 +44,28 @@ public class KinectImporter : ASensorImporter
 
     public bool IsDepthStream { get; private set; }
 
+    /// <summary>
+    /// 仮想光源の位置
+    /// 変更することで画面を変更可能
+    /// </summary>
+    public CameraSpacePoint VirtualLightResource { set; get; }
+
     #region 3D
     public BodyImage3D BodyImage3D;
     public CameraMatAttacher CameraAttacher;
     #endregion
-    //public ColorSourceManager _colormanager;
-    //ColorImageFormat colorImageFormat;
-    //ColorFrameReader colorFrameReader;
-    //FrameDescription colorFrameDescription;
-    //byte[] colordata;
-    //public ushort[] colors;
-    //int imageWidth;
-    //int imageHeight;
-    //public Mat Colorimagemat;
 
-    #region 送信用
-    //private NetworkHost m_networkHost;
-    //private ThreadHost m_threadHost;
-    //private bool m_isGettingData = false;
-    //private float m_gettingPlaneHeight = 0;
-    //private float m_gettingHeightDiff = 0.01f;
-    //private const string clientName = "Importer_Sender";
-    //private HumanPoints m_HumanCenterPositions;
-    //private bool m_IsUpdatedSendData;
-    //public TextAsset RemoteEPSettings;
-    //private RemoteManager m_remoteManager;
-    //private CameraSpacePoint m_kinectPosition = new CameraSpacePoint();
+
+    #region 送受信用
+
+    public RemoteShadowImageManager RSIM;
 
     #endregion
 
     // Use this for initialization
     void Start()
     {
+        if (this.RSIM == null) return;
         this.InitializeNetwork();
         this.InitializeField();
         m_sensor = KinectSensor.GetDefault();
@@ -156,110 +157,34 @@ public class KinectImporter : ASensorImporter
         }
         m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
 
-        if (Miwalab.ShadowGroup.Core.ApplicationSettings.CurrentMode == Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia3D)
+        switch (Miwalab.ShadowGroup.Core.ApplicationSettings.CurrentMode)
         {
-            this.BodyImage3D.SetupVertices(m_cameraSpacePoints);
-            this.CameraAttacher.Attach(ref m_mat);
-        }
-        else
-        {
-
-            //List<CameraSpacePoint> points = new List<CameraSpacePoint>();
-            //List<int> counts = new List<int>();
-            //接続しているか否かのフラグ
-            //bool _flag = false;
-            unsafe
-            {
-                byte* data = (byte*)m_mat.Data;
-                int length = this.m_depthData.Length * 3;
-                //CameraSpacePoint _point;
-                //int _count;
-                for (int i = 0; i < length; i += 3)
-                {
-                    CameraSpacePoint point = this.m_cameraSpacePoints[i / 3];
-                    if (point.X > m_left && point.X < m_right && point.Y > m_bottom && point.Y < m_top && point.Z > m_rear && point.Z < m_front)
-                    {
-                        if (IsDepthStream)
-                        {
-                            byte s = (byte)(point.Z / 8f * 255);
-                            data[i] = s;
-                            data[i + 1] = s;
-                            data[i + 2] = s;
-                        }
-                        else
-                        {
-                            data[i] = 255;
-                            data[i + 1] = 255;
-                            data[i + 2] = 255;
-                        }
-                        //断面取得
-                        #region 断面
-                        //if (this.m_isGettingData)
-                        //{
-                        //    if (point.Y > m_gettingPlaneHeight && point.Y < m_gettingPlaneHeight + m_gettingHeightDiff)
-                        //    {
-                        //        if (_flag == false)
-                        //        {
-                        //            points.Add(point);
-                        //            counts.Add(0);
-                        //        }
-                        //        _count = counts[counts.Count - 1];
-                        //        _point = points[points.Count - 1];
-                        //        point.X = ((point.X + m_kinectPosition.X) + _point.X * _count) / (_count + 1);
-                        //        point.Y = ((point.Y + m_kinectPosition.Y) + _point.Y * _count) / (_count + 1);
-                        //        point.Z = ((point.Z + m_kinectPosition.Z) + _point.Z * _count) / (_count + 1);
-                        //        points[points.Count - 1] = point;
-                        //        counts[counts.Count - 1]++;
-
-                        //        _flag = true;
-                        //    }
-                        //    else
-                        //    {
-                        //        _flag = false;
-                        //    }
-                        //}
-                        #endregion
-                    }
-                    else
-                    {
-                        data[i] = 0;
-                        data[i + 1] = 0;
-                        data[i + 2] = 0;
-                    }
-                }
-
-                //if (_colormanager == null)
-                //{
-                //    Debug.Log("null");
-                //    return;
-                //}
-                //byte* colormatdata = (byte*)Colorimagemat.Data;
-                //int colorlength = 1920 * 1080 * 3;
-                //for (int i = 0; i < colorlength; i += 3)
-                //{
-
-                //    colormatdata[i] = colordata[i];
-                //    colormatdata[i + 1] = colordata[i + 1];
-                //    colormatdata[i + 2] = colordata[i + 2];
-
-                //}
-
-
-            }
+            case Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia3D:
+                this.BodyImage3D.SetupVertices(m_cameraSpacePoints);
+                this.CameraAttacher.Attach(ref m_mat);
+                break;
+            case Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia2D:
+                this.ConvertDepthToMat();
+                break;
         }
 
-        //this.m_HumanCenterPositions.setData(points);
-        //this.m_IsUpdatedSendData = true;
-
-
-        //if (readdata.IsRead)
-        //{
-        //    m_mat = readdata.playmat;
-        //}
+        this.RSIM.SetSendMat(m_mat);
+        Mat mat = this.RSIM.GetReceiveMat();
+        if (mat != null)
+        {
+            m_mat += mat;
+        }
 
         foreach (var imageProcesser in this.m_ImagerProcesserList)
         {
             imageProcesser.SetBody(_bodyManager.GetData());
+
+            this.RSIM.SetSendSkeletons(ref imageProcesser.depthBodyData, _bodyManager.GetData());
+            this.RSIM.GetReceivedSkeletons(ref imageProcesser.depthBodyData, _bodyManager.GetData());
+
+
+            imageProcesser.UpdateBodyIndexList();
+
             imageProcesser.ImageProcess(ref this.m_mat, ref this.m_mat);
 
         }
@@ -269,9 +194,46 @@ public class KinectImporter : ASensorImporter
             var afterEffect = this.m_AfterEffectList[i];
             afterEffect.ImageProcess(ref this.m_mat, ref this.m_mat);
         }
+    }
+
+    private void ConvertDepthToMat()
+    {
+        unsafe
+        {
+            byte* data = (byte*)m_mat.Data;
+            int length = this.m_depthData.Length * 3;
+            //CameraSpacePoint _point;
+            //int _count;
+            for (int i = 0; i < length; i += 3)
+            {
+                CameraSpacePoint point = this.m_cameraSpacePoints[i / 3];
+                if (point.X > m_left && point.X < m_right && point.Y > m_bottom && point.Y < m_top && point.Z > m_rear && point.Z < m_front)
+                {
+                    if (IsDepthStream)
+                    {
+                        byte s = (byte)(point.Z / 8f * 255);
+                        data[i] = s;
+                        data[i + 1] = s;
+                        data[i + 2] = s;
+                    }
+                    else
+                    {
+                        data[i] = 255;
+                        data[i + 1] = 255;
+                        data[i + 2] = 255;
+                    }
+                }
+                else
+                {
+                    data[i] = 0;
+                    data[i + 1] = 0;
+                    data[i + 2] = 0;
+                }
+            }
 
 
 
+        }
     }
 
     unsafe private static void Merge(ushort[] from, ushort[] dest)
@@ -299,10 +261,14 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_z_max") as ParameterSlider).ValueChanged += KinectImporter_z_max_ValueChanged;
 
 
-        //(ShadowMediaUIHost.GetUI("Kinect_pos_x") as ParameterSlider).ValueChanged += KinectImporter_pos_x_ValueChanged;
-        //(ShadowMediaUIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueChanged += KinectImporter_pos_y_ValueChanged;
-        //(ShadowMediaUIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueChanged += KinectImporter_pos_z_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_pos_x") as ParameterSlider).ValueChanged += KinectImporter_pos_x_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueChanged += KinectImporter_pos_y_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueChanged += KinectImporter_pos_z_ValueChanged;
 
+        (ShadowMediaUIHost.GetUI("Kinect_LightMode") as ParameterDropdown).ValueChanged += KinectImporter_LightModeChanged;
+
+
+        
         //(ShadowMediaUIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueChanged += KinectImporter_Cut_y_ValueChanged;
         //(ShadowMediaUIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueChanged += KinectImporter_Cut_diff_ValueChanged;
 
@@ -323,14 +289,19 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueUpdate();
 
-        (ShadowMediaUIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueUpdate();
-        (ShadowMediaUIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueUpdate();
+        //(ShadowMediaUIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueUpdate();
+        //(ShadowMediaUIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueUpdate();
 
         (ShadowMediaUIHost.GetUI("Archive") as ParameterCheckbox).ValueUpdate();
 
         (ShadowMediaUIHost.GetUI("Kinect_Depth") as ParameterCheckbox).ValueUpdate();
 
 
+    }
+
+    private void KinectImporter_LightModeChanged(object sender, EventArgs e)
+    {
+        _lightMode = (LightSourceMode)(e as ParameterDropdown.ChangedValue).Value;
     }
 
     private void KinectImporter_KinectDepth_ValueChanged(object sender, EventArgs e)
@@ -343,20 +314,20 @@ public class KinectImporter : ASensorImporter
         this.IsArchive = (e as ParameterCheckbox.ChangedValue).Value;
     }
 
-    //private void KinectImporter_pos_x_ValueChanged(object sender, EventArgs e)
-    //{
-    //    this.m_kinectPosition.X = (e as ParameterSlider.ChangedValue).Value;
-    //}
+    private void KinectImporter_pos_x_ValueChanged(object sender, EventArgs e)
+    {
+        this._position.X = (e as ParameterSlider.ChangedValue).Value;
+    }
 
-    //private void KinectImporter_pos_y_ValueChanged(object sender, EventArgs e)
-    //{
-    //    this.m_kinectPosition.Y = (e as ParameterSlider.ChangedValue).Value;
-    //}
+    private void KinectImporter_pos_y_ValueChanged(object sender, EventArgs e)
+    {
+        this._position.Y = (e as ParameterSlider.ChangedValue).Value;
+    }
 
-    //private void KinectImporter_pos_z_ValueChanged(object sender, EventArgs e)
-    //{
-    //    this.m_kinectPosition.Z = (e as ParameterSlider.ChangedValue).Value;
-    //}
+    private void KinectImporter_pos_z_ValueChanged(object sender, EventArgs e)
+    {
+        this._position.Z = (e as ParameterSlider.ChangedValue).Value;
+    }
 
     //private void KinectImporter_Cut_diff_ValueChanged(object sender, EventArgs e)
     //{

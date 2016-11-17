@@ -9,7 +9,7 @@ using Windows.Kinect;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
- 
+
     public class ParticleVector : AShadowImageProcesser
     {
         public List<Particle2D.TaggedCircleParticle> m_particleList = new List<Particle2D.TaggedCircleParticle>();
@@ -18,15 +18,27 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         public float MaxSize = 2;
         public float MinSize = 0;
         private float ParticleNum = 1000;
-
+        private bool IsDebugMode = false;
+        private bool UseOwnShadow = false;
+        private bool UseAvarage = false;
+        private bool UseFade = false;
 
         public ParticleVector()
             : base()
         {
 
+
+
             (GUI.BackgroundMediaUIHost.GetUI("PV_Num_Init") as ParameterSlider).ValueChanged += BackRenderCamera_PV_Num_Init_ValueChanged;
             (GUI.BackgroundMediaUIHost.GetUI("PV_Size_Max") as ParameterSlider).ValueChanged += BackRenderCamera_PV_Size_Max_ValueChanged;
             (GUI.BackgroundMediaUIHost.GetUI("PV_Size_Min") as ParameterSlider).ValueChanged += BackRenderCamera_PV_Size_Min_ValueChanged;
+
+            (GUI.BackgroundMediaUIHost.GetUI("PV_UseShadowImage") as ParameterCheckbox).ValueChanged += PV_UseShadowImage_Changed;
+            (GUI.BackgroundMediaUIHost.GetUI("PV_UseAvarage") as ParameterCheckbox).ValueChanged += PV_UseAvarage_Changed;
+            (GUI.BackgroundMediaUIHost.GetUI("PV_UseFade") as ParameterCheckbox).ValueChanged += PV_UseFade_Changed;
+
+
+            (GUI.BackgroundMediaUIHost.GetUI("PV_DebugMode") as ParameterCheckbox).ValueChanged += PV_DebugMode_Changed;
 
             (GUI.BackgroundMediaUIHost.GetUI("PV_Num_Init") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("PV_Reset") as ParameterButton).Clicked += ParticleVector_Clicked;
@@ -44,9 +56,35 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         }
 
+        private void PV_UseFade_Changed(object sender, EventArgs e)
+        {
+            UseFade = (e as ParameterCheckbox.ChangedValue).Value;
+        }
+
+        private void PV_UseAvarage_Changed(object sender, EventArgs e)
+        {
+            UseAvarage = (e as ParameterCheckbox.ChangedValue).Value;
+        }
+
+        private void PV_UseShadowImage_Changed(object sender, EventArgs e)
+        {
+            UseOwnShadow = (e as ParameterCheckbox.ChangedValue).Value;
+        }
+
+        private void PV_DebugMode_Changed(object sender, EventArgs e)
+        {
+            IsDebugMode = (e as ParameterCheckbox.ChangedValue).Value;
+        }
         private void ParticleVector_ChangeHumanCount(int count)
         {
             this.ResetCircles();
+            string ids = count.ToString() + ":";
+            foreach (var id in this.bodyIdList)
+            {
+                ids += id.ToString() + ",";
+            }
+
+            ShadowMediaUIHost.setDebugText(ids);
         }
 
         private void ParticleVector_Clicked(object sender, EventArgs e)
@@ -82,9 +120,31 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
             var size = src.Size();
-            m_dst = new Mat(size, MatType.CV_8UC3, new Scalar(0, 0, 0));
+
+
+            m_dst = this.UseOwnShadow ? src.Clone() : new Mat(size, MatType.CV_8UC3, new Scalar(0, 0, 0));
+
+
             Vector3 vell = new Vector2(0, 0);
-           
+
+            Vector3 Avarage = new Vector3(0, 0, 0);
+            int counter = 0;
+            if (UseAvarage)
+            {
+                foreach (var p in this.BodyDataOnDepthImage)
+                {
+                    foreach (var q in p.JointDepth)
+                    {
+                        if (q.Value.state == TrackingState.Tracked)
+                        {
+                            Avarage += q.Value.vellocity_upperCorrect;
+                            ++counter;
+                        }
+                    }
+                }
+                Avarage /= (float)counter;
+            }
+
 
             unsafe
             {
@@ -93,21 +153,42 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 {
                     //this.m_particleList[i].AddForce(new UnityEngine.Vector2(UnityEngine.Random.Range(-0.1f, 0.1f) + (this.m_currentCenter.x-this.m_pastCenter.x)/10, UnityEngine.Random.Range(-0.1f, 0.1f) + (this.m_currentCenter.y - this.m_pastCenter.y) / 10));
 
-                    if (this.m_particleList[i].Setupped  && this.m_particleList[i].id != -1)
+                    if (!UseAvarage)
                     {
-                        var p = this.m_particleList[i];
-                        vell = this.BodyDataOnDepthImage[p.id].JointDepth[p.jointType].vellocity_upperCorrect;
+                        if (this.m_particleList[i].Setupped && this.m_particleList[i].id != -1)
+                        {
+                            var p = this.m_particleList[i];
+                            vell = this.BodyDataOnDepthImage[p.id].JointDepth[p.jointType].vellocity_upperCorrect;
 
-                        if(vell.magnitude > 1f)
+                            if (vell.magnitude > 5f)
+                            {
+                                vell.Set(0, 0, 0);
+                            }
+                        }
+                        else
                         {
                             vell.Set(0, 0, 0);
                         }
-                    }else
+
+                        this.m_particleList[i].AddForce(vell);
+                    }
+                    else
                     {
-                        vell.Set(0, 0, 0);
+                        if (this.m_particleList[i].Setupped && this.m_particleList[i].id != -1)
+                        {
+                            if (Avarage.magnitude > 5f)
+                            {
+                                vell.Set(0, 0, 0);
+                            }
+                        }
+                        else
+                        {
+                            vell.Set(0, 0, 0);
+                        }
+                        this.m_particleList[i].AddForce(Avarage);
                     }
 
-                    this.m_particleList[i].AddForce(vell);
+
                     this.m_particleList[i].AddForce(this.m_particleList[i].Vellocity * -0.01f);
                     this.m_particleList[i].Update();
                     //this.m_particleList[i].CutOffVellocity(MaxVellocity);
@@ -126,9 +207,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     else
                     {
                         this.m_particleList[i].Size = MinSize;
-                        this.m_particleList[i].GraduallyChangeColorTo(Scalar.Black, 0.07);
+                        if (UseFade) this.m_particleList[i].GraduallyChangeColorTo(Scalar.Black, 0.07);
                     }
-                    this.m_particleList[i].DrawShape(ref m_dst);
+                    if (this.IsDebugMode == false)
+                    {
+                        this.m_particleList[i].DrawShape(ref m_dst);
+                    }
+                    else
+                    {
+                        this.m_particleList[i].DrawDebug(ref m_dst);
+                    }
                 }
             }
 

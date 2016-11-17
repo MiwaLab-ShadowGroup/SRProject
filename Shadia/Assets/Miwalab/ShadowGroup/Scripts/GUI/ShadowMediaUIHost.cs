@@ -17,6 +17,11 @@ public class ShadowMediaUIHost : MonoBehaviour
     private static Dictionary<string, AParameterUI> m_ParameterUI = new Dictionary<string, AParameterUI>();
     protected static float m_lastUpdatedHeight;
 
+    public static void setDebugText(string text)
+    {
+        GameObject.FindObjectOfType<ShadowMediaUIHost>()._debugText.text = text;
+    }
+
     public static Dictionary<string, AParameterUI> GetInstance()
     {
         return m_ParameterUI;
@@ -80,6 +85,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     public ParameterCheckbox m_checkbox;
     public ParameterButton m_button;
     public ParameterText m_text;
+    public GameObject m_Dropdown;
 
     public ASensorImporter m_Sensor;
 
@@ -88,10 +94,13 @@ public class ShadowMediaUIHost : MonoBehaviour
     public Dropdown CallibrationSettingMenu;
     public Dropdown AfterEffectSettingMenu;
     public Dropdown ArchiveSettingMenu;
+    public Dropdown GenericSettingMenu;
     public List<ShadowMeshRenderer> m_meshrenderer = new List<ShadowMeshRenderer>();
 
     public GameObject SettingPanel;
     public Canvas MainCanvas;
+
+    public Text _debugText;
 
     protected List<Dropdown> m_MenuList;
     protected Dictionary<string, GameObject> m_PanelDictionary;
@@ -121,11 +130,16 @@ public class ShadowMediaUIHost : MonoBehaviour
         {
             this.ArchiveSettingMenu.options.Add(new Dropdown.OptionData(((ArchiveSettingType)i).ToString()));
         }
+        for (int i = 0; i < (int)Miwalab.ShadowGroup.Core.ApplicationSettings.GenericSettingOption.Count; ++i)
+        {
+            this.GenericSettingMenu.options.Add(new Dropdown.OptionData(((Miwalab.ShadowGroup.Core.ApplicationSettings.GenericSettingOption)i).ToString()));
+        }
         m_MenuList.Add(this.ImageProcessingMenu);
         m_MenuList.Add(this.ImportSettingMenu);
         m_MenuList.Add(this.CallibrationSettingMenu);
         m_MenuList.Add(this.AfterEffectSettingMenu);
         m_MenuList.Add(this.ArchiveSettingMenu);
+        m_MenuList.Add(this.GenericSettingMenu);
 
         foreach (var menu in this.m_MenuList)
         {
@@ -142,7 +156,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.m_currentCallibrationSettingPanel = m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()];
         this.m_currentAfterEffectSettingPanel = m_PanelDictionary[AfterEffectSettingType.Fade.ToString()];
         this.m_currentArchiveSettingPanel = m_PanelDictionary[ArchiveSettingType.Save.ToString()];
-
+        this.m_currentGenericSettingPanel = m_PanelDictionary[Miwalab.ShadowGroup.Core.ApplicationSettings.GenericSettingOption.Mode.ToString()];
 
         //UI初期化
         this.SetupUIsImageprocess();
@@ -153,11 +167,18 @@ public class ShadowMediaUIHost : MonoBehaviour
 
 
         this.CreateUIsImportKinectv2(m_PanelDictionary[ImportSettingType.Kinect.ToString()]);
+        this.CreateUIsImportNetwork(m_PanelDictionary[ImportSettingType.Network.ToString()]);
 
         this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()], 1);
         this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport1.ToString()], 1);
         this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport2.ToString()], 2);
         this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport2.ToString()], 2);
+        this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport3.ToString()], 3);
+        this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport3.ToString()], 3);
+        this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport4.ToString()], 4);
+        this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport4.ToString()], 4);
+
+
 
         this.CreateUIsAffterEffectFade(m_PanelDictionary[AfterEffectSettingType.Fade.ToString()]);
 
@@ -165,6 +186,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsArchivePlay(m_PanelDictionary[ArchiveSettingType.Play.ToString()]);
         this.CreateUIsArchiveRobot(m_PanelDictionary[ArchiveSettingType.Robot.ToString()]);
 
+        this.CreateUIsGeneric();
 
         this.m_meshrenderer.ForEach(p => p.SetUpUIs());
         this.m_Sensor.setUpUI();
@@ -175,6 +197,13 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.m_Sensor.AddImageProcesser(new Normal());
 
     }
+
+    private void CreateUIsGeneric()
+    {
+        this.CreateUIsGenericModes(m_PanelDictionary[Miwalab.ShadowGroup.Core.ApplicationSettings.GenericSettingOption.Mode.ToString()]);
+    }
+
+   
 
     private void SetupUIsImageprocess()
     {
@@ -205,7 +234,20 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     }
 
+    public void ChangeGeneralSettingOptionTo(int number)
+    {
+        var type = (Miwalab.ShadowGroup.Core.ApplicationSettings.GenericSettingOption)number;
+        switch (type)
+        {
+            case Miwalab.ShadowGroup.Core.ApplicationSettings.GenericSettingOption.Mode:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Normal()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Normal.ToString()];
+                break;
+    }
+        this.SwitchOffOtherPanelsExceptOf(this.m_currentGenericSettingPanel);
 
+    }
+    
 
     public void ChangeImageProcessingOptionTo(int number)
     {
@@ -326,10 +368,14 @@ public class ShadowMediaUIHost : MonoBehaviour
         switch (type)
         {
             case ImportSettingType.Kinect:
-                //一回作って使いまわす
                 this.m_currentImportSettingPanel = this.m_PanelDictionary[ImportSettingType.Kinect.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentImportSettingPanel);
                 break;
+            case ImportSettingType.Network:
+                this.m_currentImportSettingPanel = this.m_PanelDictionary[ImportSettingType.Network.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentImportSettingPanel);
+                break;
+
             case ImportSettingType.Camera:
                 this.m_currentImportSettingPanel = this.m_PanelDictionary[ImportSettingType.Camera.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentImportSettingPanel);
@@ -346,7 +392,6 @@ public class ShadowMediaUIHost : MonoBehaviour
         switch (type)
         {
             case CallibrationSettingType.CallibrationImport1:
-                //一回作って使いまわす
                 this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
                 break;
@@ -355,12 +400,27 @@ public class ShadowMediaUIHost : MonoBehaviour
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
                 break;
             case CallibrationSettingType.CallibrationImport2:
-                //一回作って使いまわす
                 this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport2.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
                 break;
             case CallibrationSettingType.CallibrationExport2:
                 this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport2.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
+                break;
+            case CallibrationSettingType.CallibrationImport3:
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport3.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
+                break;
+            case CallibrationSettingType.CallibrationExport3:
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport3.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
+                break;
+            case CallibrationSettingType.CallibrationImport4:
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport4.ToString()];
+                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
+                break;
+            case CallibrationSettingType.CallibrationExport4:
+                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport4.ToString()];
                 this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
                 break;
 
@@ -431,7 +491,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsImageporcessingPainterShadow(GameObject gameObject)
     {
         m_lastUpdatedHeight = 0;
-
+        
     }
 
     private void CreateUIsArchiveSave(GameObject parent)
@@ -536,6 +596,12 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "PV_Size_Max", 20, -1, 1);
         AddFloatUI(parent, "PV_Size_Min", 20, -1, 0);
 
+        AddBooleanUI(parent, "PV_UseShadowImage", false);
+        AddBooleanUI(parent, "PV_UseAvarage", false);
+        AddBooleanUI(parent, "PV_UseFade", false);
+
+        AddBooleanUI(parent, "PV_DebugMode", false);
+
         AddButtonUI(parent, "PV_Reset");
     }
 
@@ -607,7 +673,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "HandElbow_UseBec", false);
         AddBooleanUI(parent, "HandElbow_UseAtt", false);
         m_lastUpdatedHeight += 10;
-
+    
     }
     private void CreateUIsImageporcessingMoveShadow(GameObject parent)
     {
@@ -840,14 +906,24 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Kinect_pos_y", 5, 0, 1);
         AddFloatUI(parent, "Kinect_pos_z", 10, -10, -8);
         m_lastUpdatedHeight += 10;
-        AddFloatUI(parent, "Kinect_Cut_y", 2, -2, 0);
-        AddFloatUI(parent, "Kinect_Cut_diff", 0.1f, 0.005f, 0.02f);
+        AddEnumUI(parent, "Kinect_LightMode", KinectImporter.LightSourceMode.Normal);
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "Archive", false);
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "Kinect_Depth", false);
 
     }
+
+    private void CreateUIsImportNetwork(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddTextUI(parent, "Network_CIPCServerIP");
+        AddTextUI(parent, "Network_CIPCServerPort");
+        AddButtonUI(parent, "Network_CIPCServerConnect");
+        AddBooleanUI(parent, "Network_Send", false);
+        AddBooleanUI(parent, "Network_Receive", false);
+    }
+
     /// <summary>
     /// normal shadow
     /// </summary>
@@ -899,6 +975,15 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddButtonUI(parent, "Clb_E_Save" + num);
         AddButtonUI(parent, "Clb_E_Load" + num);
     }
+
+    private void CreateUIsGenericModes(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddEnumUI(parent, "core_shadow_media_mode", Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia2D);
+        AddBooleanUI(parent, "core_switch_objects", true);
+    }
+
+
 
     #endregion
 
@@ -961,6 +1046,31 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     }
 
+    protected void AddEnumUI<T>(GameObject parent, string ParameterName, T defaultValue)
+        where T : struct
+    {
+        var _object = Instantiate(m_Dropdown);
+        var titleText = _object.GetComponentInChildren<Text>(true);
+        var dropdown = _object.GetComponentInChildren<Dropdown>(true);
+
+        var item =  _object.AddComponent<ParameterDropdown>();
+        item.m_titleText = titleText;
+        item.m_Dropdown = dropdown; 
+
+        dropdown.onValueChanged.AddListener( new UnityEngine.Events.UnityAction<int>( item.OnValueChanged));
+
+        item.Title = ParameterName;
+
+        item.initialize(defaultValue);
+        _object.transform.SetParent(parent.transform, false);
+        var recttransform = _object.gameObject.transform as RectTransform;
+        recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
+
+        AddUI(ParameterName, item);
+
+        m_lastUpdatedHeight += item.getSize().height;
+
+    }
     #endregion
 
     #region Panel OnOff
@@ -990,7 +1100,12 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_currentArchiveSettingPanel.SetActive(value);
     }
+    private GameObject m_currentGenericSettingPanel;
+    public void GenericSettingPanelSet(bool value)
+    {
+        m_currentGenericSettingPanel.SetActive(value);
 
+    }
 
     #endregion
 }

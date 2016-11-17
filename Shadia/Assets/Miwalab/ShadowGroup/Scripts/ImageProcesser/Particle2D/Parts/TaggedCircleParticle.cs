@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenCvSharp.CPlusPlus;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
         public JointType jointType { set; get; }
         public int id { set; get; }
         public bool Setupped = false;
+
+        public void DrawDebug(ref Mat mat)
+        {
+            if (this.Alive)
+            {
+                if (Size >= 0)
+                {
+                    point.X = (int)Position.x;
+                    point.Y = (int)Position.y;
+                    OpenCvSharp.CPlusPlus.Cv2.PutText(mat,((int)jointType).ToString(), point, OpenCvSharp.FontFace.HersheyPlain ,0.5, Color);
+                }
+            }
+
+        }
 
         public void AutoReset(ResetType type, List<int> bodyIdList)
         {
