@@ -28,6 +28,23 @@ public class ShadowMeshRenderer : MonoBehaviour
     public Vector3 bottomRightofViewPort;
     public Vector3 topRightofViewPort;
 
+    public Vector3 debug_topLeft;
+    public Vector3 debug_bottomLeft;
+    public Vector3 debug_bottomRight;
+    public Vector3 debug_topRight;
+
+    public Vector3 Inpt_topLeft;
+    public Vector3 Inpt_bottomLeft;
+    public Vector3 Inpt_bottomRight;
+    public Vector3 Inpt_topRight;
+
+    public Vector3 Expt_topLeft;
+    public Vector3 Expt_bottomLeft;
+    public Vector3 Expt_bottomRight;
+    public Vector3 Expt_topRight;
+
+    private float dbgPlaneWidth;
+    private float dbgPlaneHeight;
 
     public int Row = 10;
     public int Col = 10;
@@ -42,6 +59,8 @@ public class ShadowMeshRenderer : MonoBehaviour
     public GameObject PointObjectSrc;
     public Camera CameraSrc;
     private List<GameObject> PointObjectList;
+
+    public GameObject debugPlane;
 
     // Use this for initialization
     public void SetUpUIs()
@@ -347,22 +366,42 @@ public class ShadowMeshRenderer : MonoBehaviour
     void UpdatePos()
     {
         //頂点変更
-
         topLeft = ProjectionCamera.ScreenToWorldPoint(topLeftofViewPort);
         bottomLeft = ProjectionCamera.ScreenToWorldPoint(bottomLeftofViewPort);
         bottomRight = ProjectionCamera.ScreenToWorldPoint(bottomRightofViewPort);
         topRight = ProjectionCamera.ScreenToWorldPoint(topRightofViewPort);
 
+        //エクスポート側　こっちはあってる
         this.PointObjectList[0].transform.position = topLeft;
         this.PointObjectList[1].transform.position = bottomLeft;
         this.PointObjectList[2].transform.position = bottomRight;
         this.PointObjectList[3].transform.position = topRight;
 
-        this.PointObjectList[4].transform.position = CameraSrc.ScreenToWorldPoint(this.ConvertUVPointToScreenPoint(src_topLeft));
-        this.PointObjectList[5].transform.position = CameraSrc.ScreenToWorldPoint(this.ConvertUVPointToScreenPoint(src_bottomLeft));
-        this.PointObjectList[6].transform.position = CameraSrc.ScreenToWorldPoint(this.ConvertUVPointToScreenPoint(src_bottomRight));
-        this.PointObjectList[7].transform.position = CameraSrc.ScreenToWorldPoint(this.ConvertUVPointToScreenPoint(src_topRight));
+        //インポート側
+     
+        this.dbgPlaneWidth = this.debugPlane.transform.lossyScale.x * 10;
+        this.dbgPlaneHeight = this.debugPlane.transform.lossyScale.y * 10;
 
+        this.Inpt_topLeft.x = this.dbgPlaneWidth  / 2 * (src_topLeft.x * -2 + 1 );
+        this.Inpt_topLeft.y = this.dbgPlaneHeight / 2 * (src_topLeft.y * 2 - 1 );
+        this.Inpt_topLeft.z = this.debugPlane.transform.position.z;
+        this.Inpt_bottomLeft.x = this.dbgPlaneWidth  / 2 * (src_bottomLeft.x *  -2 + 1 );
+        this.Inpt_bottomLeft.y = this.dbgPlaneHeight / 2 * (src_bottomLeft.y *  2 - 1);
+        this.Inpt_bottomLeft.z = this.debugPlane.transform.position.z;
+        this.Inpt_bottomRight.x = this.dbgPlaneWidth  / 2 * (src_bottomRight.x * -2 + 1 );
+        this.Inpt_bottomRight.y = this.dbgPlaneHeight / 2 * (src_bottomRight.y * 2 - 1 );
+        this.Inpt_bottomRight.z = this.debugPlane.transform.position.z; ;
+        this.Inpt_topRight.x = this.dbgPlaneWidth  / 2 * (src_topRight.x * -2 + 1);
+        this.Inpt_topRight.y = this.dbgPlaneHeight / 2 * (src_topRight.y * 2 - 1 );
+        this.Inpt_topRight.z = this.debugPlane.transform.position.z;
+
+   
+        this.PointObjectList[4].transform.position = this.Inpt_topLeft ;
+        this.PointObjectList[5].transform.position = this.Inpt_bottomLeft ;
+        this.PointObjectList[6].transform.position = this.Inpt_bottomRight;
+        this.PointObjectList[7].transform.position = this.Inpt_topRight ;
+
+      
 
         //頂点に変更があったらメッシュ再構築
         this.RefreshData();
@@ -398,6 +437,7 @@ public class ShadowMeshRenderer : MonoBehaviour
                 // Skip the last row/col
                 if (x != (localWidth - 1) && y != (localHeight - 1))
                 {
+           
                     int topLeft = index;
                     int topRight = topLeft + 1;
                     int bottomLeft = topLeft + localWidth;
@@ -409,6 +449,7 @@ public class ShadowMeshRenderer : MonoBehaviour
                     _Triangles[triangleIndex++] = bottomLeft;
                     _Triangles[triangleIndex++] = topRight;
                     _Triangles[triangleIndex++] = bottomRight;
+
                 }
             }
         }
@@ -425,22 +466,24 @@ public class ShadowMeshRenderer : MonoBehaviour
         int width = this.Col + 1;
         int height = this.Row + 1;
 
+    
+
+        
         Vector3 downVec_R = (this.bottomRight - this.topRight) / (this.Row);
         Vector3 downVec_L = (this.bottomLeft - this.topLeft) / (this.Row);
-
+       
         Vector3 UV_downVec_R = (this.src_bottomRight - this.src_topRight);
         Vector3 UV_downVec_L = (this.src_bottomLeft - this.src_topLeft);
-
 
         //Debug.Log(downVec_R);
         // \Debug.Log(downVec_L);
 
-        Vector3 downVec_L_e = downVec_L / downVec_L.magnitude;
+        //Vector3 downVec_L_e = downVec_L / downVec_L.magnitude;
 
         for (int y = 0; y < height; y++)
         {
             Vector3 rightVec = ((this.topRight + downVec_R * y) - (this.topLeft + downVec_L * y)) / (this.Col);
-            Vector3 rightVec_e = rightVec / rightVec.magnitude;
+            //Vector3 rightVec_e = rightVec / rightVec.magnitude;
 
             Vector3 UV_rightVec = ((this.src_topRight + UV_downVec_R * y / this.Row) - (this.src_topLeft + UV_downVec_L * y / this.Row));
 
@@ -463,6 +506,8 @@ public class ShadowMeshRenderer : MonoBehaviour
 
             }
         }
+        
+
 
         _Mesh.vertices = _Vertices;
         _Mesh.uv = _UV;
