@@ -8,6 +8,7 @@ namespace Miwalab.ShadowGroup.Scripts.Sensors
     public enum ImportSettingType
     {
         Kinect,
+        Kinect_Aditional,
         Camera,
         Network,
         Count

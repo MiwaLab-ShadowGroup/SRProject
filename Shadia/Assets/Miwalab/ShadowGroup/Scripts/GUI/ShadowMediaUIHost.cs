@@ -167,6 +167,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
 
         this.CreateUIsImportKinectv2(m_PanelDictionary[ImportSettingType.Kinect.ToString()]);
+        this.CreateUIsImportKinectAditional(m_PanelDictionary[ImportSettingType.Kinect_Aditional.ToString()]);
         this.CreateUIsImportNetwork(m_PanelDictionary[ImportSettingType.Network.ToString()]);
 
         this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()], 1);
@@ -197,6 +198,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.m_Sensor.AddImageProcesser(new Normal());
 
     }
+
 
     private void CreateUIsGeneric()
     {
@@ -365,109 +367,28 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         ImportSettingType type = (ImportSettingType)number;
 
-        switch (type)
-        {
-            case ImportSettingType.Kinect:
-                this.m_currentImportSettingPanel = this.m_PanelDictionary[ImportSettingType.Kinect.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentImportSettingPanel);
-                break;
-            case ImportSettingType.Network:
-                this.m_currentImportSettingPanel = this.m_PanelDictionary[ImportSettingType.Network.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentImportSettingPanel);
-                break;
-
-            case ImportSettingType.Camera:
-                this.m_currentImportSettingPanel = this.m_PanelDictionary[ImportSettingType.Camera.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentImportSettingPanel);
-                break;
-
-        }
-
+        this.m_currentImportSettingPanel = this.m_PanelDictionary[type.ToString()];
+        this.SwitchOffOtherPanelsExceptOf(this.m_currentImportSettingPanel);
     }
 
     public void ChangeCallibrationSettingOptionTo(int number)
     {
         CallibrationSettingType type = (CallibrationSettingType)number;
-
-        switch (type)
-        {
-            case CallibrationSettingType.CallibrationImport1:
-                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
-                break;
-            case CallibrationSettingType.CallibrationExport1:
-                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport1.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
-                break;
-            case CallibrationSettingType.CallibrationImport2:
-                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport2.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
-                break;
-            case CallibrationSettingType.CallibrationExport2:
-                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport2.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
-                break;
-            case CallibrationSettingType.CallibrationImport3:
-                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport3.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
-                break;
-            case CallibrationSettingType.CallibrationExport3:
-                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport3.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
-                break;
-            case CallibrationSettingType.CallibrationImport4:
-                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationImport4.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
-                break;
-            case CallibrationSettingType.CallibrationExport4:
-                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[CallibrationSettingType.CallibrationExport4.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
-                break;
-
-        }
-
+        this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[type.ToString()];
+        this.SwitchOffOtherPanelsExceptOf(this.m_currentCallibrationSettingPanel);
     }
 
     public void ChangeFadeSettingOptionTo(int number)
     {
         AfterEffectSettingType type = (AfterEffectSettingType)number;
-
-        switch (type)
-        {
-            case AfterEffectSettingType.Fade:
-                //一回作って使いまわす
-                this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[AfterEffectSettingType.Fade.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentAfterEffectSettingPanel);
-                break;
-
-        }
-
+        this.m_currentCallibrationSettingPanel = this.m_PanelDictionary[type.ToString()];
+        this.SwitchOffOtherPanelsExceptOf(this.m_currentAfterEffectSettingPanel);
     }
     public void ChangeArchiveSettingOptionTo(int number)
     {
         ArchiveSettingType type = (ArchiveSettingType)number;
-
-        switch (type)
-        {
-            case ArchiveSettingType.Save:
-                //一回作って使いまわす
-                this.m_currentArchiveSettingPanel = this.m_PanelDictionary[ArchiveSettingType.Save.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentArchiveSettingPanel);
-                break;
-
-            case ArchiveSettingType.Play:
-                //一回作って使いまわす
-                this.m_currentArchiveSettingPanel = this.m_PanelDictionary[ArchiveSettingType.Play.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentArchiveSettingPanel);
-                break;
-
-            case ArchiveSettingType.Robot:
-                //一回作って使いまわす
-                this.m_currentArchiveSettingPanel = this.m_PanelDictionary[ArchiveSettingType.Robot.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentArchiveSettingPanel);
-                break;
-        }
-
+        this.m_currentArchiveSettingPanel = this.m_PanelDictionary[type.ToString()];
+        this.SwitchOffOtherPanelsExceptOf(this.m_currentArchiveSettingPanel);
     }
 
     protected void SwitchOffOtherPanelsExceptOf(GameObject currentPanel)
@@ -902,9 +823,9 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Kinect_z_min", 8, 0, 0);
         AddFloatUI(parent, "Kinect_z_max", 8, 0, 8);
         m_lastUpdatedHeight += 10;
-        AddFloatUI(parent, "Kinect_pos_x", 15, -15, 0);
-        AddFloatUI(parent, "Kinect_pos_y", 5, 0, 1);
-        AddFloatUI(parent, "Kinect_pos_z", 10, -10, -8);
+        AddFloatUI(parent, "Kinect_pos_x", 10, -10, 0);
+        AddFloatUI(parent, "Kinect_pos_y", 10, -10, 0);
+        AddFloatUI(parent, "Kinect_pos_z", 10, -10, 0);
         m_lastUpdatedHeight += 10;
         AddEnumUI(parent, "Kinect_LightMode", KinectImporter.LightSourceMode.Normal);
         m_lastUpdatedHeight += 10;
@@ -912,6 +833,13 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "Kinect_Depth", false);
 
+    }
+
+    private void CreateUIsImportKinectAditional(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Kinect_ViewRange", 2, 0.5f, 1);
+        AddFloatUI(parent, "Kinect_CircleCut", 64, 0, 25);
     }
 
     private void CreateUIsImportNetwork(GameObject parent)

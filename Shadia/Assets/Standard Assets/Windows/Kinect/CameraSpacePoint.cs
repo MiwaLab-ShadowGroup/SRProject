@@ -9,9 +9,9 @@ namespace Windows.Kinect
     [RootSystem.Runtime.InteropServices.StructLayout(RootSystem.Runtime.InteropServices.LayoutKind.Sequential)]
     public struct CameraSpacePoint
     {
-        public float X { get; set; }
-        public float Y { get; set; }
-        public float Z { get; set; }
+        public float X;
+        public float Y;
+        public float Z;
 
         public override int GetHashCode()
         {
@@ -41,6 +41,17 @@ namespace Windows.Kinect
         public static bool operator !=(CameraSpacePoint a, CameraSpacePoint b)
         {
             return !(a.Equals(b));
+        }
+
+        /// <summary>
+        /// Œ¸ŽZ
+        /// </summary>
+        /// <param name="point"></param>
+        public void decrease(ref CameraSpacePoint point)
+        {
+            this.X -= point.X;
+            this.Y -= point.Y;
+            this.Z -= point.Z;
         }
     }
 

@@ -38,6 +38,8 @@ public class KinectImporter : ASensorImporter
     private float m_bottom = -1;
     private float m_front = 8;
     private float m_rear = 0.5f;
+    private float m_ViewRange = 1;
+    private float m_CircleCut = 25;
     private ReadData m_readdata;
     public GameObject ReadData;
     private bool IsArchive = false;
@@ -145,15 +147,10 @@ public class KinectImporter : ASensorImporter
 
         if (IsArchive)
         {
-
             if (m_readdata.IsRead)
             {
-
                 Merge(m_readdata.ReadDepthData, m_depthData);
-
             }
-
-
         }
         m_mapper.MapDepthFrameToCameraSpace(m_depthData, m_cameraSpacePoints);
 
@@ -198,6 +195,91 @@ public class KinectImporter : ASensorImporter
 
     private void ConvertDepthToMat()
     {
+        switch (_lightMode)
+        {
+            case LightSourceMode.Normal:
+                this.NormalConvertDepthToMat();
+                break;
+            case LightSourceMode.CanMoveOne:
+                this.CanMoveOneLightModeConvertDepthToMat();
+                break;
+        }
+
+    }
+
+    private void CanMoveOneLightModeConvertDepthToMat()
+    {
+        m_mat *= 0;
+        unsafe
+        {
+            byte* data = (byte*)m_mat.Data;
+            int length_X = this.m_frameDescription.Width;
+            int length_Y = this.m_frameDescription.Height;
+            int length_X_Half = this.m_frameDescription.Width / 2;
+            int length_Y_Half = this.m_frameDescription.Height / 2;
+            int length = m_cameraSpacePoints.Length * 3;
+            float depth = 0;
+            int k;
+            CameraSpacePoint point;
+            //CameraSpacePoint _point;
+            //int _count;
+            int depthPoint_X;
+            int depthPoint_Y;
+            float movingLate = 1;
+            float potion = 1;
+            for (int y = 0; y < length_Y; ++y)
+            {
+                for (int x = 0; x < length_X; ++x)
+                {
+                    point = this.m_cameraSpacePoints[(y * length_X + x)];
+                    depth = point.Z;
+                    ///とりあえずカメラの位置で減算
+                    point.decrease(ref this._position);
+                    if (point.X * point.X +
+                        point.Z * point.Z > m_CircleCut)
+                    {
+                        continue;
+                    }
+
+
+                    ///拡大率の計算
+                    if (point.Z != 0)
+                    {
+                        potion = depth / point.Z;
+                    }
+
+                    if (this._position.Z != 0)
+                    {
+                        movingLate = this._position.Z * 0.005f;
+                    }
+                    else
+                    {
+                        movingLate = 1;
+                    }
+
+                    
+                    ///新規のXY位置を計算
+                    //depthPoint.X = (x - length_X_Half - this._position.X * 10) * potion + length_X_Half + this._position.X * 10;
+                    //depthPoint.Y = (y - length_Y_Half - this._position.Y * 10) * potion + length_Y_Half + this._position.Y * 10;
+                    depthPoint_X = (int)(((x - length_X_Half - this._position.X / movingLate) * potion + this._position.X / movingLate)*m_ViewRange + length_X_Half);
+                    depthPoint_Y = (int)(((y - length_Y_Half - this._position.Y / movingLate) * potion + this._position.Y / movingLate)* m_ViewRange + length_Y_Half );
+                    if (depthPoint_X < 0 || depthPoint_X > length_X) continue;
+                    if (depthPoint_Y < 0 || depthPoint_Y > length_Y) continue;
+                    if (point.Z < 0) continue;
+
+                    k = (((int)depthPoint_Y) * length_X + (int)depthPoint_X) * 3;
+                    if (k >= length || k < 0) continue;
+
+                    data[k] = 255;
+                    data[k + 1] = 255;
+                    data[k + 2] = 255;
+                }
+            }
+        }
+    }
+
+    private void NormalConvertDepthToMat()
+    {
         unsafe
         {
             byte* data = (byte*)m_mat.Data;
@@ -230,9 +312,6 @@ public class KinectImporter : ASensorImporter
                     data[i + 2] = 0;
                 }
             }
-
-
-
         }
     }
 
@@ -266,9 +345,11 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueChanged += KinectImporter_pos_z_ValueChanged;
 
         (ShadowMediaUIHost.GetUI("Kinect_LightMode") as ParameterDropdown).ValueChanged += KinectImporter_LightModeChanged;
-
+        (ShadowMediaUIHost.GetUI("Kinect_ViewRange") as ParameterSlider).ValueChanged += KinectImporter_ViewRangeChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_CircleCut") as ParameterSlider).ValueChanged += KinectImporter_CircleCutChanged;
 
         
+
         //(ShadowMediaUIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueChanged += KinectImporter_Cut_y_ValueChanged;
         //(ShadowMediaUIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueChanged += KinectImporter_Cut_diff_ValueChanged;
 
@@ -297,6 +378,16 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_Depth") as ParameterCheckbox).ValueUpdate();
 
 
+    }
+
+    private void KinectImporter_CircleCutChanged(object sender, EventArgs e)
+    {
+        m_CircleCut = (e as ParameterSlider.ChangedValue).Value;
+    }
+
+    private void KinectImporter_ViewRangeChanged(object sender, EventArgs e)
+    {
+        m_ViewRange = (e as ParameterSlider.ChangedValue).Value;
     }
 
     private void KinectImporter_LightModeChanged(object sender, EventArgs e)
