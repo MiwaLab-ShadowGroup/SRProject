@@ -63,7 +63,7 @@ public class SaveData : MonoBehaviour
         (ShadowMediaUIHost.GetUI("SaveDepthStop") as ParameterButton).Clicked += SaveStop_Clicked;
 
         this.FpsAd = new FPSAdjuster.FPSAdjuster();
-        this.FpsAd.Fps = 30;
+        this.FpsAd.Fps = 20;
         this.FpsAd.Start();
         //Debug.Log("start1");
         

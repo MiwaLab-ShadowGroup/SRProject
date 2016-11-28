@@ -53,7 +53,7 @@ public class ArchiveAgent : MonoBehaviour {
 
 
         this.FpsAd = new FPSAdjuster.FPSAdjuster();
-        this.FpsAd.Fps = 21;
+        this.FpsAd.Fps = 20;
         this.FpsAd.Start();
     }
 

@@ -38,7 +38,7 @@ public class SaveCamera : MonoBehaviour
 
         //resizedMat = new Mat();
         this.FpsAd = new FPSAdjuster.FPSAdjuster();
-        this.FpsAd.Fps = 30;
+        this.FpsAd.Fps = 20;
         this.FpsAd.Start();
     }
 
@@ -51,14 +51,13 @@ public class SaveCamera : MonoBehaviour
 
     private void SaveStart_Clicked(object sender, EventArgs e)
     {
-        size = new Size(Camera.Colorimagematc3.Width, Camera.Colorimagematc3.Height);
-        
+        size = new Size(1920, 1080);
         
         //Debug.Log(Camera.Colorimagematc3.Width);
         if (filename != null)
         {
             vw = new VideoWriter();
-            vw.Open(filePath, codec, 30, size, true);
+            vw.Open(filePath, codec, 20, size, true);
             thread = new Thread(new ThreadStart(SaveCameraData));
             thread.Start();
         }
@@ -77,7 +76,6 @@ public class SaveCamera : MonoBehaviour
         while (true)
         {
           
-
             if (vw != null)
             {
                 vw.Write(Camera.Colorimagematc3);
