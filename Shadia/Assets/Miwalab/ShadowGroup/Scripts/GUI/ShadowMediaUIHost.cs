@@ -904,6 +904,11 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddButtonUI(parent, "Clb_E_Load" + num);
     }
 
+    protected void CreateUIsCameraCAllibration(GameObject parent, int num)
+    {
+        m_lastUpdatedHeight = 0;
+    }
+
     private void CreateUIsGenericModes(GameObject parent)
     {
         m_lastUpdatedHeight = 0;

@@ -15,6 +15,14 @@ namespace Miwalab.ShadowGroup.Scripts.Callibration
         CallibrationExport3,
         CallibrationImport4,
         CallibrationExport4,
+        CameraCllibration1,
+        CameraCllibration2,
         Count,
+    }
+
+    public enum ProjectionCameraMode
+    {
+        mode2D,
+        mode3D
     }
 }

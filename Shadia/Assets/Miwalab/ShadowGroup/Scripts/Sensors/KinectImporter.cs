@@ -235,12 +235,10 @@ public class KinectImporter : ASensorImporter
                     depth = point.Z;
                     ///とりあえずカメラの位置で減算
                     point.decrease(ref this._position);
-                    if (point.X * point.X +
-                        point.Z * point.Z > m_CircleCut)
-                    {
-                        continue;
-                    }
 
+                    if (point.X * point.X + point.Z * point.Z > m_CircleCut) { continue; }
+                    if (point.Y < this.m_bottom) { continue; }
+                    if (point.Y > this.m_top) { continue; }
 
                     ///拡大率の計算
                     if (point.Z != 0)
@@ -257,12 +255,12 @@ public class KinectImporter : ASensorImporter
                         movingLate = 1;
                     }
 
-                    
+
                     ///新規のXY位置を計算
                     //depthPoint.X = (x - length_X_Half - this._position.X * 10) * potion + length_X_Half + this._position.X * 10;
                     //depthPoint.Y = (y - length_Y_Half - this._position.Y * 10) * potion + length_Y_Half + this._position.Y * 10;
-                    depthPoint_X = (int)(((x - length_X_Half - this._position.X / movingLate) * potion + this._position.X / movingLate)*m_ViewRange + length_X_Half);
-                    depthPoint_Y = (int)(((y - length_Y_Half - this._position.Y / movingLate) * potion + this._position.Y / movingLate)* m_ViewRange + length_Y_Half );
+                    depthPoint_X = (int)(((x - length_X_Half - this._position.X / movingLate) * potion + this._position.X / movingLate) * m_ViewRange + length_X_Half);
+                    depthPoint_Y = (int)(((y - length_Y_Half - this._position.Y / movingLate) * potion + this._position.Y / movingLate) * m_ViewRange + length_Y_Half);
                     if (depthPoint_X < 0 || depthPoint_X > length_X) continue;
                     if (depthPoint_Y < 0 || depthPoint_Y > length_Y) continue;
                     if (point.Z < 0) continue;
@@ -348,7 +346,7 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_ViewRange") as ParameterSlider).ValueChanged += KinectImporter_ViewRangeChanged;
         (ShadowMediaUIHost.GetUI("Kinect_CircleCut") as ParameterSlider).ValueChanged += KinectImporter_CircleCutChanged;
 
-        
+
 
         //(ShadowMediaUIHost.GetUI("Kinect_Cut_y") as ParameterSlider).ValueChanged += KinectImporter_Cut_y_ValueChanged;
         //(ShadowMediaUIHost.GetUI("Kinect_Cut_diff") as ParameterSlider).ValueChanged += KinectImporter_Cut_diff_ValueChanged;
