@@ -105,13 +105,13 @@ Material:
       second: 0
     - first:
         name: _VertXMax
-      second: 5
+      second: 0.20432912
     - first:
         name: _VertXMin
-      second: -5
+      second: -1.1000186
     - first:
         name: _VertYMax
-      second: 4
+      second: 1.070349
     - first:
         name: _VertYMin
       second: -1
