@@ -840,7 +840,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsImportKinectAditional(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddFloatUI(parent, "Kinect_ViewRange", 2, 0.5f, 1);
+        AddFloatUI(parent, "Kinect_ViewRange", 4, 0.1f, 1);
         AddFloatUI(parent, "Kinect_CircleCut", 64, 0, 25);
     }
 
@@ -914,7 +914,16 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "clb_e_pos_y" + num, 10, -10, 0);
         AddFloatUI(parent, "clb_e_pos_z" + num, 10, -10, 0);
         m_lastUpdatedHeight += 10;
-        AddFloatUI(parent, "clb_e_radius" + num, 10, -10, 0);
+        AddFloatUI(parent, "clb_e_radius" + num, 5, 0, 2.5f);
+        AddFloatUI(parent, "clb_e_height" + num, 5, 0, 2.5f);
+        m_lastUpdatedHeight += 10;
+        AddFloatUI(parent, "clb_e_in_rad" + num, 5, 0, 0.5f);
+        m_lastUpdatedHeight += 10;
+
+        AddFloatUI(parent, "clb_e_startAngle" + num, 2 * Mathf.PI, 0, Mathf.PI / 4f );
+        AddFloatUI(parent, "clb_e_finishAngle" + num, 2 * Mathf.PI, 0, Mathf.PI / 4f * 3f);
+
+
         m_lastUpdatedHeight += 20;
 
 
@@ -935,7 +944,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "clb_camera_pos_ry" + num, 90, -90, 0);
         AddFloatUI(parent, "clb_camera_pos_rz" + num, 90, -90, 0);
         m_lastUpdatedHeight += 10;
-        AddFloatUI(parent, "clb_camera_fview" + num, 179, 1, 0);
+        AddFloatUI(parent, "clb_camera_fview" + num, 179, 1, 45);
     }
 
     private void CreateUIsGenericModes(GameObject parent)
