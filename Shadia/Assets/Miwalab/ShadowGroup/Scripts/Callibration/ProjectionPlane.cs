@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Miwalab.ShadowGroup.Scripts.Callibration;
+using Miwalab.ShadowGroup.Callibration;
 
 public class ProjectionPlane : MonoBehaviour {
 

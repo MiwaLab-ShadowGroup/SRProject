@@ -65,6 +65,8 @@ public class ShadowMeshRenderer : MonoBehaviour
     // Use this for initialization
     public void SetUpUIs()
     {
+        
+
 
         //メッシュを作る
         this.CreateMesh(this.Col, this.Row);
@@ -378,30 +380,30 @@ public class ShadowMeshRenderer : MonoBehaviour
         this.PointObjectList[3].transform.position = topRight;
 
         //インポート側
-     
+
         this.dbgPlaneWidth = this.debugPlane.transform.lossyScale.x * 10;
         this.dbgPlaneHeight = this.debugPlane.transform.lossyScale.y * 10;
 
-        this.Inpt_topLeft.x = this.dbgPlaneWidth  / 2 * (src_topLeft.x * -2 + 1 );
-        this.Inpt_topLeft.y = this.dbgPlaneHeight / 2 * (src_topLeft.y * 2 - 1 );
+        this.Inpt_topLeft.x = this.dbgPlaneWidth / 2 * (src_topLeft.x * -2 + 1);
+        this.Inpt_topLeft.y = this.dbgPlaneHeight / 2 * (src_topLeft.y * 2 - 1);
         this.Inpt_topLeft.z = this.debugPlane.transform.position.z;
-        this.Inpt_bottomLeft.x = this.dbgPlaneWidth  / 2 * (src_bottomLeft.x *  -2 + 1 );
-        this.Inpt_bottomLeft.y = this.dbgPlaneHeight / 2 * (src_bottomLeft.y *  2 - 1);
+        this.Inpt_bottomLeft.x = this.dbgPlaneWidth / 2 * (src_bottomLeft.x * -2 + 1);
+        this.Inpt_bottomLeft.y = this.dbgPlaneHeight / 2 * (src_bottomLeft.y * 2 - 1);
         this.Inpt_bottomLeft.z = this.debugPlane.transform.position.z;
-        this.Inpt_bottomRight.x = this.dbgPlaneWidth  / 2 * (src_bottomRight.x * -2 + 1 );
-        this.Inpt_bottomRight.y = this.dbgPlaneHeight / 2 * (src_bottomRight.y * 2 - 1 );
+        this.Inpt_bottomRight.x = this.dbgPlaneWidth / 2 * (src_bottomRight.x * -2 + 1);
+        this.Inpt_bottomRight.y = this.dbgPlaneHeight / 2 * (src_bottomRight.y * 2 - 1);
         this.Inpt_bottomRight.z = this.debugPlane.transform.position.z; ;
-        this.Inpt_topRight.x = this.dbgPlaneWidth  / 2 * (src_topRight.x * -2 + 1);
-        this.Inpt_topRight.y = this.dbgPlaneHeight / 2 * (src_topRight.y * 2 - 1 );
+        this.Inpt_topRight.x = this.dbgPlaneWidth / 2 * (src_topRight.x * -2 + 1);
+        this.Inpt_topRight.y = this.dbgPlaneHeight / 2 * (src_topRight.y * 2 - 1);
         this.Inpt_topRight.z = this.debugPlane.transform.position.z;
 
-   
-        this.PointObjectList[4].transform.position = this.Inpt_topLeft ;
-        this.PointObjectList[5].transform.position = this.Inpt_bottomLeft ;
-        this.PointObjectList[6].transform.position = this.Inpt_bottomRight;
-        this.PointObjectList[7].transform.position = this.Inpt_topRight ;
 
-      
+        this.PointObjectList[4].transform.position = this.Inpt_topLeft;
+        this.PointObjectList[5].transform.position = this.Inpt_bottomLeft;
+        this.PointObjectList[6].transform.position = this.Inpt_bottomRight;
+        this.PointObjectList[7].transform.position = this.Inpt_topRight;
+
+
 
         //頂点に変更があったらメッシュ再構築
         this.RefreshData();
@@ -437,7 +439,7 @@ public class ShadowMeshRenderer : MonoBehaviour
                 // Skip the last row/col
                 if (x != (localWidth - 1) && y != (localHeight - 1))
                 {
-           
+
                     int topLeft = index;
                     int topRight = topLeft + 1;
                     int bottomLeft = topLeft + localWidth;
@@ -466,12 +468,12 @@ public class ShadowMeshRenderer : MonoBehaviour
         int width = this.Col + 1;
         int height = this.Row + 1;
 
-    
 
-        
+
+
         Vector3 downVec_R = (this.bottomRight - this.topRight) / (this.Row);
         Vector3 downVec_L = (this.bottomLeft - this.topLeft) / (this.Row);
-       
+
         Vector3 UV_downVec_R = (this.src_bottomRight - this.src_topRight);
         Vector3 UV_downVec_L = (this.src_bottomLeft - this.src_topLeft);
 
@@ -506,7 +508,7 @@ public class ShadowMeshRenderer : MonoBehaviour
 
             }
         }
-        
+
 
 
         _Mesh.vertices = _Vertices;
