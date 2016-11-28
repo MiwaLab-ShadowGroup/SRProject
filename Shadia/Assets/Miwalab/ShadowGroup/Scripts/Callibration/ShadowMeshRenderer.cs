@@ -28,21 +28,11 @@ public class ShadowMeshRenderer : MonoBehaviour
     public Vector3 bottomRightofViewPort;
     public Vector3 topRightofViewPort;
 
-    public Vector3 debug_topLeft;
-    public Vector3 debug_bottomLeft;
-    public Vector3 debug_bottomRight;
-    public Vector3 debug_topRight;
-
     public Vector3 Inpt_topLeft;
     public Vector3 Inpt_bottomLeft;
     public Vector3 Inpt_bottomRight;
     public Vector3 Inpt_topRight;
-
-    public Vector3 Expt_topLeft;
-    public Vector3 Expt_bottomLeft;
-    public Vector3 Expt_bottomRight;
-    public Vector3 Expt_topRight;
-
+    
     private float dbgPlaneWidth;
     private float dbgPlaneHeight;
 
@@ -53,8 +43,7 @@ public class ShadowMeshRenderer : MonoBehaviour
     private Vector3[] _Vertices;
     private Vector2[] _UV;
     private int[] _Triangles;
-
-
+    
     public GameObject PointObjectDst;
     public GameObject PointObjectSrc;
     public Camera CameraSrc;
@@ -62,12 +51,24 @@ public class ShadowMeshRenderer : MonoBehaviour
 
     public GameObject debugPlane;
 
+    public enum PlaneMode
+    {
+        Plane,
+        Cylinder
+    }
+    public enum ImportMode
+    {
+        Plane,
+        Cylinder
+    }
+
+    PlaneMode _PlaneMode;
+    ImportMode _ImportMode;
+    
+
     // Use this for initialization
     public void SetUpUIs()
     {
-        
-
-
         //メッシュを作る
         this.CreateMesh(this.Col, this.Row);
         //this.RefreshData();
@@ -81,10 +82,13 @@ public class ShadowMeshRenderer : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Clb_I_TR_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_TR_XChanged;
         (ShadowMediaUIHost.GetUI("Clb_I_TR_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_I_TR_YChanged;
 
+        (ShadowMediaUIHost.GetUI("clb_i_import_mode" + CallibNumber) as ParameterDropdown).ValueChanged += clb_i_import_mode_changed;
+
+        
+
 
         (ShadowMediaUIHost.GetUI("Clb_I_Save" + CallibNumber) as ParameterButton).Clicked += Clb_I_Save_Clicked;
         (ShadowMediaUIHost.GetUI("Clb_I_Load" + CallibNumber) as ParameterButton).Clicked += Clb_I_Load_Clicked;
-
 
 
         (ShadowMediaUIHost.GetUI("Clb_E_TL_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_TL_XChanged;
@@ -97,9 +101,14 @@ public class ShadowMeshRenderer : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Clb_E_TR_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_TR_YChanged;
         (ShadowMediaUIHost.GetUI("Clb_E_Vsbl" + CallibNumber) as ParameterCheckbox).ValueChanged += Clb_E_VsblChanged;
 
+        (ShadowMediaUIHost.GetUI("clb_e_pos_x" + CallibNumber) as ParameterSlider).ValueChanged += clb_e_pos_xChanged;
+        (ShadowMediaUIHost.GetUI("clb_e_pos_y" + CallibNumber) as ParameterSlider).ValueChanged += clb_e_pos_yChanged;
+        (ShadowMediaUIHost.GetUI("clb_e_pos_z" + CallibNumber) as ParameterSlider).ValueChanged += clb_e_pos_zChanged;
 
         (ShadowMediaUIHost.GetUI("Clb_E_Save" + CallibNumber) as ParameterButton).Clicked += Clb_E_Save_Clicked;
         (ShadowMediaUIHost.GetUI("Clb_E_Load" + CallibNumber) as ParameterButton).Clicked += Clb_E_Load_Clicked;
+
+        (ShadowMediaUIHost.GetUI("clb_e_mode" + CallibNumber) as ParameterDropdown).ValueChanged += clb_e_mode_changed;
 
         //pointobject
         this.PointObjectList = new List<GameObject>();
@@ -113,7 +122,7 @@ public class ShadowMeshRenderer : MonoBehaviour
         for (int i = 0; i < 4; ++i)
         {
             var item = Instantiate(PointObjectSrc);
-            item.transform.SetParent(this.gameObject.transform);
+            item.transform.SetParent(debugPlane.transform);
             PointObjectList.Add(item);
         }
 
@@ -134,6 +143,39 @@ public class ShadowMeshRenderer : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Clb_E_TR_X" + CallibNumber) as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Clb_E_TR_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Clb_E_Vsbl" + CallibNumber) as ParameterCheckbox).ValueUpdate();
+    }
+
+    private void clb_e_pos_zChanged(object sender, EventArgs e)
+    {
+        var pos = this.transform.position;
+        this.transform.position = new Vector3(pos.x, pos.y, (e as ParameterSlider.ChangedValue).Value);
+        UpdatePos();
+    }
+
+    private void clb_e_pos_yChanged(object sender, EventArgs e)
+    {
+        var pos = this.transform.position;
+        this.transform.position = new Vector3(pos.x, (e as ParameterSlider.ChangedValue).Value, pos.z);
+        UpdatePos();
+    }
+
+    private void clb_e_pos_xChanged(object sender, EventArgs e)
+    {
+        var pos = this.transform.position;
+        this.transform.position = new Vector3((e as ParameterSlider.ChangedValue).Value, pos.y, pos.z);
+        UpdatePos();
+    }
+
+    private void clb_i_import_mode_changed(object sender, EventArgs e)
+    {
+        _ImportMode = (ImportMode)(e as ParameterDropdown.ChangedValue).Value;
+        UpdatePos();
+    }
+
+    private void clb_e_mode_changed(object sender, EventArgs e)
+    {
+        _PlaneMode = (PlaneMode)(e as ParameterDropdown.ChangedValue).Value;
+        UpdatePos();
     }
 
     private void Clb_E_Load_Clicked(object sender, EventArgs e)
@@ -372,13 +414,17 @@ public class ShadowMeshRenderer : MonoBehaviour
         bottomLeft = ProjectionCamera.ScreenToWorldPoint(bottomLeftofViewPort);
         bottomRight = ProjectionCamera.ScreenToWorldPoint(bottomRightofViewPort);
         topRight = ProjectionCamera.ScreenToWorldPoint(topRightofViewPort);
-
+        topLeft.z = 0;
+        bottomLeft.z = 0;
+        bottomRight.z = 0;
+        topRight.z = 0;
         //エクスポート側　こっちはあってる
-        this.PointObjectList[0].transform.position = topLeft;
-        this.PointObjectList[1].transform.position = bottomLeft;
-        this.PointObjectList[2].transform.position = bottomRight;
-        this.PointObjectList[3].transform.position = topRight;
+        this.PointObjectList[0].transform.localPosition = topLeft;
+        this.PointObjectList[1].transform.localPosition = bottomLeft;
+        this.PointObjectList[2].transform.localPosition = bottomRight;
+        this.PointObjectList[3].transform.localPosition = topRight;
 
+        
         //インポート側
 
         this.dbgPlaneWidth = this.debugPlane.transform.lossyScale.x * 10;
@@ -392,7 +438,7 @@ public class ShadowMeshRenderer : MonoBehaviour
         this.Inpt_bottomLeft.z = this.debugPlane.transform.position.z;
         this.Inpt_bottomRight.x = this.dbgPlaneWidth / 2 * (src_bottomRight.x * -2 + 1);
         this.Inpt_bottomRight.y = this.dbgPlaneHeight / 2 * (src_bottomRight.y * 2 - 1);
-        this.Inpt_bottomRight.z = this.debugPlane.transform.position.z; ;
+        this.Inpt_bottomRight.z = this.debugPlane.transform.position.z;
         this.Inpt_topRight.x = this.dbgPlaneWidth / 2 * (src_topRight.x * -2 + 1);
         this.Inpt_topRight.y = this.dbgPlaneHeight / 2 * (src_topRight.y * 2 - 1);
         this.Inpt_topRight.z = this.debugPlane.transform.position.z;
@@ -408,12 +454,7 @@ public class ShadowMeshRenderer : MonoBehaviour
         //頂点に変更があったらメッシュ再構築
         this.RefreshData();
     }
-
-    private Vector3 ConvertUVPointToScreenPoint(Vector3 point)
-    {
-        return new Vector3(point.x * Screen.width, point.y * Screen.height, 1);
-    }
-
+    
     void CreateMesh(int width, int height)
     {
         int localWidth = width + 1;
@@ -439,7 +480,6 @@ public class ShadowMeshRenderer : MonoBehaviour
                 // Skip the last row/col
                 if (x != (localWidth - 1) && y != (localHeight - 1))
                 {
-
                     int topLeft = index;
                     int topRight = topLeft + 1;
                     int bottomLeft = topLeft + localWidth;
@@ -465,50 +505,15 @@ public class ShadowMeshRenderer : MonoBehaviour
 
     private void RefreshData()
     {
-        int width = this.Col + 1;
-        int height = this.Row + 1;
-
-
-
-
-        Vector3 downVec_R = (this.bottomRight - this.topRight) / (this.Row);
-        Vector3 downVec_L = (this.bottomLeft - this.topLeft) / (this.Row);
-
-        Vector3 UV_downVec_R = (this.src_bottomRight - this.src_topRight);
-        Vector3 UV_downVec_L = (this.src_bottomLeft - this.src_topLeft);
-
-        //Debug.Log(downVec_R);
-        // \Debug.Log(downVec_L);
-
-        //Vector3 downVec_L_e = downVec_L / downVec_L.magnitude;
-
-        for (int y = 0; y < height; y++)
+        switch (this._PlaneMode)
         {
-            Vector3 rightVec = ((this.topRight + downVec_R * y) - (this.topLeft + downVec_L * y)) / (this.Col);
-            //Vector3 rightVec_e = rightVec / rightVec.magnitude;
-
-            Vector3 UV_rightVec = ((this.src_topRight + UV_downVec_R * y / this.Row) - (this.src_topLeft + UV_downVec_L * y / this.Row));
-
-            //  Debug.Log(rightVec);
-
-            for (int x = 0; x < width; x++)
-            {
-                //各頂点の座標算出
-                int index = y * width + x;
-
-                Vector3 pos = new Vector3();
-                pos = this.topLeft + downVec_L * y + rightVec * x;
-                _Vertices[index] = pos;
-
-                //Debug.Log(index.ToString() + ":" + pos);
-                //_UV[index] = downVec_L_e * y / this.Row + rightVec_e * x / this.Col; //this.topLeft + downVec_L_e * y + rightVec_e * x;
-                //_UV[index] = new Vector2(((float)x / (float)width), -((float)y / (float)height)) ;
-                _UV[index] = (this.src_topLeft + UV_downVec_L * y / this.Col + UV_rightVec * x / this.Row);
-
-
-            }
+            case PlaneMode.Plane:
+                break;
+            case PlaneMode.Cylinder:
+                break;
         }
-
+        this.UpdateVertices();
+        this.UpdateUVs();
 
 
         _Mesh.vertices = _Vertices;
@@ -516,5 +521,40 @@ public class ShadowMeshRenderer : MonoBehaviour
         _Mesh.triangles = _Triangles;
         _Mesh.RecalculateNormals();
         _Mesh.RecalculateBounds();
+    }
+
+    private void UpdateUVs()
+    {
+
+        int width = this.Col + 1;
+        int height = this.Row + 1;
+        Vector3 downVec_R = (this.bottomRight - this.topRight) / (this.Row);
+        Vector3 downVec_L = (this.bottomLeft - this.topLeft) / (this.Row);
+
+        for (int y = 0; y < height; y++)
+        {
+            Vector3 rightVec = ((this.topRight + downVec_R * y) - (this.topLeft + downVec_L * y)) / (this.Col);
+            for (int x = 0; x < width; x++)
+            {
+                _Vertices[y * width + x] = this.topLeft + downVec_L * y + rightVec * x;
+            }
+        }
+    }
+
+    private void UpdateVertices()
+    {
+        int width = this.Col + 1;
+        int height = this.Row + 1;
+        Vector3 UV_downVec_R = (this.src_bottomRight - this.src_topRight);
+        Vector3 UV_downVec_L = (this.src_bottomLeft - this.src_topLeft);
+
+        for (int y = 0; y < height; y++)
+        {
+            Vector3 UV_rightVec = ((this.src_topRight + UV_downVec_R * y / this.Row) - (this.src_topLeft + UV_downVec_L * y / this.Row));
+            for (int x = 0; x < width; x++)
+            {
+                _UV[y * width + x] = (this.src_topLeft + UV_downVec_L * y / this.Col + UV_rightVec * x / this.Row);
+            }
+        }
     }
 }

@@ -146,7 +146,8 @@ MonoBehaviour:
   - {fileID: 1030939601}
   - {fileID: 414223626}
   - {fileID: 1520457999}
-  SettingPanel: {fileID: 179318, guid: 5c09bdef07f004445afc0ccc3448ee25, type: 2}
+  SettingPanel: {fileID: 1000011453645106, guid: e90641bf8145877479479df482ed4e4b,
+    type: 2}
   MainCanvas: {fileID: 1376283625}
   _debugText: {fileID: 1340047489}
 --- !u!4 &241750978
