@@ -22,7 +22,7 @@ namespace Miwalab.ShadowGroup.Scripts.Callibration
 
     public enum ProjectionCameraMode
     {
-        mode2D,
-        mode3D
+        Orthographic,
+        Perthpective
     }
 }

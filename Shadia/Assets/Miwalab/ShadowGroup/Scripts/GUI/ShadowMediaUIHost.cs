@@ -179,6 +179,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsCallibrationImport(m_PanelDictionary[CallibrationSettingType.CallibrationImport4.ToString()], 4);
         this.CreateUIsCallibrationExport(m_PanelDictionary[CallibrationSettingType.CallibrationExport4.ToString()], 4);
 
+        this.CreateUIsCameraCllibration(m_PanelDictionary[CallibrationSettingType.CameraCllibration1.ToString()], 1);
+        this.CreateUIsCameraCllibration(m_PanelDictionary[CallibrationSettingType.CameraCllibration2.ToString()], 2);
 
 
         this.CreateUIsAffterEffectFade(m_PanelDictionary[AfterEffectSettingType.Fade.ToString()]);
@@ -904,9 +906,10 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddButtonUI(parent, "Clb_E_Load" + num);
     }
 
-    protected void CreateUIsCameraCAllibration(GameObject parent, int num)
+    protected void CreateUIsCameraCllibration(GameObject parent, int num)
     {
         m_lastUpdatedHeight = 0;
+        AddEnumUI(parent, "clb_camera_mode" + num, Miwalab.ShadowGroup.Scripts.Callibration.ProjectionCameraMode.Orthographic);
     }
 
     private void CreateUIsGenericModes(GameObject parent)
