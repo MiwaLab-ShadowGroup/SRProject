@@ -65,15 +65,7 @@ public class ShadowMeshRenderer : MonoBehaviour
     // Use this for initialization
     public void SetUpUIs()
     {
-        if (CallibNumber % 2 == 1)
-        {
-            (ShadowMediaUIHost.GetUI("clb_camera_mode" + 1) as ParameterDropdown).ValueChanged += ShadowMeshRenderer_cameramode_ValueChanged;
-        }
-        else
-        {
-            (ShadowMediaUIHost.GetUI("clb_camera_mode" + 2) as ParameterDropdown).ValueChanged += ShadowMeshRenderer_cameramode_ValueChanged;
-        }
-
+        
 
 
         //メッシュを作る
@@ -142,22 +134,6 @@ public class ShadowMeshRenderer : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Clb_E_TR_X" + CallibNumber) as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Clb_E_TR_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Clb_E_Vsbl" + CallibNumber) as ParameterCheckbox).ValueUpdate();
-    }
-
-    private void ShadowMeshRenderer_cameramode_ValueChanged(object sender, EventArgs e)
-    {
-        switch ((Miwalab.ShadowGroup.Scripts.Callibration.ProjectionCameraMode)(e as ParameterDropdown.ChangedValue).Value)
-        {
-            case Miwalab.ShadowGroup.Scripts.Callibration.ProjectionCameraMode.Orthographic:
-                ProjectionCamera.orthographic = true;
-                break;
-            case Miwalab.ShadowGroup.Scripts.Callibration.ProjectionCameraMode.Perthpective:
-                ProjectionCamera.orthographic = false;
-                break;
-        }
-
-
-
     }
 
     private void Clb_E_Load_Clicked(object sender, EventArgs e)

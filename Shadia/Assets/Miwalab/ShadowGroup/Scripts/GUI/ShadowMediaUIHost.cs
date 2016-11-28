@@ -5,7 +5,7 @@ using System;
 using Miwalab.ShadowGroup.ImageProcesser;
 using UnityEngine.UI;
 using Miwalab.ShadowGroup.Scripts.Sensors;
-using Miwalab.ShadowGroup.Scripts.Callibration;
+using Miwalab.ShadowGroup.Callibration;
 using Miwalab.ShadowGroup.AfterEffect;
 using Miwalab.ShadowGroup.Archive;
 using System.Text.RegularExpressions;
@@ -909,7 +909,10 @@ public class ShadowMediaUIHost : MonoBehaviour
     protected void CreateUIsCameraCllibration(GameObject parent, int num)
     {
         m_lastUpdatedHeight = 0;
-        AddEnumUI(parent, "clb_camera_mode" + num, Miwalab.ShadowGroup.Scripts.Callibration.ProjectionCameraMode.Orthographic);
+        AddEnumUI(parent, "clb_camera_mode" + num, ProjectionCameraMode.Orthographic);
+        AddFloatUI(parent, "clb_camera_pos_x" + num, 10, -10, 0);
+        AddFloatUI(parent, "clb_camera_pos_y" + num, 10, -10, 0);
+        AddFloatUI(parent, "clb_camera_pos_z" + num, 10, -10, 0);
     }
 
     private void CreateUIsGenericModes(GameObject parent)
