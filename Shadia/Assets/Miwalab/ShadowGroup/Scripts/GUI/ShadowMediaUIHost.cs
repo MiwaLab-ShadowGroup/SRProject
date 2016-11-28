@@ -919,7 +919,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddEnumUI(parent, "core_shadow_media_mode", Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia2D);
-        AddBooleanUI(parent, "core_switch_objects", true);
+        AddBooleanUI(parent, "core_switch_objects", false);
     }
 
 

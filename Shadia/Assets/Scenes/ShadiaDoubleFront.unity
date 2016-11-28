@@ -1299,6 +1299,7 @@ GameObject:
   - 20: {fileID: 1210671061}
   - 124: {fileID: 1210671060}
   - 92: {fileID: 1210671059}
+  - 114: {fileID: 1210671062}
   m_Layer: 0
   m_Name: ProjectionCamera (1)
   m_TagString: Untagged
@@ -1367,6 +1368,18 @@ Camera:
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
   m_StereoMirrorMode: 0
+--- !u!114 &1210671062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1210671057}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4269f9126e9dc3849b96420a2a83e9a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _CameraNumber: 2
 --- !u!114 &1340047489 stripped
 MonoBehaviour:
   m_PrefabParentObject: {fileID: 114000012174756312, guid: dfe8ed46e6d70b9489662955ed352936,
@@ -1389,6 +1402,7 @@ GameObject:
   - 20: {fileID: 1399569308}
   - 124: {fileID: 1399569307}
   - 92: {fileID: 1399569306}
+  - 114: {fileID: 1399569305}
   m_Layer: 0
   m_Name: ProjectionCamera
   m_TagString: Untagged
@@ -1396,6 +1410,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1399569305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1399569304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4269f9126e9dc3849b96420a2a83e9a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _CameraNumber: 1
 --- !u!92 &1399569306
 Behaviour:
   m_ObjectHideFlags: 0
