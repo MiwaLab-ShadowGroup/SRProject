@@ -6,7 +6,6 @@ using System.Threading;
 using OpenCvSharp.CPlusPlus;
 using OpenCvSharp;
 using UnityEngine;
-using UnityEditor;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {

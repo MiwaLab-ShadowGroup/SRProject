@@ -37,7 +37,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
     public abstract class AImageProcesser
     {
 
-        protected class DepthBody
+        public class DepthBody
         {
             public class DepthJoint
             {
@@ -51,6 +51,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     vellocity_front = new Vector3(dsp.X, dsp.Y);
                     position_front = new Vector3(dsp.X, dsp.Y);
                     state = ts;
+
+                    _sensor = sensor;
+                }
+                public DepthJoint(Vector3 initialPosition,  KinectSensor sensor)
+                {
+                    InitializePosition = initialPosition;
+                    localPosition = initialPosition;
+                    vellocity = initialPosition;
+                    acceleration = initialPosition;
+                    vellocity_front = initialPosition;
+                    position_front = initialPosition;
 
                     _sensor = sensor;
                 }
@@ -126,7 +137,21 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                 public void update(CameraSpacePoint dsp, TrackingState ts)
                 {
-                    localPosition = new Vector3(dsp.X, dsp.Y,dsp.Z);
+                    localPosition = new Vector3(dsp.X, dsp.Y, dsp.Z);
+                    this.state = ts;
+                    this.CalcVelAndAccel();
+                }
+
+                //通信用
+                public void update(Vector3 position, TrackingState ts)
+                {
+                    localPosition = position;
+                    this.state = ts;
+                    this.CalcVelAndAccel();
+                }
+
+                public void CalcVelAndAccel()
+                {
                     if (position_front != InitializePosition)
                     {
                         vellocity = localPosition - position_front;
@@ -164,6 +189,25 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     JointDepth.Add(p.Key, dj);
                 }
             }
+
+            /// <summary>
+            /// 通信受信用
+            /// </summary>
+            /// <param name="jointLength"></param>
+            public DepthBody(int jointLength, Vector3 initialPosition)
+            {
+                _sensor = Windows.Kinect.KinectSensor.GetDefault();
+                JointDepth = new Dictionary<JointType, DepthJoint>();
+                for (int i =0;  i < jointLength; ++i)
+                {
+
+                    DepthJoint dj = new DepthJoint(initialPosition, _sensor);
+
+                    JointDepth.Add((JointType)i, dj);
+                }
+            }
+
+
             public void Update(Body body)
             {
                 foreach (var p in body.Joints)
@@ -175,7 +219,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         }
 
         private Body[] bodydata;
-        private DepthBody[] depthBodyData;
+        public DepthBody[] depthBodyData;
         protected Body[] BodyData
         {
             get
@@ -202,6 +246,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             {
                 bodydata = new Body[bodyData.Length];
             }
+            //通信などの影響によりBodyの長さが変わる恐れあり
+            //そのため，再度初期化する
+            if (bodyData.Length != bodydata.Length)
+            {
+                bodydata = new Body[bodyData.Length];
+            }
+
             bodyData.CopyTo(bodydata, 0);
             this.UpdateBody();
         }
@@ -212,32 +263,43 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             {
                 depthBodyData = new DepthBody[bodydata.Length];
             }
-
-            UnityEngine.Assertions.Assert.IsTrue(bodydata.Length == depthBodyData.Length);
-            bodyIdList.Clear();
+            //通信などの影響によりBodyの長さが変わる恐れあり
+            //そのため，再度初期化する
+            if (bodydata.Length > depthBodyData.Length)
+            {
+                depthBodyData = new DepthBody[bodydata.Length];
+            }
             for (int i = 0; i < bodydata.Length; ++i)
             {
                 if (depthBodyData[i] == null)
                 {
                     depthBodyData[i] = new DepthBody(bodydata[i]);
+                    depthBodyData[i].Update(bodydata[i]);
                 }
                 else
                 {
                     depthBodyData[i].Update(bodydata[i]);
                 }
-                if (bodydata[i].IsTracked) this.bodyIdList.Add(i);
-
-                BodyCount = bodyIdList.Count;
-
-                if(BodyCount != BodyCountFront)
-                {
-                    OnChangedHumanCount(BodyCount);
-                }
-
-                BodyCountFront = BodyCount;
-
             }
 
+        }
+
+        public void UpdateBodyIndexList()
+        {
+            if (depthBodyData == null) return;
+            bodyIdList.Clear();
+            for (int i = 0; i < depthBodyData.Length; ++i)
+            {
+                if (depthBodyData[i].JointDepth[JointType.SpineBase].state != TrackingState.NotTracked) this.bodyIdList.Add(i);
+
+            }
+            BodyCount = bodyIdList.Count;
+            if (BodyCount != BodyCountFront)
+            {
+                OnChangedHumanCount(BodyCount);
+            }
+
+            BodyCountFront = BodyCount;
         }
 
         public List<int> bodyIdList = new List<int>();
