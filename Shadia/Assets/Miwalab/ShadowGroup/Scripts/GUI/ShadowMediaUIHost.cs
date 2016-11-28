@@ -875,13 +875,27 @@ public class ShadowMediaUIHost : MonoBehaviour
 
         AddFloatUI(parent, "Clb_I_TL_X" + num, 2, -1, 0);
         AddFloatUI(parent, "Clb_I_TL_Y" + num, 2, -1, 0);
+        m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Clb_I_BL_X" + num, 2, -1, 0);
         AddFloatUI(parent, "Clb_I_BL_Y" + num, 2, -1, 1);
+        m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Clb_I_BR_X" + num, 2, -1, 1);
         AddFloatUI(parent, "Clb_I_BR_Y" + num, 2, -1, 1);
+        m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Clb_I_TR_X" + num, 2, -1, 1);
         AddFloatUI(parent, "Clb_I_TR_Y" + num, 2, -1, 0);
-        AddEnumUI(parent, "clb_i_import_mode" + num, ShadowMeshRenderer.ImportMode.Plane);
+        m_lastUpdatedHeight += 20;
+        AddEnumUI(parent, "clb_i_import_mode" + num, ShadowMeshRenderer.ImportMode.Quadrangle);
+        m_lastUpdatedHeight += 10;
+        AddFloatUI(parent, "clb_i_r_top" + num, 5, 0, 1);
+        AddBooleanUI(parent, "clb_i_use_up_top" + num, true);
+        m_lastUpdatedHeight += 10;
+        AddFloatUI(parent, "clb_i_r_btm" + num, 5, 0, 1);
+        AddBooleanUI(parent, "clb_i_use_up_btm" + num, true);
+
+
+
+        m_lastUpdatedHeight += 10;
 
 
 

@@ -18,10 +18,10 @@ public class ShadowMeshRenderer : MonoBehaviour
 
     public Camera ProjectionCamera;
 
-    public Vector3 src_topLeft;
-    public Vector3 src_bottomLeft;
-    public Vector3 src_bottomRight;
-    public Vector3 src_topRight;
+    public Vector2 src_topLeft;
+    public Vector2 src_bottomLeft;
+    public Vector2 src_bottomRight;
+    public Vector2 src_topRight;
 
     public Vector3 topLeftofViewPort;
     public Vector3 bottomLeftofViewPort;
@@ -60,9 +60,8 @@ public class ShadowMeshRenderer : MonoBehaviour
     }
     public enum ImportMode
     {
-        Plane,
-        Cylinder,
-        PinePlane,
+        Quadrangle,
+        Curve,
     }
 
     PlaneMode _PlaneMode;
@@ -74,6 +73,13 @@ public class ShadowMeshRenderer : MonoBehaviour
 
     float _AngleStart;
     float _AngleFinish;
+
+    float _CurveRTop;
+    bool _UseUpperTop;
+    float _CurveRBtm;
+    bool _UseUpperBtm;
+
+
 
     // Use this for initialization
     public void SetUpUIs()
@@ -93,6 +99,10 @@ public class ShadowMeshRenderer : MonoBehaviour
 
         (ShadowMediaUIHost.GetUI("clb_i_import_mode" + CallibNumber) as ParameterDropdown).ValueChanged += clb_i_import_mode_changed;
 
+        (ShadowMediaUIHost.GetUI("clb_i_r_top" + CallibNumber) as ParameterSlider).ValueChanged += clb_i_r_topChanged;
+        (ShadowMediaUIHost.GetUI("clb_i_use_up_top" + CallibNumber) as ParameterCheckbox).ValueChanged += clb_i_use_up_topChanged;
+        (ShadowMediaUIHost.GetUI("clb_i_r_btm" + CallibNumber) as ParameterSlider).ValueChanged += clb_i_r_btmChanged;
+        (ShadowMediaUIHost.GetUI("clb_i_use_up_btm" + CallibNumber) as ParameterCheckbox).ValueChanged += clb_i_use_up_btmChanged;
 
 
 
@@ -130,7 +140,7 @@ public class ShadowMeshRenderer : MonoBehaviour
         //pointobject
         this.PointObjectDstList = new List<GameObject>();
         this.PointObjectSrcList = new List<GameObject>();
-        for (int i = 0; i < (Row+ 1)*(Col+1) ; ++i)
+        for (int i = 0; i < (Row + 1) * (Col + 1); ++i)
         {
             var item = Instantiate(PointObjectDst);
             item.transform.SetParent(this.gameObject.transform);
@@ -161,6 +171,30 @@ public class ShadowMeshRenderer : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Clb_E_TR_X" + CallibNumber) as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Clb_E_TR_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Clb_E_Vsbl" + CallibNumber) as ParameterCheckbox).ValueUpdate();
+    }
+
+    private void clb_i_use_up_btmChanged(object sender, EventArgs e)
+    {
+        this._UseUpperBtm = (e as ParameterCheckbox.ChangedValue).Value;
+        UpdatePos();
+    }
+
+    private void clb_i_r_btmChanged(object sender, EventArgs e)
+    {
+        this._CurveRBtm = (e as ParameterSlider.ChangedValue).Value;
+        UpdatePos();
+    }
+
+    private void clb_i_use_up_topChanged(object sender, EventArgs e)
+    {
+        this._UseUpperTop = (e as ParameterCheckbox.ChangedValue).Value;
+        UpdatePos();
+    }
+
+    private void clb_i_r_topChanged(object sender, EventArgs e)
+    {
+        this._CurveRTop = (e as ParameterSlider.ChangedValue).Value;
+        UpdatePos();
     }
 
     private void clb_e_in_radChanged(object sender, EventArgs e)
@@ -349,7 +383,7 @@ public class ShadowMeshRenderer : MonoBehaviour
     private void Clb_E_VsblChanged(object sender, EventArgs e)
     {
         var visible = (e as ParameterCheckbox.ChangedValue).Value;
-        for (int i = 0; i < (Row+1) *(Col + 1) ; ++i)
+        for (int i = 0; i < (Row + 1) * (Col + 1); ++i)
         {
             this.PointObjectSrcList[i].gameObject.SetActive(visible);
             this.PointObjectDstList[i].gameObject.SetActive(visible);
@@ -473,7 +507,7 @@ public class ShadowMeshRenderer : MonoBehaviour
 
         this.dbgPlaneWidth = this.debugPlane.transform.lossyScale.x * 10;
         this.dbgPlaneHeight = this.debugPlane.transform.lossyScale.y * 10;
-        
+
 
         //頂点に変更があったらメッシュ再構築
         this.RefreshData();
@@ -552,16 +586,16 @@ public class ShadowMeshRenderer : MonoBehaviour
         }
         switch (this._ImportMode)
         {
-            case ImportMode.Plane:
-                this.UpdateUVsPlane();
+            case ImportMode.Quadrangle:
+                this.UpdateUVsQuadrangle();
                 break;
-            case ImportMode.Cylinder:
-                this.UpdateUVsCylinder();
+            case ImportMode.Curve:
+                this.UpdateUVsCurve();
                 break;
         }
 
         int i = 0;
-        foreach(var p in this._Vertices)
+        foreach (var p in this._Vertices)
         {
             this.PointObjectDstList[i].transform.localPosition = p;
             this.PointObjectSrcList[i].transform.position = this.getInptPosition(this._UV[i]);
@@ -577,17 +611,17 @@ public class ShadowMeshRenderer : MonoBehaviour
 
 
 
-    private void UpdateUVsPlane()
+    private void UpdateUVsQuadrangle()
     {
 
         int width = this.Col + 1;
         int height = this.Row + 1;
-        Vector3 UV_downVec_R = (this.src_bottomRight - this.src_topRight);
-        Vector3 UV_downVec_L = (this.src_bottomLeft - this.src_topLeft);
+        Vector2 UV_downVec_R = (this.src_bottomRight - this.src_topRight);
+        Vector2 UV_downVec_L = (this.src_bottomLeft - this.src_topLeft);
 
         for (int y = 0; y < height; y++)
         {
-            Vector3 UV_rightVec = ((this.src_topRight + UV_downVec_R * y / this.Row) - (this.src_topLeft + UV_downVec_L * y / this.Row));
+            Vector2 UV_rightVec = ((this.src_topRight + UV_downVec_R * y / this.Row) - (this.src_topLeft + UV_downVec_L * y / this.Row));
             for (int x = 0; x < width; x++)
             {
                 _UV[y * width + x] = (this.src_topLeft + UV_downVec_L * y / this.Col + UV_rightVec * x / this.Row);
@@ -612,21 +646,96 @@ public class ShadowMeshRenderer : MonoBehaviour
             }
         }
     }
-    private void UpdateUVsCylinder()
+    private void UpdateUVsCurve()
     {
         int width = this.Col + 1;
         int height = this.Row + 1;
-        Vector3 UV_downVec_R = (this.src_bottomRight - this.src_topRight);
-        Vector3 UV_downVec_L = (this.src_bottomLeft - this.src_topLeft);
 
-        for (int y = 0; y < height; y++)
+        Vector2 CenterTop1 = new Vector2();
+        Vector2 CenterTop2 = new Vector2();
+        Vector2 CenterBtm1 = new Vector2();
+        Vector2 CenterBtm2 = new Vector2();
+        //上
+        if (!GetCircleOf2PTAndR(this.src_topLeft, this.src_topRight, _CurveRTop, ref CenterTop1, ref CenterTop2))
         {
-            Vector3 UV_rightVec = ((this.src_topRight + UV_downVec_R * y / this.Row) - (this.src_topLeft + UV_downVec_L * y / this.Row));
-            for (int x = 0; x < width; x++)
+            UpdateUVsQuadrangle();
+            return;
+        }
+
+        if (!GetCircleOf2PTAndR(this.src_bottomLeft, this.src_bottomRight, _CurveRBtm, ref CenterBtm1, ref CenterBtm2))
+        {
+            UpdateUVsQuadrangle();
+            return;
+        }
+
+        var CenterTop = (this._UseUpperTop ? CenterTop1 : CenterTop2);
+        var CenterBtm = (this._UseUpperBtm ? CenterBtm1 : CenterBtm2);
+
+
+        var top_start = this.src_topLeft - CenterTop;
+        var top_end = this.src_topRight - CenterTop;
+        var top_startAngle = Mathf.Deg2Rad * Vector2.Angle(Vector2.right, top_start) * (top_start.y > 0 ? 1 : -1);
+        var top_endAngle = Mathf.Deg2Rad * Vector2.Angle(Vector2.right, top_end) * (top_end.y > 0 ? 1 : -1);
+        var top_diffAngle = (top_endAngle - top_startAngle) / (float)this.Col;
+
+        var btm_start = this.src_bottomLeft - CenterBtm;
+        var btm_end = this.src_bottomRight - CenterBtm;
+        var btm_startAngle = Mathf.Deg2Rad * Vector2.Angle(Vector2.right, btm_start) * (btm_start.y > 0 ? 1 : -1);
+        var btm_endAngle = Mathf.Deg2Rad * Vector2.Angle(Vector2.right, btm_end) * (btm_end.y > 0 ? 1 : -1);
+        var btm_diffAngle = (btm_endAngle - btm_startAngle) / (float)this.Col;
+
+        var tempTop = new Vector2();
+        var tempBtm = new Vector2();
+        float topAngle;
+        float btmAngle;
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
             {
-                _UV[y * width + x] = (this.src_topLeft + UV_downVec_L * y / this.Col + UV_rightVec * x / this.Row);
+                topAngle = top_startAngle + top_diffAngle * x;
+                tempTop = CenterTop + (new Vector2(Mathf.Cos(topAngle), Mathf.Sin(topAngle))) * top_start.magnitude;
+                btmAngle = btm_startAngle + btm_diffAngle * x;
+                tempBtm = CenterBtm + (new Vector2(Mathf.Cos(btmAngle), Mathf.Sin(btmAngle))) * btm_start.magnitude;
+
+                _UV[y * width + x] = tempTop + (tempBtm - tempTop) * y / (float)Row;
             }
         }
+    }
+
+    private bool GetCircleOf2PTAndR(
+                            Vector2 pt1,            // 円上の第１点
+                            Vector2 pt2,            // 円上の第２点
+                            float r,              // 円の半径
+                            ref Vector2 pc1,           // 第１円の中心
+                            ref Vector2 pc2)           // 第２円の中心
+    {
+        bool stat = true;
+        Vector2 pt3;
+        float d, l1, dx, dy;
+
+        pt3.x = (pt1.x + pt2.x) * 0.5f;
+        pt3.y = (pt1.y + pt2.y) * 0.5f;
+
+        r *= r;
+        l1 = (pt2.x - pt3.x) * (pt2.x - pt3.x) + (pt2.y - pt3.y) * (pt2.y - pt3.y);
+
+        if (r >= l1)
+        {
+            d = Mathf.Sqrt(r / l1 - 1.0f);
+            dx = d * (pt2.y - pt3.y);
+            dy = d * (pt2.x - pt3.x);
+
+            pc1.x = pt3.x + dx;
+            pc1.y = pt3.y - dy;
+
+            pc2.x = pt3.x - dx;
+            pc2.y = pt3.y + dy;
+        }
+        else
+        {
+            stat = false;
+        }
+        return stat;
     }
 
     private void UpdateVerticesCylinder()
