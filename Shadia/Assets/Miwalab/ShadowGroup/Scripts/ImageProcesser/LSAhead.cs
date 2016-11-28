@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading;
 using OpenCvSharp.CPlusPlus;
 using UnityEngine;
+using Windows.Kinect;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    class LeastSquare : AShadowImageProcesser
+    class LSAhead : AShadowImageProcesser
     {
 
         public override void ImageProcess(ref Mat src, ref Mat dst)
@@ -24,7 +25,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         List<OpenCvSharp.CPlusPlus.Point> CvPoints = new List<Point>();
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Goast = new List<List<Point>>();
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
-        List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours_Buffer = new List<List<Point>>();
         Scalar color;
         Scalar colorBack;
         float speedCtl;
@@ -38,7 +38,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         int stackNum = 20;
 
 
-        int numberingId= 0;
+        int numberingId = 0;
         List<int?> activeIdList = new List<int?>();
         float thresholdDist = 200;
 
@@ -54,86 +54,90 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         //List<double> timeTable = new List<double>();
         List<double> t1 = new List<double>();
 
+        //骨格
+        List<BodyBasePair> basePairList = new List<BodyBasePair>();
 
-        public LeastSquare() : base()
+
+
+        public LSAhead() : base()
         {
-            (ShadowMediaUIHost.GetUI("LeastSquare_con_R") as ParameterSlider).ValueChanged += LeastSquare_con_R_ValueChanged;
-            (ShadowMediaUIHost.GetUI("LeastSquare_con_G") as ParameterSlider).ValueChanged += LeastSquare_con_G_ValueChanged;
-            (ShadowMediaUIHost.GetUI("LeastSquare_con_B") as ParameterSlider).ValueChanged += LeastSquare_con_B_ValueChanged;
-            (ShadowMediaUIHost.GetUI("LeastSquare_bgd_R") as ParameterSlider).ValueChanged += LeastSquare_bgd_R_ValueChanged;
-            (ShadowMediaUIHost.GetUI("LeastSquare_bgd_G") as ParameterSlider).ValueChanged += LeastSquare_bgd_G_ValueChanged;
-            (ShadowMediaUIHost.GetUI("LeastSquare_bgd_B") as ParameterSlider).ValueChanged += LeastSquare_bgd_B_ValueChanged;
-            (ShadowMediaUIHost.GetUI("LeastSquare_Rate") as ParameterSlider).ValueChanged += LeastSquare_Rate_ValueChanged;
-            (ShadowMediaUIHost.GetUI("LeastSquare_useFrame") as ParameterSlider).ValueChanged += LeastSquare_useFrame_ValueChanged;
-            (ShadowMediaUIHost.GetUI("LeastSquare_preFrame") as ParameterSlider).ValueChanged += LeastSquare_preFrame_ValueChanged;
-            (ShadowMediaUIHost.GetUI("LeastSquare_UseFade") as ParameterCheckbox).ValueChanged += LeastSquare_UseFade_ValueChanged;
+            (ShadowMediaUIHost.GetUI("LSAhead_con_R") as ParameterSlider).ValueChanged += LSAhead_con_R_ValueChanged;
+            (ShadowMediaUIHost.GetUI("LSAhead_con_G") as ParameterSlider).ValueChanged += LSAhead_con_G_ValueChanged;
+            (ShadowMediaUIHost.GetUI("LSAhead_con_B") as ParameterSlider).ValueChanged += LSAhead_con_B_ValueChanged;
+            (ShadowMediaUIHost.GetUI("LSAhead_bgd_R") as ParameterSlider).ValueChanged += LSAhead_bgd_R_ValueChanged;
+            (ShadowMediaUIHost.GetUI("LSAhead_bgd_G") as ParameterSlider).ValueChanged += LSAhead_bgd_G_ValueChanged;
+            (ShadowMediaUIHost.GetUI("LSAhead_bgd_B") as ParameterSlider).ValueChanged += LSAhead_bgd_B_ValueChanged;
+            (ShadowMediaUIHost.GetUI("LSAhead_Rate") as ParameterSlider).ValueChanged += LSAhead_Rate_ValueChanged;
+            (ShadowMediaUIHost.GetUI("LSAhead_useFrame") as ParameterSlider).ValueChanged += LSAhead_useFrame_ValueChanged;
+            (ShadowMediaUIHost.GetUI("LSAhead_preFrame") as ParameterSlider).ValueChanged += LSAhead_preFrame_ValueChanged;
+            (ShadowMediaUIHost.GetUI("LSAhead_UseFade") as ParameterCheckbox).ValueChanged += LSAhead_UseFade_ValueChanged;
 
 
-            (ShadowMediaUIHost.GetUI("LeastSquare_con_R") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("LeastSquare_con_G") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("LeastSquare_con_B") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("LeastSquare_bgd_R") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("LeastSquare_bgd_G") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("LeastSquare_bgd_B") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("LeastSquare_Rate") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("LeastSquare_useFrame") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("LeastSquare_preFrame") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("LeastSquare_UseFade") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("LSAhead_con_R") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("LSAhead_con_G") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("LSAhead_con_B") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("LSAhead_bgd_R") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("LSAhead_bgd_G") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("LSAhead_bgd_B") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("LSAhead_Rate") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("LSAhead_useFrame") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("LSAhead_preFrame") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("LSAhead_UseFade") as ParameterCheckbox).ValueUpdate();
         }
 
-     
 
-        private void LeastSquare_UseFade_ValueChanged(object sender, EventArgs e)
+
+        private void LSAhead_UseFade_ValueChanged(object sender, EventArgs e)
         {
             this.m_UseFade = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
-        private void LeastSquare_Rate_ValueChanged(object sender, EventArgs e)
+        private void LSAhead_Rate_ValueChanged(object sender, EventArgs e)
         {
             this.sharpness = (int)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void LeastSquare_useFrame_ValueChanged(object sender, EventArgs e)
+        private void LSAhead_useFrame_ValueChanged(object sender, EventArgs e)
         {
             this.useFrame = (int)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void LeastSquare_preFrame_ValueChanged(object sender, EventArgs e)
+        private void LSAhead_preFrame_ValueChanged(object sender, EventArgs e)
         {
             this.preFrame = (int)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void LeastSquare_con_R_ValueChanged(object sender, EventArgs e)
+        private void LSAhead_con_R_ValueChanged(object sender, EventArgs e)
         {
             this.color.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void LeastSquare_con_G_ValueChanged(object sender, EventArgs e)
+        private void LSAhead_con_G_ValueChanged(object sender, EventArgs e)
         {
             this.color.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void LeastSquare_con_B_ValueChanged(object sender, EventArgs e)
+        private void LSAhead_con_B_ValueChanged(object sender, EventArgs e)
         {
             this.color.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void LeastSquare_bgd_R_ValueChanged(object sender, EventArgs e)
+        private void LSAhead_bgd_R_ValueChanged(object sender, EventArgs e)
         {
             this.colorBack.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void LeastSquare_bgd_G_ValueChanged(object sender, EventArgs e)
+        private void LSAhead_bgd_G_ValueChanged(object sender, EventArgs e)
         {
             this.colorBack.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void LeastSquare_bgd_B_ValueChanged(object sender, EventArgs e)
+        private void LSAhead_bgd_B_ValueChanged(object sender, EventArgs e)
         {
             this.colorBack.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
 
@@ -163,7 +167,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 }
             }
 
-          
+
 
 
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
@@ -171,7 +175,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             //Cv2.MedianBlur(grayimage, grayimage, 9);
             //Cv2.Dilate(grayimage, grayimage, new Mat(), null, 1);
 
-            Cv2.GaussianBlur(grayimage,grayimage, new Size(3, 3), 0f);
+            Cv2.GaussianBlur(grayimage, grayimage, new Size(3, 3), 0f);
 
             //dstMat = new Mat(dst.Height, dst.Width, MatType.CV_8UC4,colorBack);
             dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
@@ -189,7 +193,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                 this.CvPoints.Clear();
                 if (Cv2.ContourArea(contour[i]) > 1000)
-                    if (contour[i].Length > this.sharpness) {
+                    if (contour[i].Length > this.sharpness)
+                    {
                         {
                             //重心検出処理
                             var cont = contour[i].ToArray();
@@ -209,7 +214,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                             //this.List_Contours.Add(new List<Point>(CvPoints));
                             this.List_NowContsGroup.Add(new NowContsGroup(null, this.CvPoints, new Point((M.M10 / M.M00), (M.M01 / M.M00))));
                         }
-                }
+                    }
 
             }
             var _contour = List_Contours.ToArray();
@@ -219,7 +224,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             //現在の輪郭すべてにIDを振る
 
-           
+
             this.activeIdList.Clear();
 
 
@@ -270,7 +275,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     this.bufferNum = 0;
                     for (int j = 0; j < this.List_NowContsGroup.Count; ++j)
                     {
-                        dist = Point.Distance( this.Tree_ContsGroup[i].contCenter, this.List_NowContsGroup[j].contCenter);
+                        dist = Point.Distance(this.Tree_ContsGroup[i].contCenter, this.List_NowContsGroup[j].contCenter);
                         if (dist < minDist)
                         {
                             bufferNum = j;
@@ -310,10 +315,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     this.numberingId++;
                     this.List_NowContsGroup[i].trackingId = this.numberingId;
                 }
-                this.activeIdList.Add( this.List_NowContsGroup[i].trackingId);
+                this.activeIdList.Add(this.List_NowContsGroup[i].trackingId);
             }
             //現在の輪郭のID振りは終了
-        
+
 
 
 
@@ -331,21 +336,21 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     {
                         existNum = true;
 
-                        this.Tree_ContsGroup[j].AddContsGroup(this.List_NowContsGroup[i].contsList,this.List_NowContsGroup[i].contCenter,this.stackNum);
+                        this.Tree_ContsGroup[j].AddContsGroup(this.List_NowContsGroup[i].contsList, this.List_NowContsGroup[i].contCenter, this.stackNum);
                         protectId.Add(this.List_NowContsGroup[i].trackingId);
                     }
                 }
                 //新しくできたものなら新しいリストを作る
                 if (existNum == false)
                 {
-                    
-                    this.Tree_ContsGroup.Add(new StackContsGroup(this.List_NowContsGroup[i].trackingId, this.List_NowContsGroup[i].contsList, this.List_NowContsGroup[i].contCenter,this.stackNum) );
+
+                    this.Tree_ContsGroup.Add(new StackContsGroup(this.List_NowContsGroup[i].trackingId, this.List_NowContsGroup[i].contsList, this.List_NowContsGroup[i].contCenter, this.stackNum));
                     protectId.Add(this.List_NowContsGroup[i].trackingId);
                 }
             }
 
             //追加がなかったものは削除する
-            for (int i = this.Tree_ContsGroup.Count -1; i >= 0; --i)
+            for (int i = this.Tree_ContsGroup.Count - 1; i >= 0; --i)
             {
                 if (!protectId.Contains(this.Tree_ContsGroup[i].trackingId))
                 {
@@ -354,15 +359,169 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
             //輪郭追跡終了
 
+            //------------------------------------------------------------
+
+            //ここから骨格点分類
+
+            //輪郭の重心位置と比較する骨格のSpineBaseの位置リストを作る
+            this.basePairList.Clear();
+            for (int i = 0; i < BodyData.Length; i++)
+            {
+                if (BodyData[i].IsTracked)
+                {
+                    if (this.CheckBodyInSCreen(i, src))
+                    {
+                        this.basePairList.Add(new BodyBasePair(i, new Point(BodyDataOnDepthImage[i].JointDepth[JointType.SpineBase].position.x, BodyDataOnDepthImage[i].JointDepth[JointType.SpineBase].position.y)) );
+                    }
+                }
+            }
+            
+
+
+
+            //アクティブな骨格が輪郭の数より少ないとき　　少ない方から調べていく
+            if (this.basePairList.Count <= this.Tree_ContsGroup.Count)
+            {
+                for (int i = 0; i < this.basePairList.Count; ++i)
+                {
+                    this.dist = 1000;
+                    this.minDist = 1000; //とりあえず笑　その場しのぎ
+                    this.bufferNum = 0;
+                    for (int j = 0; j < this.Tree_ContsGroup.Count; ++j)
+                    {
+
+                        dist = Point.Distance(this.basePairList[i].basePoint, this.Tree_ContsGroup[j].contCenter);
+
+                        if (dist < minDist)
+                        {
+                            bufferNum = j;
+                            minDist = dist;
+                        }
+
+                        //骨格情報をツリーに入れる
+                        for (int k = 0; k < _TrackigBoneList.Count; ++k)
+                        {
+                            if (this.Tree_ContsGroup[bufferNum].boneStack.ContainsKey(_TrackigBoneList[k]))
+                            {
+                                //トラッキングしていたらPointをしてなかったらnullを代入
+                                if (BodyData[this.basePairList[i].bodyNumber].Joints[_TrackigBoneList[k]].TrackingState == Windows.Kinect.TrackingState.Tracked)
+                                {
+                                this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Insert(0, new Point(BodyDataOnDepthImage[this.basePairList[i].bodyNumber].JointDepth[_TrackigBoneList[k]].position.x, BodyDataOnDepthImage[this.basePairList[i].bodyNumber].JointDepth[_TrackigBoneList[k]].position.y));
+                                }
+                                else
+                                {
+                                    this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Insert(0, null);
+                                }
+
+                                //個数がオーバーしていたら消す
+                                if (this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Count > this.useFrame) this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].RemoveAt(this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Count-1);
+
+
+                            }
+                            //リストがなかったらとりあえず埋める
+                            else
+                            {
+                                for (int l = 0; l < this.stackNum; ++l)
+                                {
+                                    this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Add(new Point(BodyDataOnDepthImage[this.basePairList[i].bodyNumber].JointDepth[_TrackigBoneList[k]].position.x, BodyDataOnDepthImage[this.basePairList[i].bodyNumber].JointDepth[_TrackigBoneList[k]].position.y));
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+            //アクティブな骨格が輪郭の数より多いとき
+            else
+            {
+                for (int i = 0; i < this.Tree_ContsGroup.Count; ++i)
+                {
+                    this.dist = 1000;
+                    this.minDist = 1000; //とりあえず笑　その場しのぎ
+                    this.bufferNum = 0;
+                    for (int j = 0; j < this.basePairList.Count; ++j)
+                    {
+                        dist = Point.Distance(this.Tree_ContsGroup[i].contCenter, this.basePairList[j].basePoint);
+                        if (dist < minDist)
+                        {
+                            bufferNum = j;
+                            minDist = dist;
+                        }
+                    }
+
+
+                    //骨格情報をツリーに入れる
+                    for (int k = 0; k < _TrackigBoneList.Count; ++k)
+                    {
+                        if (this.Tree_ContsGroup[i].boneStack.ContainsKey(_TrackigBoneList[k]))
+                        {
+                            //トラッキングしていたらPointをしてなかったらnullを代入
+                            if (BodyData[this.basePairList[bufferNum].bodyNumber].Joints[_TrackigBoneList[k]].TrackingState == Windows.Kinect.TrackingState.Tracked)
+                            {
+                                this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Insert(0, new Point(BodyDataOnDepthImage[this.basePairList[bufferNum].bodyNumber].JointDepth[_TrackigBoneList[k]].position.x, BodyDataOnDepthImage[this.basePairList[bufferNum].bodyNumber].JointDepth[_TrackigBoneList[k]].position.y));
+                            }
+                            else
+                            {
+                                this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Insert(0, null);
+                            }
+
+                            //個数がオーバーしていたら消す
+                            if (this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Count > this.useFrame) this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].RemoveAt(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Count - 1);
+
+
+                        }
+                        //リストがなかったらとりあえず埋める
+                        else
+                        {
+                            for (int l = 0; l < this.stackNum; ++l)
+                            {
+                                this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Add(new Point(BodyDataOnDepthImage[this.basePairList[bufferNum].bodyNumber].JointDepth[_TrackigBoneList[k]].position.x, BodyDataOnDepthImage[this.basePairList[bufferNum].bodyNumber].JointDepth[_TrackigBoneList[k]].position.y));
+                            }
+                        }
+                    }
+                }
+            }
+
+            //骨格情報ツリー完成
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             //ここから最小二乗法
 
             //タイムテーブルを作成　マイナス方向に作る //最初はとりあえず埋めとく
-            if(this.t1.Count == 0)
+            if (this.t1.Count == 0)
             {
                 for (int i = 0; i < this.stackNum; ++i)
                 {
-                    this.t1.Add( - Time.deltaTime);
+                    this.t1.Add(-Time.deltaTime);
                 }
             }
             for (int i = 0; i < this.t1.Count; ++i)
@@ -385,20 +544,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
 
             //描画
-            Cv2.CvtColor(m_buffer,m_buffer, OpenCvSharp.ColorConversion.BgrToHsv);
+            Cv2.CvtColor(m_buffer, m_buffer, OpenCvSharp.ColorConversion.BgrToHsv);
 
-            for (int i = 0; i < this.Tree_ContsGroup.Count ; ++i)
+            for (int i = 0; i < this.Tree_ContsGroup.Count; ++i)
             {
                 List<Point>[] m_contour = this.Tree_ContsGroup[i].ToArrey();
                 //List<Point>[] m_preContour = SquarePredictCont(this.Tree_ContsGroup[i],5,5);
-                List<Point>[] m_preContour = this.Tree_ContsGroup[i].MoveContour(SquarePredictCenterMove(this.Tree_ContsGroup[i],this.useFrame,this.preFrame)).ToArray();
+                List<Point>[] m_preContour = this.Tree_ContsGroup[i].MoveContour(SquarePredictCenterMove(this.Tree_ContsGroup[i], this.useFrame, this.preFrame)).ToArray();
                 Cv2.DrawContours(m_buffer, m_contour, -1, this.Tree_ContsGroup[i].color, -1, OpenCvSharp.LineType.Link8);
-                
-                
+
+
 
 
                 //Hをずらす　　　Sを下げて明るくするのはだめ
-                Cv2.DrawContours(m_buffer, m_preContour, -1,  new Scalar(this.Tree_ContsGroup[i].color.Val0 - 20, this.Tree_ContsGroup[i].color.Val1 , this.Tree_ContsGroup[i].color.Val2), -1, OpenCvSharp.LineType.Link8);
+                Cv2.DrawContours(m_buffer, m_preContour, -1, new Scalar(this.Tree_ContsGroup[i].color.Val1 + 20, this.Tree_ContsGroup[i].color.Val1, this.Tree_ContsGroup[i].color.Val2), -1, OpenCvSharp.LineType.Link8);
 
                 //Cv2.Circle(m_buffer, this.Tree_ContsGroup[i].contsStack[0][0], 3, new Scalar(255, 255, 255));
                 //Cv2.Circle(m_buffer, SquarePredict(this.Tree_ContsGroup[i],6,3,0) , 3, new Scalar(120, 240, 240));
@@ -408,19 +567,18 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             Cv2.CvtColor(m_buffer, m_buffer, OpenCvSharp.ColorConversion.HsvToBgr);
 
 
-          
 
 
 
 
 
-            
+
+
 
 
 
 
             dst += m_buffer;
-            this.List_Contours_Buffer = this.List_Contours;
             //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
 
         }
@@ -437,7 +595,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
 
 
-        public  class StackContsGroup
+        public class StackContsGroup
         {
             public int? trackingId { get; set; }
             public Scalar color { get; set; }
@@ -446,10 +604,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             public float vel { get; set; }
             int frameCount { get; set; }
 
-            public List<List<Point>> contsStack  { get; set; }
+            public List<List<Point>> contsStack { get; set; }
             public Point contCenter { get; set; }
             public List<Point> contCenterList { get; set; }
             private List<List<Point>> buf { get; set; }
+
+            public Dictionary<JointType, List<Point?>> boneStack { get; set; }
 
 
             //新しく作るとき　　　※ストック分の数値は全部ゼロにする
@@ -457,16 +617,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             {
                 this.trackingId = id;
                 this.contCenter = centerPt;
-                this.color = new Scalar(UnityEngine.Random.Range(0,180),240,240  );
+                this.color = new Scalar(UnityEngine.Random.Range(0, 180), 240, 240);
                 this.contsStack = new List<List<Point>>();
                 this.contCenterList = new List<Point>();
                 this.buf = new List<List<Point>>();
+                this.boneStack = new Dictionary<JointType, List<Point?>>();
 
                 for (int a = 0; a < stacklim; ++a)
                 {
-                this.contsStack.Add(new List<Point>(contList));
-                this.contCenterList.Add(centerPt);
-                //this.contsStack.Add(contList);
+                    this.contsStack.Add(new List<Point>(contList));
+                    this.contCenterList.Add(centerPt);
+                    //this.contsStack.Add(contList);
                 }
 
 
@@ -474,14 +635,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
 
             //新しい値を追加するとき
-            public void AddContsGroup(List<Point> contList, Point centerPt,int stacklim)
+            public void AddContsGroup(List<Point> contList, Point centerPt, int stacklim)
             {
                 this.contCenter = centerPt;
-                this.contsStack.Insert(0, new List<Point>( contList));
+                this.contsStack.Insert(0, new List<Point>(contList));
                 if (this.contsStack.Count > stacklim) this.contsStack.RemoveAt(this.contsStack.Count - 1);
                 this.contCenterList.Insert(0, centerPt);
                 if (this.contCenterList.Count > stacklim) this.contCenterList.RemoveAt(this.contCenterList.Count - 1);
             }
+
+      
 
 
             //arreyで返す
@@ -490,9 +653,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 this.buf.Clear();
                 if (this.contsStack.Count > 0)
                 {
-                this.buf.Add(new List<Point>(this.contsStack[0]));
+                    this.buf.Add(new List<Point>(this.contsStack[0]));
 
-                return buf.ToArray();
+                    return buf.ToArray();
 
                 }
 
@@ -559,9 +722,25 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
         }
 
-        public Point SquarePredict(StackContsGroup stack,  int useFeameNum, int preFrameNum,int predictContNum)
+       
+
+        public class BodyBasePair
         {
-            Point predictPt ;
+            public int bodyNumber { get; set; }
+            public Point basePoint { get; set; }
+
+            public BodyBasePair(int bdNum,  Point basePt)
+            {
+                this.bodyNumber = bdNum;
+                this.basePoint = basePt;
+            }
+        }
+
+
+
+        public Point SquarePredict(StackContsGroup stack, int useFeameNum, int preFrameNum, int predictContNum)
+        {
+            Point predictPt;
 
             //List<double> t1 = new List<double>();
             List<double> t2 = new List<double>();
@@ -610,7 +789,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     t1x.Add(this.t1[i] * stack.contsStack[i][predictContNum].X);
                     t2x.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contsStack[i][predictContNum].X);
 
-                    t0y.Add( stack.contsStack[i][predictContNum].Y);
+                    t0y.Add(stack.contsStack[i][predictContNum].Y);
                     t1y.Add(this.t1[i] * stack.contsStack[i][predictContNum].Y);
                     t2y.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contsStack[i][predictContNum].Y);
                 }
@@ -852,17 +1031,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             //各数値リストの作成
             //計算するフレームはもっと少なくてもいいかも
 
-
-
-
-
-
-
-            for (int h = 0; h < stack.contsStack[0].Count; ++h  )
+            
+            for (int h = 0; h < stack.contsStack[0].Count; ++h)
             {
-                t2 .Clear();
-                t3 .Clear();
-                t4 .Clear();
+                t2.Clear();
+                t3.Clear();
+                t4.Clear();
 
                 t0x.Clear();
                 t1x.Clear();
@@ -974,15 +1148,67 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             return predictList.ToArray();
         }
 
+        bool CheckBodyInSCreen(int bodyNum, Mat srcMat)
+        {
+            bool bl = true;
+            for (int i = 0; i < this._TrackigBoneList.Count; ++i)
+            {
+                if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.x > srcMat.Width) bl = false;
+                //if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.x > srcMat.Width) Debug.Log("OverNum : "  + this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.x); 
+                if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.x < 0) bl = false;
+                //if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.x < 0 ) Debug.Log("OverNum : " + this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.x);
+                if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.y > srcMat.Height) bl = false;
+                //if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.y > srcMat.Height) Debug.Log("OverNum : " + this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.y);
+                if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.y < 0) bl = false;
+                //if (this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.y < 0) Debug.Log("OverNum : " + this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.y);
+                if (double.IsInfinity(this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.x))
+                {
+                    bl = false;
+                }
+                if (double.IsInfinity(this.BodyDataOnDepthImage[bodyNum].JointDepth[_TrackigBoneList[i]].position.y))
+                {
+                    bl = false;
+                }
+            }
+            return bl;
+        }
+
+        //posを計測するボーンのリスト　体が画面内にあるのかどうかを判断するときに使用
+        public Dictionary<int, Windows.Kinect.JointType> _TrackigBoneList = new Dictionary<int, Windows.Kinect.JointType>()
+        {
+            { 0,Windows.Kinect.JointType.AnkleLeft },
+            { 1,Windows.Kinect.JointType.KneeLeft},
+
+            { 2,Windows.Kinect.JointType.AnkleRight },
+            { 3,Windows.Kinect.JointType.KneeRight  },
+
+            { 4,Windows.Kinect.JointType.WristLeft   },
+            { 5,Windows.Kinect.JointType.ElbowLeft    },
+
+            { 6,Windows.Kinect.JointType.WristRight },
+            { 7,Windows.Kinect.JointType.ElbowRight },
+            { 8,Windows.Kinect.JointType.SpineBase},
+            { 9,Windows.Kinect.JointType.Head},
+            { 10,Windows.Kinect.JointType.ShoulderLeft},
+            { 11,Windows.Kinect.JointType.ShoulderRight},
+            { 12,Windows.Kinect.JointType.SpineMid},
+            { 13,Windows.Kinect.JointType.Neck},
+        };
+
+
+
+
+
+
 
         public override string ToString()
         {
-            return "LeastSquare";
+            return "LSAhead";
         }
 
         public override ImageProcesserType getImageProcesserType()
         {
-            return ImageProcesserType.LeastSquare;
+            return ImageProcesserType.LSAhead;
         }
 
         public bool IsFirstFrame { get; private set; }

@@ -28,23 +28,15 @@ public class ShadowMeshRenderer : MonoBehaviour
     public Vector3 bottomRightofViewPort;
     public Vector3 topRightofViewPort;
 
-    public Vector3 debug_topLeft;
-    public Vector3 debug_bottomLeft;
-    public Vector3 debug_bottomRight;
-    public Vector3 debug_topRight;
-
     public Vector3 Inpt_topLeft;
     public Vector3 Inpt_bottomLeft;
     public Vector3 Inpt_bottomRight;
     public Vector3 Inpt_topRight;
 
-    public Vector3 Expt_topLeft;
-    public Vector3 Expt_bottomLeft;
-    public Vector3 Expt_bottomRight;
-    public Vector3 Expt_topRight;
 
-    private float dbgPlaneWidth;
-    private float dbgPlaneHeight;
+
+    public float dbgPlaneWidth;
+    public float dbgPlaneHeight;
 
     public int Row = 10;
     public int Col = 10;
@@ -378,7 +370,6 @@ public class ShadowMeshRenderer : MonoBehaviour
         this.PointObjectList[3].transform.position = topRight;
 
         //インポート側
-     
         this.dbgPlaneWidth = this.debugPlane.transform.lossyScale.x * 10;
         this.dbgPlaneHeight = this.debugPlane.transform.lossyScale.y * 10;
 
@@ -395,13 +386,10 @@ public class ShadowMeshRenderer : MonoBehaviour
         this.Inpt_topRight.y = this.dbgPlaneHeight / 2 * (src_topRight.y * 2 - 1 );
         this.Inpt_topRight.z = this.debugPlane.transform.position.z;
 
-   
         this.PointObjectList[4].transform.position = this.Inpt_topLeft ;
         this.PointObjectList[5].transform.position = this.Inpt_bottomLeft ;
         this.PointObjectList[6].transform.position = this.Inpt_bottomRight;
         this.PointObjectList[7].transform.position = this.Inpt_topRight ;
-
-      
 
         //頂点に変更があったらメッシュ再構築
         this.RefreshData();
@@ -515,4 +503,19 @@ public class ShadowMeshRenderer : MonoBehaviour
         _Mesh.RecalculateNormals();
         _Mesh.RecalculateBounds();
     }
+
+    public void BallPosToSrcPos()
+    {
+        //ボールの位置からsrc_..に値を入れる
+        this.src_topLeft.x = -this.PointObjectList[4].transform.position.x / this.dbgPlaneWidth + 0.5f;
+        this.src_topLeft.y =  this.PointObjectList[4].transform.position.y / this.dbgPlaneHeight + 0.5f;
+        this.src_bottomLeft.x = -this.PointObjectList[5].transform.position.x / this.dbgPlaneWidth + 0.5f;
+        this.src_bottomLeft.y =  this.PointObjectList[5].transform.position.y / this.dbgPlaneHeight + 0.5f;
+        this.src_bottomRight.x = -this.PointObjectList[6].transform.position.x / this.dbgPlaneWidth + 0.5f;
+        this.src_bottomRight.y =  this.PointObjectList[6].transform.position.y / this.dbgPlaneHeight + 0.5f;
+        this.src_topRight.x = -this.PointObjectList[7].transform.position.x / this.dbgPlaneWidth + 0.5f;
+        this.src_topRight.y =  this.PointObjectList[7].transform.position.y / this.dbgPlaneHeight + 0.5f;
+    }
+
+
 }

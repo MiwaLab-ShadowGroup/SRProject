@@ -199,6 +199,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingColorful(m_PanelDictionary[ImageProcesserType.Colorful.ToString()]);
         this.CreateUIsImageporcessingCanny(m_PanelDictionary[ImageProcesserType.Canny.ToString()]);
         this.CreateUIsImageporcessingLeastSquare(m_PanelDictionary[ImageProcesserType.LeastSquare.ToString()]);
+        this.CreateUIsImageporcessingLSAhead(m_PanelDictionary[ImageProcesserType.LSAhead.ToString()]);
+        this.CreateUIsImageporcessingMixColor(m_PanelDictionary[ImageProcesserType.MixColor.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
         this.CreateUIsImageporcessingFlowParticlesShadow(m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()]);
         this.CreateUIsImageporcessingPainterShadow(m_PanelDictionary[ImageProcesserType.PainterShadow.ToString()]);
@@ -299,6 +301,14 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.LeastSquare:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new LeastSquare()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.LeastSquare.ToString()];
+                break;
+            case ImageProcesserType.LSAhead:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new LSAhead()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.LSAhead.ToString()];
+                break;
+            case ImageProcesserType.MixColor:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new MixColor()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.MixColor.ToString()];
                 break;
             case ImageProcesserType.EachMoveParticle:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.EachMoveParticle()));
@@ -791,16 +801,47 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "LeastSquare_bgd_R", 255, 0, 0);
         AddFloatUI(parent, "LeastSquare_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "LeastSquare_bgd_B", 255, 0, 0);
-        AddFloatUI(parent, "LeastSquare_Rate", 200, 50, 100);
-        AddFloatUI(parent, "LeastSquare_Speed", 1, 0.01f, 0.5f);
-        AddBooleanUI(parent, "LeastSquare_UseFade", true);
+        AddFloatUI(parent, "LeastSquare_Rate", 200, 10, 100);
+        AddFloatUI(parent, "LeastSquare_useFrame", 20, 2, 8);
+        AddFloatUI(parent, "LeastSquare_preFrame", 20, 0, 4);
+        AddBooleanUI(parent, "LeastSquare_UseFade", false);
         m_lastUpdatedHeight += 10;
 
-        AddButtonUI(parent, "LeastSquare_CC_Blue");
-        AddButtonUI(parent, "LeastSquare_CC_Orange");
-        AddButtonUI(parent, "LeastSquare_CC_Yellow");
-        AddButtonUI(parent, "LeastSquare_CC_Pink");
-        AddButtonUI(parent, "LeastSquare_CC_Green");
+    }
+
+    private void CreateUIsImageporcessingLSAhead(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "LSAhead_con_R", 255, 0, 0);
+        AddFloatUI(parent, "LSAhead_con_G", 255, 0, 0);
+        AddFloatUI(parent, "LSAhead_con_B", 255, 0, 200);
+        AddFloatUI(parent, "LSAhead_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "LSAhead_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "LSAhead_bgd_B", 255, 0, 0);
+        AddFloatUI(parent, "LSAhead_Rate", 200, 10, 100);
+        AddFloatUI(parent, "LSAhead_useFrame", 20, 2, 8);
+        AddFloatUI(parent, "LSAhead_preFrame", 20, 0, 4);
+        AddBooleanUI(parent, "LSAhead_UseFade", false);
+        m_lastUpdatedHeight += 10;
+
+    }
+
+    private void CreateUIsImageporcessingMixColor(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "MixColor_con_R", 255, 0, 0);
+        AddFloatUI(parent, "MixColor_con_G", 255, 0, 0);
+        AddFloatUI(parent, "MixColor_con_B", 255, 0, 200);
+        AddFloatUI(parent, "MixColor_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "MixColor_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "MixColor_bgd_B", 255, 0, 0);
+        AddFloatUI(parent, "MixColor_Rate", 200, 10, 100);
+        AddFloatUI(parent, "MixColor_Speed", 0.5f, 0, 0.2f);
+        AddFloatUI(parent, "MixColor_Mix", 100, 1, 50);
+        AddBooleanUI(parent, "MixColor_UseFade", false);
+        m_lastUpdatedHeight += 10;
+
+      
 
     }
 
