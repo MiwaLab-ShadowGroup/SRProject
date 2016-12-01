@@ -787,18 +787,5 @@ public class ShadowMeshRenderer : MonoBehaviour
         }
     }
 
-    public void BallPosToSrcPos()
-    {
-        //ボールの位置からsrc_..に値を入れる
-        this.src_topLeft.x = -this.PointObjectList[4].transform.position.x / this.dbgPlaneWidth + 0.5f;
-        this.src_topLeft.y =  this.PointObjectList[4].transform.position.y / this.dbgPlaneHeight + 0.5f;
-        this.src_bottomLeft.x = -this.PointObjectList[5].transform.position.x / this.dbgPlaneWidth + 0.5f;
-        this.src_bottomLeft.y =  this.PointObjectList[5].transform.position.y / this.dbgPlaneHeight + 0.5f;
-        this.src_bottomRight.x = -this.PointObjectList[6].transform.position.x / this.dbgPlaneWidth + 0.5f;
-        this.src_bottomRight.y =  this.PointObjectList[6].transform.position.y / this.dbgPlaneHeight + 0.5f;
-        this.src_topRight.x = -this.PointObjectList[7].transform.position.x / this.dbgPlaneWidth + 0.5f;
-        this.src_topRight.y =  this.PointObjectList[7].transform.position.y / this.dbgPlaneHeight + 0.5f;
-    }
-
 
 }
