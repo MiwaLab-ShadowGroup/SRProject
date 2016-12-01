@@ -881,7 +881,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsImportKinectAditional(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddFloatUI(parent, "Kinect_ViewRange", 4, 0.1f, 1);
+        AddFloatUI(parent, "Kinect_ViewRange", 2, 0.5f, 1);
         AddFloatUI(parent, "Kinect_CircleCut", 64, 0, 25);
     }
 
@@ -916,29 +916,12 @@ public class ShadowMediaUIHost : MonoBehaviour
 
         AddFloatUI(parent, "Clb_I_TL_X" + num, 2, -1, 0);
         AddFloatUI(parent, "Clb_I_TL_Y" + num, 2, -1, 0);
-        m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Clb_I_BL_X" + num, 2, -1, 0);
         AddFloatUI(parent, "Clb_I_BL_Y" + num, 2, -1, 1);
-        m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Clb_I_BR_X" + num, 2, -1, 1);
         AddFloatUI(parent, "Clb_I_BR_Y" + num, 2, -1, 1);
-        m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Clb_I_TR_X" + num, 2, -1, 1);
         AddFloatUI(parent, "Clb_I_TR_Y" + num, 2, -1, 0);
-        m_lastUpdatedHeight += 20;
-        AddEnumUI(parent, "clb_i_import_mode" + num, ShadowMeshRenderer.ImportMode.Quadrangle);
-        m_lastUpdatedHeight += 10;
-        AddFloatUI(parent, "clb_i_r_top" + num, 5, 0, 1);
-        AddBooleanUI(parent, "clb_i_use_up_top" + num, true);
-        m_lastUpdatedHeight += 10;
-        AddFloatUI(parent, "clb_i_r_btm" + num, 5, 0, 1);
-        AddBooleanUI(parent, "clb_i_use_up_btm" + num, true);
-
-
-
-        m_lastUpdatedHeight += 10;
-
-
 
         m_lastUpdatedHeight += 10;
         AddButtonUI(parent, "Clb_I_Save" + num);
@@ -950,38 +933,16 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "Clb_E_TL_X" + num, 2000, -1000, 0);
         AddFloatUI(parent, "Clb_E_TL_Y" + num, 2000, -1000, 0);
-        m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Clb_E_BL_X" + num, 2000, -1000, 0);
         AddFloatUI(parent, "Clb_E_BL_Y" + num, 2000, -1000, Screen.height);
-        m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Clb_E_BR_X" + num, 2000, -1000, Screen.width);
         AddFloatUI(parent, "Clb_E_BR_Y" + num, 2000, -1000, Screen.height);
-        m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "Clb_E_TR_X" + num, 2000, -1000, Screen.width);
         AddFloatUI(parent, "Clb_E_TR_Y" + num, 2000, -1000, 0);
-        m_lastUpdatedHeight += 20;
 
         AddBooleanUI(parent, "Clb_E_Vsbl" + num, true);
-        m_lastUpdatedHeight += 20;
-        AddEnumUI(parent, "clb_e_mode" + num, ShadowMeshRenderer.PlaneMode.Plane);
+
         m_lastUpdatedHeight += 10;
-        AddFloatUI(parent, "clb_e_pos_x" + num, 10, -10, 0);
-        AddFloatUI(parent, "clb_e_pos_y" + num, 10, -10, 0);
-        AddFloatUI(parent, "clb_e_pos_z" + num, 10, -10, 0);
-        m_lastUpdatedHeight += 10;
-        AddFloatUI(parent, "clb_e_radius" + num, 5, 0, 2.5f);
-        AddFloatUI(parent, "clb_e_height" + num, 5, 0, 2.5f);
-        m_lastUpdatedHeight += 10;
-        AddFloatUI(parent, "clb_e_in_rad" + num, 5, 0, 0.5f);
-        m_lastUpdatedHeight += 10;
-
-        AddFloatUI(parent, "clb_e_startAngle" + num, 2 * Mathf.PI, 0, Mathf.PI / 4f );
-        AddFloatUI(parent, "clb_e_finishAngle" + num, 2 * Mathf.PI, 0, Mathf.PI / 4f * 3f);
-
-
-        m_lastUpdatedHeight += 20;
-
-
         AddButtonUI(parent, "Clb_E_Save" + num);
         AddButtonUI(parent, "Clb_E_Load" + num);
     }
@@ -990,23 +951,16 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddEnumUI(parent, "clb_camera_mode" + num, ProjectionCameraMode.Orthographic);
-        m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "clb_camera_pos_x" + num, 10, -10, 0);
         AddFloatUI(parent, "clb_camera_pos_y" + num, 10, -10, 0);
         AddFloatUI(parent, "clb_camera_pos_z" + num, 10, -10, 0);
-        m_lastUpdatedHeight += 10;
-        AddFloatUI(parent, "clb_camera_pos_rx" + num, 90, -90, 0);
-        AddFloatUI(parent, "clb_camera_pos_ry" + num, 90, -90, 0);
-        AddFloatUI(parent, "clb_camera_pos_rz" + num, 90, -90, 0);
-        m_lastUpdatedHeight += 10;
-        AddFloatUI(parent, "clb_camera_fview" + num, 179, 1, 45);
     }
 
     private void CreateUIsGenericModes(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
         AddEnumUI(parent, "core_shadow_media_mode", Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia2D);
-        AddBooleanUI(parent, "core_switch_objects", false);
+        AddBooleanUI(parent, "core_switch_objects", true);
     }
 
 
@@ -1021,7 +975,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         slider.Max = max;
         slider.Min = min;
         slider.DefaultValue = @default;
-        slider.gameObject.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        slider.gameObject.transform.SetParent(parent.transform, false);
         var recttransform = slider.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1035,7 +989,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         var checkBox = Instantiate<ParameterCheckbox>(m_checkbox);
         checkBox.Title = ParameterName;
         checkBox.DefaultValue = @default;
-        checkBox.gameObject.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        checkBox.gameObject.transform.SetParent(parent.transform, false);
         var recttransform = checkBox.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1048,7 +1002,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         var button = Instantiate<ParameterButton>(m_button);
         button.Title = ParameterName;
-        button.gameObject.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        button.gameObject.transform.SetParent(parent.transform, false);
         var recttransform = button.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1062,7 +1016,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         var Text = Instantiate<ParameterText>(m_text);
         Text.Title = ParameterName;
-        Text.gameObject.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        Text.gameObject.transform.SetParent(parent.transform, false);
         var recttransform = Text.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1088,7 +1042,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         item.Title = ParameterName;
 
         item.initialize(defaultValue);
-        _object.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        _object.transform.SetParent(parent.transform, false);
         var recttransform = _object.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
