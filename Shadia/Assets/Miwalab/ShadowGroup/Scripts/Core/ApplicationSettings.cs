@@ -41,6 +41,8 @@ namespace Miwalab.ShadowGroup.Core
                 Display.displays[2].Activate();
             if (Display.displays.Length > 3)
                 Display.displays[3].Activate();
+            (ShadowMediaUIHost.GetUI("core_switch_objects") as ParameterCheckbox).OnValueChanged(false);
+
         }
 
         private void SwitchObjectsSwitched(object sender, EventArgs e)
