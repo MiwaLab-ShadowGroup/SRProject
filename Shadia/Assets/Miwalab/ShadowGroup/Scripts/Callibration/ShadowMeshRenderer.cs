@@ -33,8 +33,9 @@ public class ShadowMeshRenderer : MonoBehaviour
     public Vector3 Inpt_bottomRight;
     public Vector3 Inpt_topRight;
 
-    private float dbgPlaneWidth;
-    private float dbgPlaneHeight;
+
+    public float dbgPlaneWidth;
+    public float dbgPlaneHeight;
 
     public int Row = 10;
     public int Col = 10;
@@ -504,7 +505,6 @@ public class ShadowMeshRenderer : MonoBehaviour
 
 
         //インポート側
-
         this.dbgPlaneWidth = this.debugPlane.transform.lossyScale.x * 10;
         this.dbgPlaneHeight = this.debugPlane.transform.lossyScale.y * 10;
 
@@ -786,4 +786,19 @@ public class ShadowMeshRenderer : MonoBehaviour
             }
         }
     }
+
+    public void BallPosToSrcPos()
+    {
+        //ボールの位置からsrc_..に値を入れる
+        this.src_topLeft.x = -this.PointObjectList[4].transform.position.x / this.dbgPlaneWidth + 0.5f;
+        this.src_topLeft.y =  this.PointObjectList[4].transform.position.y / this.dbgPlaneHeight + 0.5f;
+        this.src_bottomLeft.x = -this.PointObjectList[5].transform.position.x / this.dbgPlaneWidth + 0.5f;
+        this.src_bottomLeft.y =  this.PointObjectList[5].transform.position.y / this.dbgPlaneHeight + 0.5f;
+        this.src_bottomRight.x = -this.PointObjectList[6].transform.position.x / this.dbgPlaneWidth + 0.5f;
+        this.src_bottomRight.y =  this.PointObjectList[6].transform.position.y / this.dbgPlaneHeight + 0.5f;
+        this.src_topRight.x = -this.PointObjectList[7].transform.position.x / this.dbgPlaneWidth + 0.5f;
+        this.src_topRight.y =  this.PointObjectList[7].transform.position.y / this.dbgPlaneHeight + 0.5f;
+    }
+
+
 }

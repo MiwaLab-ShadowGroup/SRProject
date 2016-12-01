@@ -1761,6 +1761,10 @@ Prefab:
       propertyPath: m_Name
       value: CallibrationSettingPanel1
       objectReference: {fileID: 0}
+    - target: {fileID: 11456374, guid: dfe8ed46e6d70b9489662955ed352936, type: 2}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dfe8ed46e6d70b9489662955ed352936, type: 2}
   m_IsPrefabParent: 0
@@ -2831,6 +2835,10 @@ Prefab:
       propertyPath: debugPlane
       value: 
       objectReference: {fileID: 842574304}
+    - target: {fileID: 489422, guid: bc2478497808cfc4e9ec04f8426e11c4, type: 2}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bc2478497808cfc4e9ec04f8426e11c4, type: 2}
   m_IsPrefabParent: 0
