@@ -1055,6 +1055,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     return bonePointList[0];
                 }
 
+
                 t2.Add(Mathf.Pow((float)this.t1[i], 2));
                 t3.Add(Mathf.Pow((float)this.t1[i], 3));
                 t4.Add(Mathf.Pow((float)this.t1[i], 4));
