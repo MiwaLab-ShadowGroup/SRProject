@@ -22,9 +22,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private Mat grayimage = new Mat();
         private Mat dstMat = new Mat();
         List<OpenCvSharp.CPlusPlus.Point> CvPoints = new List<Point>();
-        List<List<OpenCvSharp.CPlusPlus.Point>> List_Goast = new List<List<Point>>();
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
-        List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours_Buffer = new List<List<Point>>();
         Scalar color;
         Scalar colorBack;
         float speedCtl;
@@ -53,6 +51,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         //List<double> timeTable = new List<double>();
         List<double> t1 = new List<double>();
+
+       
 
 
         public LeastSquare() : base()
@@ -140,6 +140,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         }
 
         Mat m_buffer;
+        Mat m_mask;
+        Mat m_nowbuffer;
+        Mat m_prebuffer;
+        Mat m_alphablend;
         bool m_UseFade;
         private void Update(ref Mat src, ref Mat dst)
         {
@@ -150,6 +154,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             if (m_buffer == null)
             {
                 m_buffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
+                m_prebuffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
+                m_nowbuffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
+                m_mask = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
+                m_alphablend = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
             }
             else
             {
@@ -161,8 +169,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 {
                     m_buffer *= 0;
                 }
+                m_mask *= 0;
+                m_prebuffer *= 0;
+                m_nowbuffer *= 0;
+                m_alphablend *= 0;
             }
-
           
 
 
@@ -190,33 +201,33 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 this.CvPoints.Clear();
                 if (Cv2.ContourArea(contour[i]) > 1000)
                     if (contour[i].Length > this.sharpness) {
+                    {
+                        //重心検出処理
+                        var cont = contour[i].ToArray();
+
+                        var M = Cv2.Moments(cont);
+                        this.contour_Center.Add(new Point((M.M10 / M.M00), (M.M01 / M.M00)));
+
+
+                        //for (int j = 0; j < contour[i].Length; j += (int)( contour[i].Length / this.sharpness + 1))
+                        for (int j = 0; j < this.sharpness; j++)
                         {
-                            //重心検出処理
-                            var cont = contour[i].ToArray();
-
-                            var M = Cv2.Moments(cont);
-                            this.contour_Center.Add(new Point((M.M10 / M.M00), (M.M01 / M.M00)));
-
-
-                            //for (int j = 0; j < contour[i].Length; j += (int)( contour[i].Length / this.sharpness + 1))
-                            for (int j = 0; j < this.sharpness; j++)
-                            {
-                                //this.useContNum = j * contour[i].Length / this.sharpness;
-                                this.CvPoints.Add(contour[i][j * contour[i].Length / this.sharpness]);
-                            }
-                            //Debug.Log("cvPoints Num ; " + this.CvPoints.Count);
-
-                            //this.List_Contours.Add(new List<Point>(CvPoints));
-                            this.List_NowContsGroup.Add(new NowContsGroup(null, this.CvPoints, new Point((M.M10 / M.M00), (M.M01 / M.M00))));
+                            //this.useContNum = j * contour[i].Length / this.sharpness;
+                            this.CvPoints.Add(contour[i][j * contour[i].Length / this.sharpness]);
                         }
+                        //Debug.Log("cvPoints Num ; " + this.CvPoints.Count);
+
+                        //this.List_Contours.Add(new List<Point>(CvPoints));
+                        this.List_NowContsGroup.Add(new NowContsGroup(null, this.CvPoints, new Point((M.M10 / M.M00), (M.M01 / M.M00))));
+                    }
                 }
-
             }
+
             var _contour = List_Contours.ToArray();
-            //Cv2.DrawContours(m_buffer, _contour, -1, color, -1, OpenCvSharp.LineType.Link8);
+            //Cv2.DrawContours(cont_mask, _contour, -1, new Scalar(255,255,255), -1, OpenCvSharp.LineType.Link8);
 
 
-
+            //------------------------------------------------
             //現在の輪郭すべてにIDを振る
 
            
@@ -354,7 +365,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
             //輪郭追跡終了
 
-
+            //-----------------------------------------------
             //ここから最小二乗法
 
             //タイムテーブルを作成　マイナス方向に作る //最初はとりあえず埋めとく
@@ -373,56 +384,52 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             if (this.t1.Count > this.stackNum) this.t1.RemoveAt(this.t1.Count - 1);
 
 
-
-
-
-
-
-
-
-
-
-
-
+            //------------------------------------------------
             //描画
-            Cv2.CvtColor(m_buffer,m_buffer, OpenCvSharp.ColorConversion.BgrToHsv);
+            Cv2.CvtColor(m_nowbuffer, m_nowbuffer, OpenCvSharp.ColorConversion.BgrToHsv);
+            Cv2.CvtColor(m_prebuffer, m_prebuffer, OpenCvSharp.ColorConversion.BgrToHsv);
 
             for (int i = 0; i < this.Tree_ContsGroup.Count ; ++i)
             {
                 List<Point>[] m_contour = this.Tree_ContsGroup[i].ToArrey();
                 //List<Point>[] m_preContour = SquarePredictCont(this.Tree_ContsGroup[i],5,5);
                 List<Point>[] m_preContour = this.Tree_ContsGroup[i].MoveContour(SquarePredictCenterMove(this.Tree_ContsGroup[i],this.useFrame,this.preFrame)).ToArray();
-                Cv2.DrawContours(m_buffer, m_contour, -1, this.Tree_ContsGroup[i].color, -1, OpenCvSharp.LineType.Link8);
+                Cv2.DrawContours(m_nowbuffer, m_contour, -1, this.Tree_ContsGroup[i].color, -1, OpenCvSharp.LineType.Link8);
                 
-                
-
-
                 //Hをずらす　　　Sを下げて明るくするのはだめ
-                Cv2.DrawContours(m_buffer, m_preContour, -1,  new Scalar(this.Tree_ContsGroup[i].color.Val0 - 20, this.Tree_ContsGroup[i].color.Val1 , this.Tree_ContsGroup[i].color.Val2), -1, OpenCvSharp.LineType.Link8);
+                Cv2.DrawContours(m_prebuffer, m_preContour, -1,  new Scalar(this.Tree_ContsGroup[i].color.Val0 - 20, this.Tree_ContsGroup[i].color.Val1 , this.Tree_ContsGroup[i].color.Val2), -1, OpenCvSharp.LineType.Link8);
 
                 //Cv2.Circle(m_buffer, this.Tree_ContsGroup[i].contsStack[0][0], 3, new Scalar(255, 255, 255));
                 //Cv2.Circle(m_buffer, SquarePredict(this.Tree_ContsGroup[i],6,3,0) , 3, new Scalar(120, 240, 240));
 
             }
-
-            Cv2.CvtColor(m_buffer, m_buffer, OpenCvSharp.ColorConversion.HsvToBgr);
-
-
-          
+            Cv2.CvtColor(m_nowbuffer, m_nowbuffer, OpenCvSharp.ColorConversion.HsvToBgr);
+            Cv2.CvtColor(m_prebuffer, m_prebuffer, OpenCvSharp.ColorConversion.HsvToBgr);
 
 
+            //---------------------------------------------------
+            //合成処理
+            m_mask = m_nowbuffer.Mul(m_prebuffer);
+            Cv2.CvtColor(m_mask, m_mask, OpenCvSharp.ColorConversion.BgrToGray);
+            Cv2.Threshold(m_mask, m_mask, 1, 255, OpenCvSharp.ThresholdType.Binary);   //かぶっている部分だけが白いマスクを作る
+            Cv2.CvtColor(m_mask, m_mask, OpenCvSharp.ColorConversion.GrayToBgr);
 
+            //アルファブレンドで重なった部分だけの絵を作る
+            Cv2.AddWeighted(m_prebuffer, 0.5, m_nowbuffer, 0.5, 0, m_alphablend);
+            m_alphablend -= ~m_mask;
 
+            //重なってない部分は加算合成で作る
+            m_nowbuffer += m_prebuffer;
+            m_nowbuffer -= m_mask;
 
-            
+            //二つを合成する
+            m_buffer += m_alphablend;
+            m_buffer += m_nowbuffer;
 
-
-
+            //ブラーで滑らかにぼかす
+            Cv2.GaussianBlur(m_buffer, m_buffer, new Size(3, 3), 0f);
 
             dst += m_buffer;
-            this.List_Contours_Buffer = this.List_Contours;
-            //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
-
         }
 
 

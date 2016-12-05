@@ -808,9 +808,10 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "LSAhead_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "LSAhead_bgd_B", 255, 0, 0);
         AddFloatUI(parent, "LSAhead_Rate", 200, 10, 100);
-        AddFloatUI(parent, "LSAhead_useFrame", 20, 2, 8);
+        AddFloatUI(parent, "LSAhead_useFrame", 40, 2, 8);
         AddFloatUI(parent, "LSAhead_preFrame", 20, 0, 4);
         AddBooleanUI(parent, "LSAhead_UseFade", false);
+        AddBooleanUI(parent, "LSAhead_useCubeCurve", false);
         m_lastUpdatedHeight += 10;
 
     }

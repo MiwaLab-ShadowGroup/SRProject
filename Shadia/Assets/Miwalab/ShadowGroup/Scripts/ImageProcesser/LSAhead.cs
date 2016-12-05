@@ -35,7 +35,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         List<OpenCvSharp.CPlusPlus.Point> contour_Center = new List<Point>();
         List<StackContsGroup> Tree_ContsGroup = new List<StackContsGroup>();
         List<NowContsGroup> List_NowContsGroup = new List<NowContsGroup>();
-        int stackNum = 20;
+        int stackNum = 50;
 
 
         int numberingId = 0;
@@ -56,6 +56,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         //骨格
         List<BodyBasePair> basePairList = new List<BodyBasePair>();
+        List<Point?> bonePt_buf = new List<Point?>();
+
+        bool useCubeCurve;
 
 
 
@@ -71,6 +74,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("LSAhead_useFrame") as ParameterSlider).ValueChanged += LSAhead_useFrame_ValueChanged;
             (ShadowMediaUIHost.GetUI("LSAhead_preFrame") as ParameterSlider).ValueChanged += LSAhead_preFrame_ValueChanged;
             (ShadowMediaUIHost.GetUI("LSAhead_UseFade") as ParameterCheckbox).ValueChanged += LSAhead_UseFade_ValueChanged;
+            (ShadowMediaUIHost.GetUI("LSAhead_useCubeCurve") as ParameterCheckbox).ValueChanged += LSAhead_useCubeCurve_ValueChanged;
 
 
             (ShadowMediaUIHost.GetUI("LSAhead_con_R") as ParameterSlider).ValueUpdate();
@@ -83,6 +87,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("LSAhead_useFrame") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("LSAhead_preFrame") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("LSAhead_UseFade") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("LSAhead_useCubeCurve") as ParameterCheckbox).ValueUpdate();
         }
 
 
@@ -90,6 +95,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private void LSAhead_UseFade_ValueChanged(object sender, EventArgs e)
         {
             this.m_UseFade = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+        }
+
+        private void LSAhead_useCubeCurve_ValueChanged(object sender, EventArgs e)
+        {
+            this.useCubeCurve = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
         private void LSAhead_Rate_ValueChanged(object sender, EventArgs e)
@@ -361,7 +371,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             //------------------------------------------------------------
 
-            //ここから骨格点分類
+            //ここから骨格点同期
 
             //輪郭の重心位置と比較する骨格のSpineBaseの位置リストを作る
             this.basePairList.Clear();
@@ -371,32 +381,38 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 {
                     if (this.CheckBodyInSCreen(i, src))
                     {
-                        this.basePairList.Add(new BodyBasePair(i, new Point(BodyDataOnDepthImage[i].JointDepth[JointType.SpineBase].position.x, BodyDataOnDepthImage[i].JointDepth[JointType.SpineBase].position.y)) );
+                        this.basePairList.Add(new BodyBasePair(i, new Point(BodyDataOnDepthImage[i].JointDepth[JointType.SpineBase].position.x, BodyDataOnDepthImage[i].JointDepth[JointType.SpineBase].position.y)));
                     }
                 }
             }
-            
-
 
 
             //アクティブな骨格が輪郭の数より少ないとき　　少ない方から調べていく
+            this.protectId.Clear();
+
             if (this.basePairList.Count <= this.Tree_ContsGroup.Count)
             {
-                for (int i = 0; i < this.basePairList.Count; ++i)
+                if (this.basePairList.Count != 0)
                 {
-                    this.dist = 1000;
-                    this.minDist = 1000; //とりあえず笑　その場しのぎ
-                    this.bufferNum = 0;
-                    for (int j = 0; j < this.Tree_ContsGroup.Count; ++j)
+
+                    for (int i = 0; i < this.basePairList.Count; ++i)
                     {
-
-                        dist = Point.Distance(this.basePairList[i].basePoint, this.Tree_ContsGroup[j].contCenter);
-
-                        if (dist < minDist)
+                        this.dist = 1000;
+                        this.minDist = 1000; //とりあえず笑　その場しのぎ
+                        this.bufferNum = 0;
+                        for (int j = 0; j < this.Tree_ContsGroup.Count; ++j)
                         {
-                            bufferNum = j;
-                            minDist = dist;
+
+                            dist = Point.Distance(this.basePairList[i].basePoint, this.Tree_ContsGroup[j].contCenter);
+
+                            if (dist < minDist)
+                            {
+                                bufferNum = j;
+                                minDist = dist;
+                            }
                         }
+                        //余りものを検出するためのリスト作り
+                        this.protectId.Add(this.Tree_ContsGroup[bufferNum].trackingId);
 
                         //骨格情報をツリーに入れる
                         for (int k = 0; k < _TrackigBoneList.Count; ++k)
@@ -406,7 +422,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                                 //トラッキングしていたらPointをしてなかったらnullを代入
                                 if (BodyData[this.basePairList[i].bodyNumber].Joints[_TrackigBoneList[k]].TrackingState == Windows.Kinect.TrackingState.Tracked)
                                 {
-                                this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Insert(0, new Point(BodyDataOnDepthImage[this.basePairList[i].bodyNumber].JointDepth[_TrackigBoneList[k]].position.x, BodyDataOnDepthImage[this.basePairList[i].bodyNumber].JointDepth[_TrackigBoneList[k]].position.y));
+                                    this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Insert(0, new Point(BodyDataOnDepthImage[this.basePairList[i].bodyNumber].JointDepth[_TrackigBoneList[k]].position.x, BodyDataOnDepthImage[this.basePairList[i].bodyNumber].JointDepth[_TrackigBoneList[k]].position.y));
                                 }
                                 else
                                 {
@@ -414,22 +430,90 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                                 }
 
                                 //個数がオーバーしていたら消す
-                                if (this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Count > this.useFrame) this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].RemoveAt(this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Count-1);
+                                if (this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Count > this.useFrame) this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].RemoveAt(this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Count - 1);
+
+
+                            }
+                            //リストがなかったらとりあえず埋める　勝手にnullになるだろうという期待
+                            else
+                            {
+                                this.bonePt_buf.Clear();
+                                for (int l = 0; l < this.stackNum; ++l)
+                                {
+                                    this.bonePt_buf.Add(new Point(BodyDataOnDepthImage[this.basePairList[i].bodyNumber].JointDepth[_TrackigBoneList[k]].position.x, BodyDataOnDepthImage[this.basePairList[i].bodyNumber].JointDepth[_TrackigBoneList[k]].position.y));
+                                }
+                                this.Tree_ContsGroup[bufferNum].boneStack.Add(_TrackigBoneList[k], new List<Point?>(this.bonePt_buf));
+
+
+                            }
+
+                        }
+                    }
+                    //追加がなかったものにもnullリストをぶっこむ
+                    for (int i = 0; i < this.Tree_ContsGroup.Count; ++i)
+                    {
+                        if (!protectId.Contains(this.Tree_ContsGroup[i].trackingId))
+                        {
+                            for (int k = 0; k < _TrackigBoneList.Count; ++k)
+                            {
+                                if (this.Tree_ContsGroup[i].boneStack.ContainsKey(_TrackigBoneList[k]))
+                                {
+                                   
+                                    this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Insert(0, null);
+                                   
+                                    //個数がオーバーしていたら消す
+                                    if (this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Count > this.useFrame) this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].RemoveAt(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Count - 1);
+
+                                }
+                                //リストがなかったらとりあえず埋める　　勝手にnullになるだろうという期待
+                                else
+                                {
+                                    this.bonePt_buf.Clear();
+                                    for (int l = 0; l < this.stackNum; ++l)
+                                    {
+                                        this.bonePt_buf.Add(null);
+                                    }
+                                    this.Tree_ContsGroup[i].boneStack.Add(_TrackigBoneList[k], new List<Point?>(this.bonePt_buf));
+                                }
+
+                            }
+                        }
+                    }
+
+
+                }
+                //アクティブな骨格一つもないとき
+                else
+                {
+                    for (int i = 0; i < this.Tree_ContsGroup.Count; ++i)
+                    {
+                        //骨格情報をツリーに入れる
+                        for (int j = 0; j < _TrackigBoneList.Count; ++j)
+                        {
+                            if (this.Tree_ContsGroup[i].boneStack.ContainsKey(_TrackigBoneList[j]))
+                            {
+                                this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]].Insert(0, null);
+
+                                //個数がオーバーしていたら消す
+                                if (this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]].Count > this.useFrame) this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]].RemoveAt(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]].Count - 1);
 
 
                             }
                             //リストがなかったらとりあえず埋める
                             else
                             {
+                                this.bonePt_buf.Clear();
                                 for (int l = 0; l < this.stackNum; ++l)
                                 {
-                                    this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Add(new Point(BodyDataOnDepthImage[this.basePairList[i].bodyNumber].JointDepth[_TrackigBoneList[k]].position.x, BodyDataOnDepthImage[this.basePairList[i].bodyNumber].JointDepth[_TrackigBoneList[k]].position.y));
+                                    this.bonePt_buf.Add(null);
                                 }
-
+                                this.Tree_ContsGroup[i].boneStack.Add(_TrackigBoneList[j], new List<Point?>(this.bonePt_buf));
                             }
                         }
                     }
                 }
+
+
             }
             //アクティブな骨格が輪郭の数より多いとき
             else
@@ -455,7 +539,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     {
                         if (this.Tree_ContsGroup[i].boneStack.ContainsKey(_TrackigBoneList[k]))
                         {
-                            //トラッキングしていたらPointをしてなかったらnullを代入
+                            //トラッキングしていたらPointを,してなかったらnullを代入
                             if (BodyData[this.basePairList[bufferNum].bodyNumber].Joints[_TrackigBoneList[k]].TrackingState == Windows.Kinect.TrackingState.Tracked)
                             {
                                 this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Insert(0, new Point(BodyDataOnDepthImage[this.basePairList[bufferNum].bodyNumber].JointDepth[_TrackigBoneList[k]].position.x, BodyDataOnDepthImage[this.basePairList[bufferNum].bodyNumber].JointDepth[_TrackigBoneList[k]].position.y));
@@ -473,49 +557,21 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                         //リストがなかったらとりあえず埋める
                         else
                         {
+                            this.bonePt_buf.Clear();
                             for (int l = 0; l < this.stackNum; ++l)
                             {
-                                this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Add(new Point(BodyDataOnDepthImage[this.basePairList[bufferNum].bodyNumber].JointDepth[_TrackigBoneList[k]].position.x, BodyDataOnDepthImage[this.basePairList[bufferNum].bodyNumber].JointDepth[_TrackigBoneList[k]].position.y));
+                                this.bonePt_buf.Add(new Point(BodyDataOnDepthImage[this.basePairList[bufferNum].bodyNumber].JointDepth[_TrackigBoneList[k]].position.x, BodyDataOnDepthImage[this.basePairList[bufferNum].bodyNumber].JointDepth[_TrackigBoneList[k]].position.y));
                             }
+                            this.Tree_ContsGroup[i].boneStack.Add(_TrackigBoneList[k], new List<Point?>(this.bonePt_buf));
                         }
                     }
                 }
             }
 
             //骨格情報ツリー完成
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            //------------------------------------------------------
 
             //ここから最小二乗法
-
             //タイムテーブルを作成　マイナス方向に作る //最初はとりあえず埋めとく
             if (this.t1.Count == 0)
             {
@@ -532,36 +588,79 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             if (this.t1.Count > this.stackNum) this.t1.RemoveAt(this.t1.Count - 1);
 
 
+            //-------------------------------------------------------
 
+            //骨格点を先行させたリストを作る
+            for (int i = 0; i < this.Tree_ContsGroup.Count; ++i)
+            {
+                //先行骨格点のリストを更新
+                this.Tree_ContsGroup[i].preBonePoints.Clear();
 
-
-
-
-
-
-
-
-
+                for (int j = 0; j < _TrackigBoneList.Count; ++j)
+                {
+                    if (!this.useCubeCurve)
+                    {
+                    //二次曲線フィッティング
+                    this.Tree_ContsGroup[i].preBonePoints.Add(_TrackigBoneList[j], LeastSquarePredict(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]], this.useFrame, this.preFrame));
+                    }
+                    else
+                    {
+                    //三次曲線フィッティング
+                    this.Tree_ContsGroup[i].preBonePoints.Add(_TrackigBoneList[j],LeastSquareCubePredict(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]], this.useFrame, this.preFrame));
+                    }
+                }
+            }
 
             //描画
             Cv2.CvtColor(m_buffer, m_buffer, OpenCvSharp.ColorConversion.BgrToHsv);
 
             for (int i = 0; i < this.Tree_ContsGroup.Count; ++i)
             {
+                /*
                 List<Point>[] m_contour = this.Tree_ContsGroup[i].ToArrey();
                 //List<Point>[] m_preContour = SquarePredictCont(this.Tree_ContsGroup[i],5,5);
                 List<Point>[] m_preContour = this.Tree_ContsGroup[i].MoveContour(SquarePredictCenterMove(this.Tree_ContsGroup[i], this.useFrame, this.preFrame)).ToArray();
+
                 Cv2.DrawContours(m_buffer, m_contour, -1, this.Tree_ContsGroup[i].color, -1, OpenCvSharp.LineType.Link8);
+                //Hをずらす　　　Sを下げて明るくするのは違いが分かりずらい
+                Cv2.DrawContours(m_buffer, m_preContour, -1, new Scalar(this.Tree_ContsGroup[i].color.Val0 + 20, this.Tree_ContsGroup[i].color.Val1, this.Tree_ContsGroup[i].color.Val2), -1, OpenCvSharp.LineType.Link8);
+                */
+
+                for (int j = 0; j < _TrackigBoneList.Count; ++j)
+                {
+                    if (this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]][0] != null)
+                    {
+                        Cv2.Circle(m_buffer, (Point)this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]][0], 3, this.Tree_ContsGroup[i].color);
+
+                    }
+                    if (this.Tree_ContsGroup[i].preBonePoints[_TrackigBoneList[j]] != null)
+                    {
+                    Cv2.Circle(m_buffer, (Point)this.Tree_ContsGroup[i].preBonePoints[_TrackigBoneList[j]], 3, new Scalar(this.Tree_ContsGroup[i].color.Val0 + 40, this.Tree_ContsGroup[i].color.Val1, this.Tree_ContsGroup[i].color.Val2));
+
+                    }
+
+                }
 
 
+                //骨格点の描画
 
-
-                //Hをずらす　　　Sを下げて明るくするのはだめ
-                Cv2.DrawContours(m_buffer, m_preContour, -1, new Scalar(this.Tree_ContsGroup[i].color.Val1 + 20, this.Tree_ContsGroup[i].color.Val1, this.Tree_ContsGroup[i].color.Val2), -1, OpenCvSharp.LineType.Link8);
-
-                //Cv2.Circle(m_buffer, this.Tree_ContsGroup[i].contsStack[0][0], 3, new Scalar(255, 255, 255));
-                //Cv2.Circle(m_buffer, SquarePredict(this.Tree_ContsGroup[i],6,3,0) , 3, new Scalar(120, 240, 240));
-
+                for (int j = 0; j < _TrackigBoneList.Count; ++j)
+                {
+                    if (_BoneConectMap.ContainsKey(_TrackigBoneList[j]))
+                        {
+                        if (this.Tree_ContsGroup[i].boneStack.ContainsKey(_TrackigBoneList[j]))
+                        {
+                            if (this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]][0] != null &&this.Tree_ContsGroup[i].boneStack[_BoneConectMap[_TrackigBoneList[j]]][0] != null)
+                            {
+                              Cv2.Line(m_buffer, (Point)this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]][0], (Point)this.Tree_ContsGroup[i].boneStack[_BoneConectMap[_TrackigBoneList[j]]][0], this.Tree_ContsGroup[i].color);
+                            }
+                            if (this.Tree_ContsGroup[i].preBonePoints[_TrackigBoneList[j]] != null && this.Tree_ContsGroup[i].preBonePoints[_BoneConectMap[_TrackigBoneList[j]]] != null)
+                            {
+                            Cv2.Line(m_buffer, (Point)this.Tree_ContsGroup[i].preBonePoints[_TrackigBoneList[j]], (Point)this.Tree_ContsGroup[i].preBonePoints[_BoneConectMap[_TrackigBoneList[j]]], new Scalar(this.Tree_ContsGroup[i].color.Val0 + 40, this.Tree_ContsGroup[i].color.Val1, this.Tree_ContsGroup[i].color.Val2));
+                            }
+                        }
+                    }
+                }
             }
 
             Cv2.CvtColor(m_buffer, m_buffer, OpenCvSharp.ColorConversion.HsvToBgr);
@@ -610,6 +709,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             private List<List<Point>> buf { get; set; }
 
             public Dictionary<JointType, List<Point?>> boneStack { get; set; }
+            public Dictionary<JointType, Point?> preBonePoints { get; set; }
 
 
             //新しく作るとき　　　※ストック分の数値は全部ゼロにする
@@ -622,6 +722,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 this.contCenterList = new List<Point>();
                 this.buf = new List<List<Point>>();
                 this.boneStack = new Dictionary<JointType, List<Point?>>();
+                this.preBonePoints = new Dictionary<JointType, Point?>();
 
                 for (int a = 0; a < stacklim; ++a)
                 {
@@ -644,7 +745,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 if (this.contCenterList.Count > stacklim) this.contCenterList.RemoveAt(this.contCenterList.Count - 1);
             }
 
-      
+
+
+
 
 
             //arreyで返す
@@ -705,6 +808,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
 
 
+
+
         }
 
         public class NowContsGroup
@@ -722,14 +827,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
         }
 
-       
+
 
         public class BodyBasePair
         {
             public int bodyNumber { get; set; }
             public Point basePoint { get; set; }
 
-            public BodyBasePair(int bdNum,  Point basePt)
+            public BodyBasePair(int bdNum, Point basePt)
             {
                 this.bodyNumber = bdNum;
                 this.basePoint = basePt;
@@ -737,10 +842,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         }
 
 
-
-        public Point SquarePredict(StackContsGroup stack, int useFeameNum, int preFrameNum, int predictContNum)
+        //最小二乗法推測アルゴリズム　　nullがあったら即終了スタイル
+        public Point? LeastSquarePredict(List<Point?> bonePointList, int useFeameNum, int preFrameNum)
         {
             Point predictPt;
+            Point bufpt;
 
             //List<double> t1 = new List<double>();
             List<double> t2 = new List<double>();
@@ -780,28 +886,49 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             //計算するフレームはもっと少なくてもいいかも
             for (int i = 0; i < this.t1.Count; ++i)
             {
+                //トラッキングできていないものが混じっていたら即終了
+                if (bonePointList[i] == null)
+                {
+                    //if (bonePointList[0] == null)
+                    //{
+                    //    return new Point(0, 0);
+                    //}
+                    //else
+                    //{
+                    //    return (Point)bonePointList[0];
+                    //}
+                    return bonePointList[0];
+
+                }
+
+
                 t2.Add(Mathf.Pow((float)this.t1[i], 2));
                 t3.Add(Mathf.Pow((float)this.t1[i], 3));
                 t4.Add(Mathf.Pow((float)this.t1[i], 4));
-                if (i < stack.contsStack.Count)
+                if (i < bonePointList.Count)
                 {
-                    t0x.Add(stack.contsStack[i][predictContNum].X);
-                    t1x.Add(this.t1[i] * stack.contsStack[i][predictContNum].X);
-                    t2x.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contsStack[i][predictContNum].X);
+                    bufpt = (Point)bonePointList[i];
 
-                    t0y.Add(stack.contsStack[i][predictContNum].Y);
-                    t1y.Add(this.t1[i] * stack.contsStack[i][predictContNum].Y);
-                    t2y.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contsStack[i][predictContNum].Y);
+
+                    t0x.Add(bufpt.X);
+                    t1x.Add(this.t1[i] * bufpt.X);
+                    t2x.Add(Mathf.Pow((float)this.t1[i], 2) * bufpt.X);
+
+                    t0y.Add(bufpt.Y);
+                    t1y.Add(this.t1[i] * bufpt.Y);
+                    t2y.Add(Mathf.Pow((float)this.t1[i], 2) * bufpt.Y);
                 }
                 else
                 {
-                    t0x.Add(stack.contsStack[stack.contsStack.Count - 1][predictContNum].X);
-                    t1x.Add(this.t1[i] * stack.contsStack[stack.contsStack.Count - 1][predictContNum].X);
-                    t2x.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contsStack[stack.contsStack.Count - 1][predictContNum].X);
+                    bufpt = (Point)bonePointList[bonePointList.Count - 1];
 
-                    t0y.Add(stack.contsStack[stack.contsStack.Count - 1][predictContNum].Y);
-                    t1y.Add(this.t1[i] * stack.contsStack[stack.contsStack.Count - 1][predictContNum].Y);
-                    t2y.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contsStack[stack.contsStack.Count - 1][predictContNum].Y);
+                    t0x.Add(bufpt.X);
+                    t1x.Add(this.t1[i] * bufpt.X);
+                    t2x.Add(Mathf.Pow((float)this.t1[i], 2) * bufpt.X);
+
+                    t0y.Add(bufpt.Y);
+                    t1y.Add(this.t1[i] * bufpt.Y);
+                    t2y.Add(Mathf.Pow((float)this.t1[i], 2) * bufpt.Y);
                 }
             }
 
@@ -862,36 +989,45 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             return predictPt;
         }
 
-        //センターポイントの推移を見る
-        public Point SquarePredictCenterMove(StackContsGroup stack, int useFeameNum, int preFrameNum)
+        //三次曲線フィッティング
+        public Point? LeastSquareCubePredict(List<Point?> bonePointList, int useFeameNum, int preFrameNum)
         {
             Point predictPt;
+            Point bufpt;
 
             //List<double> t1 = new List<double>();
             List<double> t2 = new List<double>();
             List<double> t3 = new List<double>();
             List<double> t4 = new List<double>();
+            List<double> t5 = new List<double>();
+            List<double> t6 = new List<double>();
 
             List<double> t0x = new List<double>();
             List<double> t1x = new List<double>();
             List<double> t2x = new List<double>();
+            List<double> t3x = new List<double>();
 
             List<double> t0y = new List<double>();
             List<double> t1y = new List<double>();
             List<double> t2y = new List<double>();
+            List<double> t3y = new List<double>();
 
             double sumT1 = 0;
             double sumT2 = 0;
             double sumT3 = 0;
             double sumT4 = 0;
+            double sumT5 = 0;
+            double sumT6 = 0;
 
             double sumT0X = 0;
             double sumT1X = 0;
             double sumT2X = 0;
+            double sumT3X = 0;
 
             double sumT0Y = 0;
             double sumT1Y = 0;
             double sumT2Y = 0;
+            double sumT3Y = 0;
 
             Matrix4x4 TMat = Matrix4x4.identity;
             Matrix4x4 invTMat = Matrix4x4.identity;
@@ -905,28 +1041,53 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             //計算するフレームはもっと少なくてもいいかも
             for (int i = 0; i < this.t1.Count; ++i)
             {
+                //トラッキングできていないものが混じっていたら即終了
+                if (bonePointList[i] == null)
+                {
+                    //if (bonePointList[0] == null)
+                    //{
+                    //    return new Point(0, 0);
+                    //}
+                    //else
+                    //{
+                    //    return (Point)bonePointList[0];
+                    //}
+                    return bonePointList[0];
+                }
+
+
                 t2.Add(Mathf.Pow((float)this.t1[i], 2));
                 t3.Add(Mathf.Pow((float)this.t1[i], 3));
                 t4.Add(Mathf.Pow((float)this.t1[i], 4));
-                if (i < stack.contsStack.Count)
+                t5.Add(Mathf.Pow((float)this.t1[i], 5));
+                t6.Add(Mathf.Pow((float)this.t1[i], 6));
+                if (i < bonePointList.Count)
                 {
-                    t0x.Add(stack.contCenterList[i].X);
-                    t1x.Add(this.t1[i] * stack.contCenterList[i].X);
-                    t2x.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contCenterList[i].X);
+                    bufpt = (Point)bonePointList[i];
 
-                    t0y.Add(stack.contCenterList[i].Y);
-                    t1y.Add(this.t1[i] * stack.contCenterList[i].Y);
-                    t2y.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contCenterList[i].Y);
+                    t0x.Add(bufpt.X);
+                    t1x.Add(this.t1[i] * bufpt.X);
+                    t2x.Add(Mathf.Pow((float)this.t1[i], 2) * bufpt.X);
+                    t3x.Add(Mathf.Pow((float)this.t1[i], 3) * bufpt.X);
+
+                    t0y.Add(bufpt.Y);
+                    t1y.Add(this.t1[i] * bufpt.Y);
+                    t2y.Add(Mathf.Pow((float)this.t1[i], 2) * bufpt.Y);
+                    t3y.Add(Mathf.Pow((float)this.t1[i], 3) * bufpt.Y);
                 }
                 else
                 {
-                    t0x.Add(stack.contCenterList[stack.contCenterList.Count - 1].X);
-                    t1x.Add(this.t1[i] * stack.contCenterList[stack.contCenterList.Count - 1].X);
-                    t2x.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contCenterList[stack.contCenterList.Count - 1].X);
+                    bufpt = (Point)bonePointList[bonePointList.Count - 1];
 
-                    t0y.Add(stack.contCenterList[stack.contCenterList.Count - 1].Y);
-                    t1y.Add(this.t1[i] * stack.contCenterList[stack.contCenterList.Count - 1].Y);
-                    t2y.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contCenterList[stack.contCenterList.Count - 1].Y);
+                    t0x.Add(bufpt.X);
+                    t1x.Add(this.t1[i] * bufpt.X);
+                    t2x.Add(Mathf.Pow((float)this.t1[i], 2) * bufpt.X);
+                    t3x.Add(Mathf.Pow((float)this.t1[i], 3) * bufpt.X);
+
+                    t0y.Add(bufpt.Y);
+                    t1y.Add(this.t1[i] * bufpt.Y);
+                    t2y.Add(Mathf.Pow((float)this.t1[i], 2) * bufpt.Y);
+                    t3y.Add(Mathf.Pow((float)this.t1[i], 3) * bufpt.Y);
                 }
             }
 
@@ -937,216 +1098,65 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 sumT2 += t2[i];
                 sumT3 += t3[i];
                 sumT4 += t4[i];
+                sumT5 += t5[i];
+                sumT6 += t6[i];
 
                 sumT0X += t0x[i];
                 sumT1X += t1x[i];
                 sumT2X += t2x[i];
+                sumT3X += t3x[i];
 
                 sumT0Y += t0y[i];
                 sumT1Y += t1y[i];
                 sumT2Y += t2y[i];
+                sumT3Y += t3y[i];
             }
 
             //行列を作る
             TMat.m00 = useFeameNum;
             TMat.m01 = (float)sumT1;
             TMat.m02 = (float)sumT2;
-            TMat.m03 = 0;
+            TMat.m03 = (float)sumT3;
 
             TMat.m10 = (float)sumT1;
             TMat.m11 = (float)sumT2;
             TMat.m12 = (float)sumT3;
-            TMat.m13 = 0;
+            TMat.m13 = (float)sumT4;
 
             TMat.m20 = (float)sumT2;
             TMat.m21 = (float)sumT3;
             TMat.m22 = (float)sumT4;
-            TMat.m23 = 0;
+            TMat.m23 = (float)sumT5;
 
-            TMat.m30 = 0;
-            TMat.m31 = 0;
-            TMat.m32 = 0;
-            TMat.m33 = 1; //逆行列が存在するためにはここが１じゃないとだめ
+            TMat.m30 = (float)sumT3;
+            TMat.m31 = (float)sumT4;
+            TMat.m32 = (float)sumT5;
+            TMat.m33 = (float)sumT6; 
 
             XMat.m00 = (float)sumT0X;
             XMat.m10 = (float)sumT1X;
             XMat.m20 = (float)sumT2X;
+            XMat.m30 = (float)sumT3X;
 
             YMat.m00 = (float)sumT0Y;
             YMat.m10 = (float)sumT1Y;
             YMat.m20 = (float)sumT2Y;
+            YMat.m30 = (float)sumT3Y;
 
             //行列の計算
             ansXMat = TMat.inverse * XMat;
             ansYMat = TMat.inverse * YMat;
 
             //座標の計算
-            predictPt.X = (int)(ansXMat.m00 + ansXMat.m10 * preFrameNum * 0.016 + ansXMat.m20 * preFrameNum * preFrameNum * 0.016f * 0.016f);
-            predictPt.Y = (int)(ansYMat.m00 + ansYMat.m10 * preFrameNum * 0.016 + ansYMat.m20 * preFrameNum * preFrameNum * 0.016f * 0.016f);
+            predictPt.X = (int)(ansXMat.m00 + ansXMat.m10 * preFrameNum * 0.016 + ansXMat.m20 * preFrameNum * preFrameNum * 0.016f * 0.016f + ansXMat.m30 * preFrameNum * preFrameNum * preFrameNum * 0.016f * 0.016f * 0.016f);
+            predictPt.Y = (int)(ansYMat.m00 + ansYMat.m10 * preFrameNum * 0.016 + ansYMat.m20 * preFrameNum * preFrameNum * 0.016f * 0.016f + ansXMat.m30 * preFrameNum * preFrameNum * preFrameNum * 0.016f * 0.016f * 0.016f);
 
-            return predictPt - stack.contCenter;
+            return predictPt;
         }
 
 
 
-        public List<Point>[] SquarePredictCont(StackContsGroup stack, int useFeameNum, int preFrameNum)
-        {
-            List<List<Point>> predictList = new List<List<Point>>();
-            List<Point> predictCont = new List<Point>();
-            Point predictPt;
 
-            //List<double> t1 = new List<double>();
-            List<double> t2 = new List<double>();
-            List<double> t3 = new List<double>();
-            List<double> t4 = new List<double>();
-
-            List<double> t0x = new List<double>();
-            List<double> t1x = new List<double>();
-            List<double> t2x = new List<double>();
-
-            List<double> t0y = new List<double>();
-            List<double> t1y = new List<double>();
-            List<double> t2y = new List<double>();
-
-            double sumT1 = 0;
-            double sumT2 = 0;
-            double sumT3 = 0;
-            double sumT4 = 0;
-
-            double sumT0X = 0;
-            double sumT1X = 0;
-            double sumT2X = 0;
-
-            double sumT0Y = 0;
-            double sumT1Y = 0;
-            double sumT2Y = 0;
-
-            Matrix4x4 TMat = Matrix4x4.identity;
-            Matrix4x4 XMat = Matrix4x4.zero;
-            Matrix4x4 YMat = Matrix4x4.zero;
-            Matrix4x4 ansXMat = Matrix4x4.zero;
-            Matrix4x4 ansYMat = Matrix4x4.zero;
-
-            //Xから
-            //各数値リストの作成
-            //計算するフレームはもっと少なくてもいいかも
-
-            
-            for (int h = 0; h < stack.contsStack[0].Count; ++h)
-            {
-                t2.Clear();
-                t3.Clear();
-                t4.Clear();
-
-                t0x.Clear();
-                t1x.Clear();
-                t2x.Clear();
-                t0y.Clear();
-
-                t1y.Clear();
-                t2y.Clear();
-
-                sumT1 = 0;
-                sumT2 = 0;
-                sumT3 = 0;
-                sumT4 = 0;
-
-                sumT0X = 0;
-                sumT1X = 0;
-                sumT2X = 0;
-
-                sumT0Y = 0;
-                sumT1Y = 0;
-                sumT2Y = 0;
-
-
-                for (int i = 0; i < this.t1.Count; ++i)
-                {
-                    t2.Add(Mathf.Pow((float)this.t1[i], 2));
-                    t3.Add(Mathf.Pow((float)this.t1[i], 3));
-                    t4.Add(Mathf.Pow((float)this.t1[i], 4));
-                    if (i < stack.contsStack.Count)
-                    {
-                        t0x.Add(stack.contsStack[i][h].X);
-                        t1x.Add(this.t1[i] * stack.contsStack[i][h].X);
-                        t2x.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contsStack[i][h].X);
-
-                        t0y.Add(stack.contsStack[i][h].Y);
-                        t1y.Add(this.t1[i] * stack.contsStack[i][h].Y);
-                        t2y.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contsStack[i][h].Y);
-                    }
-                    else
-                    {
-                        t0x.Add(stack.contsStack[stack.contsStack.Count - 1][h].X);
-                        t1x.Add(this.t1[i] * stack.contsStack[stack.contsStack.Count - 1][h].X);
-                        t2x.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contsStack[stack.contsStack.Count - 1][h].X);
-
-                        t0y.Add(stack.contsStack[stack.contsStack.Count - 1][h].Y);
-                        t1y.Add(this.t1[i] * stack.contsStack[stack.contsStack.Count - 1][h].Y);
-                        t2y.Add(Mathf.Pow((float)this.t1[i], 2) * stack.contsStack[stack.contsStack.Count - 1][h].Y);
-                    }
-                }
-
-                //各リストの累計を作る
-                for (int i = 0; i < useFeameNum; ++i)
-                {
-                    sumT1 += this.t1[i];
-                    sumT2 += t2[i];
-                    sumT3 += t3[i];
-                    sumT4 += t4[i];
-
-                    sumT0X += t0x[i];
-                    sumT1X += t1x[i];
-                    sumT2X += t2x[i];
-
-                    sumT0Y += t0y[i];
-                    sumT1Y += t1y[i];
-                    sumT2Y += t2y[i];
-                }
-
-                //行列を作る
-                TMat.m00 = useFeameNum;
-                TMat.m01 = (float)sumT1;
-                TMat.m02 = (float)sumT2;
-                TMat.m03 = 0;
-
-                TMat.m10 = (float)sumT1;
-                TMat.m11 = (float)sumT2;
-                TMat.m12 = (float)sumT3;
-                TMat.m13 = 0;
-
-                TMat.m20 = (float)sumT2;
-                TMat.m21 = (float)sumT3;
-                TMat.m22 = (float)sumT4;
-                TMat.m23 = 0;
-
-                TMat.m30 = 0;
-                TMat.m31 = 0;
-                TMat.m32 = 0;
-                TMat.m33 = 1; //逆行列が存在するためにはここが１じゃないとだめ
-
-                XMat.m00 = (float)sumT0X;
-                XMat.m10 = (float)sumT1X;
-                XMat.m20 = (float)sumT2X;
-
-                YMat.m00 = (float)sumT0Y;
-                YMat.m10 = (float)sumT1Y;
-                YMat.m20 = (float)sumT2Y;
-
-                //行列の計算
-                ansXMat = TMat.inverse * XMat;
-                ansYMat = TMat.inverse * YMat;
-
-                //座標の計算
-                predictPt.X = (int)(ansXMat.m00 + ansXMat.m10 * preFrameNum * 0.016 + ansXMat.m20 * preFrameNum * preFrameNum * 0.016f * 0.016f);
-                predictPt.Y = (int)(ansYMat.m00 + ansYMat.m10 * preFrameNum * 0.016 + ansYMat.m20 * preFrameNum * preFrameNum * 0.016f * 0.016f);
-
-                predictCont.Add(predictPt);
-            }
-            predictList.Add(predictCont);
-
-            return predictList.ToArray();
-        }
 
         bool CheckBodyInSCreen(int bodyNum, Mat srcMat)
         {
@@ -1195,7 +1205,35 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             { 13,Windows.Kinect.JointType.Neck},
         };
 
+        //骨を作る際に使用
+        private Dictionary<Windows.Kinect.JointType, Windows.Kinect.JointType> _BoneConectMap = new Dictionary<Windows.Kinect.JointType, Windows.Kinect.JointType>()
+    {
+        //{ Windows.Kinect.JointType.FootLeft, Windows.Kinect.JointType.AnkleLeft },
+        { Windows.Kinect.JointType.AnkleLeft, Windows.Kinect.JointType.KneeLeft },
+        { Windows.Kinect.JointType.KneeLeft, Windows.Kinect.JointType.SpineBase },
 
+        //{ Windows.Kinect.JointType.FootRight, Windows.Kinect.JointType.AnkleRight },
+        { Windows.Kinect.JointType.AnkleRight, Windows.Kinect.JointType.KneeRight },
+        { Windows.Kinect.JointType.KneeRight,Windows.Kinect.JointType.SpineBase },
+
+        //{ Windows.Kinect.JointType.HandTipLeft, Windows.Kinect.JointType.HandLeft },
+        //{ Windows.Kinect.JointType.ThumbLeft, Windows.Kinect.JointType.HandLeft },
+        //{ Windows.Kinect.JointType.HandLeft, Windows.Kinect.JointType.WristLeft },
+        { Windows.Kinect.JointType.WristLeft, Windows.Kinect.JointType.ElbowLeft },
+        { Windows.Kinect.JointType.ElbowLeft, Windows.Kinect.JointType.ShoulderLeft },
+        { Windows.Kinect.JointType.ShoulderLeft, Windows.Kinect.JointType.Neck },
+
+        //{ Windows.Kinect.JointType.HandTipRight, Windows.Kinect.JointType.HandRight },
+        //{ Windows.Kinect.JointType.ThumbRight, Windows.Kinect.JointType.HandRight },
+        //{ Windows.Kinect.JointType.HandRight, Windows.Kinect.JointType.WristRight },
+        { Windows.Kinect.JointType.WristRight, Windows.Kinect.JointType.ElbowRight },
+        { Windows.Kinect.JointType.ElbowRight, Windows.Kinect.JointType.ShoulderRight },
+        { Windows.Kinect.JointType.ShoulderRight, Windows.Kinect.JointType.Neck },
+
+        { Windows.Kinect.JointType.SpineBase, Windows.Kinect.JointType.SpineMid },
+        { Windows.Kinect.JointType.SpineMid, Windows.Kinect.JointType.Neck },
+        { Windows.Kinect.JointType.Neck, Windows.Kinect.JointType.Head },
+    };
 
 
 
