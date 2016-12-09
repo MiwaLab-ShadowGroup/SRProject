@@ -46,6 +46,9 @@ public class KinectImporter : ASensorImporter
 
     public bool IsDepthStream { get; private set; }
 
+    public float m_kinectRotation_rx = 0;
+    public float m_kinectRotation_ry = 0;
+
     /// <summary>
     /// 仮想光源の位置
     /// 変更することで画面を変更可能
@@ -203,8 +206,91 @@ public class KinectImporter : ASensorImporter
             case LightSourceMode.CanMoveOne:
                 this.CanMoveOneLightModeConvertDepthToMat();
                 break;
+            case LightSourceMode.CanMoveCircle:
+                this.CanMoveCircleLightModeConvertDepthToMat();
+                break;
         }
 
+    }
+
+    private void CanMoveCircleLightModeConvertDepthToMat()
+    {
+        m_mat *= 0;
+        unsafe
+        {
+            byte* data = (byte*)m_mat.Data;
+            int length_X = this.m_frameDescription.Width;
+            int length_Y = this.m_frameDescription.Height;
+            int length_X_Half = this.m_frameDescription.Width / 2;
+            int length_Y_Half = this.m_frameDescription.Height / 2;
+            int length = m_cameraSpacePoints.Length * 3;
+            float depth = 0;
+            int k;
+            CameraSpacePoint point;
+            //CameraSpacePoint _point;
+            //int _count;
+            int depthPoint_X;
+            int depthPoint_Y;
+
+            Vector3 pos =new Vector3(0,0,0);
+            Quaternion quat = Quaternion.Euler(m_kinectRotation_rx, m_kinectRotation_ry, 0);
+            float movingLate = 1;
+            float potion = 1;
+            for (int y = 0; y < length_Y; ++y)
+            {
+                for (int x = 0; x < length_X; ++x)
+                {
+                    point = this.m_cameraSpacePoints[(y * length_X + x)];
+                    depth = point.Z;
+                    ///とりあえずカメラの位置で減算
+                    point.decrease(ref this._position);
+
+                    //if (point.X * point.X + point.Z * point.Z > m_CircleCut) { continue; }
+                    if (point.Y < this.m_bottom) { continue; }
+                    if (point.Y > this.m_top) { continue; }
+
+                    ///拡大率の計算
+                    if (point.Z != 0)
+                    {
+                        potion = depth / point.Z;
+                    }
+
+                    if (this._position.Z != 0)
+                    {
+                        movingLate = this._position.Z * 0.005f;
+                    }
+                    else
+                    {
+                        movingLate = 1;
+                    }
+
+                    pos.x = point.X;
+                    pos.y = point.Y;
+                    pos.z = point.Z;
+
+                    pos = quat * pos;
+                    
+
+                    ///新規のXY位置を計算
+                    depthPoint_X = (int)(length_X_Half- pos.x * length_X_Half /pos.z);
+                    depthPoint_Y = (int)(length_Y_Half - pos.y * length_Y_Half / pos.z);
+                    if (depthPoint_X < 0 || depthPoint_X > length_X) continue;
+                    if (depthPoint_Y < 0 || depthPoint_Y > length_Y) continue;
+                    if(pos.z < 0)
+                    {
+                        continue;
+                    }
+
+
+                    k = (((int)depthPoint_Y) * length_X + (int)depthPoint_X) * 3;
+                    if (k >= length || k < 0) continue;
+
+                    data[k] = 255;
+                    data[k + 1] = 255;
+                    data[k + 2] = 255;
+                }
+            }
+        }
     }
 
     private void CanMoveOneLightModeConvertDepthToMat()
@@ -342,9 +428,14 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_pos_y") as ParameterSlider).ValueChanged += KinectImporter_pos_y_ValueChanged;
         (ShadowMediaUIHost.GetUI("Kinect_pos_z") as ParameterSlider).ValueChanged += KinectImporter_pos_z_ValueChanged;
 
+        (ShadowMediaUIHost.GetUI("Kinect_rot_x") as ParameterSlider).ValueChanged += KinectImporter_rot_x_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_rot_y") as ParameterSlider).ValueChanged += KinectImporter_rot_y_ValueChanged;
+
+
         (ShadowMediaUIHost.GetUI("Kinect_LightMode") as ParameterDropdown).ValueChanged += KinectImporter_LightModeChanged;
         (ShadowMediaUIHost.GetUI("Kinect_ViewRange") as ParameterSlider).ValueChanged += KinectImporter_ViewRangeChanged;
         (ShadowMediaUIHost.GetUI("Kinect_CircleCut") as ParameterSlider).ValueChanged += KinectImporter_CircleCutChanged;
+
 
 
 
@@ -376,6 +467,16 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_Depth") as ParameterCheckbox).ValueUpdate();
 
 
+    }
+
+    private void KinectImporter_rot_y_ValueChanged(object sender, EventArgs e)
+    {
+        m_kinectRotation_ry = (e as ParameterSlider.ChangedValue).Value;
+    }
+
+    private void KinectImporter_rot_x_ValueChanged(object sender, EventArgs e)
+    {
+        m_kinectRotation_rx = (e as ParameterSlider.ChangedValue).Value;
     }
 
     private void KinectImporter_CircleCutChanged(object sender, EventArgs e)

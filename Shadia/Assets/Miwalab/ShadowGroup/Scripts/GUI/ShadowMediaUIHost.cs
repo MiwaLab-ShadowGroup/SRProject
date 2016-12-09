@@ -870,6 +870,9 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Kinect_pos_y", 10, -10, 0);
         AddFloatUI(parent, "Kinect_pos_z", 10, -10, 0);
         m_lastUpdatedHeight += 10;
+        AddFloatUI(parent, "Kinect_rot_x", 180, -180, 0);
+        AddFloatUI(parent, "Kinect_rot_y", 180, -180, 0);
+        m_lastUpdatedHeight += 10;
         AddEnumUI(parent, "Kinect_LightMode", KinectImporter.LightSourceMode.Normal);
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "Archive", false);
