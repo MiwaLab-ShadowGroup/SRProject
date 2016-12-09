@@ -10,8 +10,8 @@ GameObject:
   - 4: {fileID: 436928}
   - 33: {fileID: 3322668}
   - 23: {fileID: 2342138}
-  - 114: {fileID: 114000011664698376}
   - 135: {fileID: 135000012944723168}
+  - 114: {fileID: 114000014028388090}
   m_Layer: 8
   m_Name: UIPointSphereSrc
   m_TagString: Untagged
@@ -29,7 +29,6 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -46,7 +45,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 883ae177358541b45aed349c7f3dd81a, type: 2}
+  - {fileID: 2100000, guid: 0373eaa712ed1ec4b9edc74c859d784d, type: 2}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
@@ -96,7 +95,7 @@ Prefab:
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 164426}
   m_IsPrefabParent: 1
---- !u!114 &114000011664698376
+--- !u!114 &114000014028388090
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -104,7 +103,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 164426}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5bdc230ee36fb614f807c2573242919a, type: 3}
+  m_Script: {fileID: 11500000, guid: 59765532f63ab61408fbf662dc62e0d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!135 &135000012944723168
@@ -117,5 +116,5 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
