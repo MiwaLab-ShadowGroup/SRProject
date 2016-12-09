@@ -935,11 +935,12 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "clb_i_r_btm" + num, 5, 0, 1);
         AddBooleanUI(parent, "clb_i_use_up_btm" + num, true);
 
+        AddFloatUI(parent, "clb_i_condence" + num, 1, 0, 1);
 
 
         m_lastUpdatedHeight += 10;
 
-
+        
 
         m_lastUpdatedHeight += 10;
         AddButtonUI(parent, "Clb_I_Save" + num);

@@ -8,6 +8,8 @@ namespace Miwalab.ShadowGroup.Core
 {
     public class ApplicationSettings : MonoBehaviour
     {
+        public Canvas _Canvas;
+
         public static ShadowMediaMode _CurrentMode;
         public static ShadowMediaMode CurrentMode
         {
@@ -61,10 +63,19 @@ namespace Miwalab.ShadowGroup.Core
 
         public void Update()
         {
+            //終了
             if (Input.GetKey(KeyCode.Escape))
             {
                 Application.Quit();
             }
+
+            //キャンバスを隠す つける
+            if ((Input.GetKey(KeyCode.LeftControl ) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.F))
+            {
+                this._Canvas.gameObject.SetActive(!this._Canvas.gameObject.activeInHierarchy);
+            }
+
+
         }
 
 
