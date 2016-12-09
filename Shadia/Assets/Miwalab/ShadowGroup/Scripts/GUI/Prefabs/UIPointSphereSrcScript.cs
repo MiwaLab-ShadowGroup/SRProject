@@ -46,7 +46,7 @@ public class UIPointSphereSrcScript : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonUp(0) && (Input.GetKey(KeyCode.LeftControl) || (Input.GetKey(KeyCode.RightControl))))
+        if (Input.GetMouseButtonUp(0) )
         {
             _isDragged = false;
         }
