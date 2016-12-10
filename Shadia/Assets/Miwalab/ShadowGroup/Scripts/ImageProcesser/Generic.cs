@@ -127,6 +127,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         MixColor,
 
+        /// <summary>
+        /// ポイントクラウドの基本画像処理（B5河野）
+        /// </summary>
+        PtsImgProcesser,
+
 
         /// <summary>
         /// 一定方向に流れるパーティクル

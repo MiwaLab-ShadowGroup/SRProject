@@ -234,6 +234,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingLeastSquare(m_PanelDictionary[ImageProcesserType.LeastSquare.ToString()]);
         this.CreateUIsImageporcessingLSAhead(m_PanelDictionary[ImageProcesserType.LSAhead.ToString()]);
         this.CreateUIsImageporcessingMixColor(m_PanelDictionary[ImageProcesserType.MixColor.ToString()]);
+        this.CreateUIsImageporcessingPtsImgProcesser(m_PanelDictionary[ImageProcesserType.PtsImgProcesser.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
         this.CreateUIsImageporcessingFlowParticlesShadow(m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()]);
         this.CreateUIsImageporcessingPainterShadow(m_PanelDictionary[ImageProcesserType.PainterShadow.ToString()]);
@@ -355,6 +356,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.MixColor:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new MixColor()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.MixColor.ToString()];
+                break;
+            case ImageProcesserType.PtsImgProcesser:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new PtsImgProcesser()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.PtsImgProcesser.ToString()];
                 break;
             case ImageProcesserType.EachMoveParticle:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.EachMoveParticle()));
@@ -759,6 +764,27 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddButtonUI(parent, "Polygon_CC_Green");
 
     }
+
+    private void CreateUIsImageporcessingPtsImgProcesser(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "PtsImg_con_R", 255, 0, 0);
+        AddFloatUI(parent, "PtsImg_con_G", 255, 0, 0);
+        AddFloatUI(parent, "PtsImg_con_B", 255, 0, 200);
+        AddFloatUI(parent, "PtsImg_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "PtsImg_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "PtsImg_bgd_B", 255, 0, 0);
+        AddFloatUI(parent, "PtsImg_Dilate", 10, 0, 0);
+        AddFloatUI(parent, "PtsImg_GaussianSize", 100, 1, 1);
+        AddFloatUI(parent, "PtsImg_GaussianNum", 10, 0, 1);
+        AddFloatUI(parent, "PtsImg_Threshold", 255, 0, 0);
+        AddFloatUI(parent, "PtsImg_findAreaTh", 1000, 0, 100);
+        AddFloatUI(parent, "PtsImg_Rate", 200, 1, 60);
+        AddBooleanUI(parent, "PtsImg_UseFade", true);
+        AddBooleanUI(parent, "PtsImg_contFind", false);
+        m_lastUpdatedHeight += 10;
+    }
+    
     private void CreateUIsImageporcessingCanny(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
