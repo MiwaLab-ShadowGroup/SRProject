@@ -16,7 +16,7 @@ public class UIPointSphereSrcScript : MonoBehaviour
     private bool _isDragged;
     private Vector3 _initialMyPosition;
     private Vector3 _initialMousePosition;
-    
+
 
     public ShadowMeshRenderer _Renderer { set; get; }
     public int _uvIndex { set; get; }
@@ -34,6 +34,13 @@ public class UIPointSphereSrcScript : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && (Input.GetKey(KeyCode.LeftControl) || (Input.GetKey(KeyCode.RightControl))))
         {
+            if (this._pointType == PointType.Other)
+            {
+                if (!(Input.GetKey(KeyCode.LeftShift) || (Input.GetKey(KeyCode.RightShift))))
+                {
+                    return;
+                }
+            }
             var mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var mousePos2D = new Vector2(mousePos.x, mousePos.y);
             var myPos = this.gameObject.transform.position;
@@ -46,7 +53,7 @@ public class UIPointSphereSrcScript : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonUp(0) )
+        if (Input.GetMouseButtonUp(0))
         {
             _isDragged = false;
         }
@@ -58,8 +65,8 @@ public class UIPointSphereSrcScript : MonoBehaviour
 
             var posnow = _initialMyPosition + pos;
 
-             _Renderer.setInptPositionInverse(posnow, this._uvIndex, _pointType);
-            
+            _Renderer.setInptPositionInverse(posnow, this._uvIndex, _pointType);
+
         }
     }
 }

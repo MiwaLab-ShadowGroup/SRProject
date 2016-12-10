@@ -48,6 +48,8 @@ public class KinectImporter : ASensorImporter
 
     public float m_kinectRotation_rx = 0;
     public float m_kinectRotation_ry = 0;
+    public float m_ScreenR = 2.5f;
+    public float m_LightR = 2.5f;
 
     /// <summary>
     /// 仮想光源の位置
@@ -250,19 +252,12 @@ public class KinectImporter : ASensorImporter
                     if (point.Y > this.m_top) { continue; }
 
                     ///拡大率の計算
-                    if (point.Z != 0)
+                    if (point.X * point.X + point.Z * point.Z < m_CircleCut )
                     {
-                        potion = depth / point.Z;
+                        continue;
                     }
 
-                    if (this._position.Z != 0)
-                    {
-                        movingLate = this._position.Z * 0.005f;
-                    }
-                    else
-                    {
-                        movingLate = 1;
-                    }
+                    
 
                     pos.x = point.X;
                     pos.y = point.Y;
@@ -273,7 +268,7 @@ public class KinectImporter : ASensorImporter
 
                     ///新規のXY位置を計算
                     depthPoint_X = (int)(length_X_Half- pos.x * length_X_Half /pos.z);
-                    depthPoint_Y = (int)(length_Y_Half - pos.y * length_Y_Half / pos.z);
+                    depthPoint_Y = (int)(length_Y_Half - pos.y * length_Y_Half * (m_LightR- m_ScreenR) / (m_ScreenR * (m_LightR- pos.z)));
                     if (depthPoint_X < 0 || depthPoint_X > length_X) continue;
                     if (depthPoint_Y < 0 || depthPoint_Y > length_Y) continue;
                     if(pos.z < 0)
@@ -431,6 +426,9 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_rot_x") as ParameterSlider).ValueChanged += KinectImporter_rot_x_ValueChanged;
         (ShadowMediaUIHost.GetUI("Kinect_rot_y") as ParameterSlider).ValueChanged += KinectImporter_rot_y_ValueChanged;
 
+        (ShadowMediaUIHost.GetUI("Kinect_screen_r") as ParameterSlider).ValueChanged += Kinect_screen_r_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Kinect_light_r") as ParameterSlider).ValueChanged += Kinect_light_r_ValueChanged;
+
 
         (ShadowMediaUIHost.GetUI("Kinect_LightMode") as ParameterDropdown).ValueChanged += KinectImporter_LightModeChanged;
         (ShadowMediaUIHost.GetUI("Kinect_ViewRange") as ParameterSlider).ValueChanged += KinectImporter_ViewRangeChanged;
@@ -467,6 +465,16 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_Depth") as ParameterCheckbox).ValueUpdate();
 
 
+    }
+
+    private void Kinect_light_r_ValueChanged(object sender, EventArgs e)
+    {
+        m_LightR = (e as ParameterSlider.ChangedValue).Value;
+    }
+
+    private void Kinect_screen_r_ValueChanged(object sender, EventArgs e)
+    {
+        m_ScreenR = (e as ParameterSlider.ChangedValue).Value;
     }
 
     private void KinectImporter_rot_y_ValueChanged(object sender, EventArgs e)
