@@ -132,6 +132,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         /// </summary>
         PtsImgProcesser,
 
+        /// <summary>
+        /// 明るさ測定用メディア（B5河野）
+        /// </summary>
+        BrightCheck,
 
         /// <summary>
         /// 一定方向に流れるパーティクル

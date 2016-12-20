@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    class PtsImgProcesser : AShadowImageProcesser
+    class BrightCheck : AShadowImageProcesser
     {
 
         public override void ImageProcess(ref Mat src, ref Mat dst)
@@ -34,27 +34,27 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         int findAreaTh;
         float lightAnd;
 
-       
+
 
         bool contFind;
 
-        public PtsImgProcesser() : base()
+        public BrightCheck() : base()
         {
-            (ShadowMediaUIHost.GetUI("PtsImg_con_R") as ParameterSlider).ValueChanged += PtsImgProcesser_con_R_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_con_G") as ParameterSlider).ValueChanged += PtsImgProcesser_con_G_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_con_B") as ParameterSlider).ValueChanged += PtsImgProcesser_con_B_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_R") as ParameterSlider).ValueChanged += PtsImgProcesser_bgd_R_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_G") as ParameterSlider).ValueChanged += PtsImgProcesser_bgd_G_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_B") as ParameterSlider).ValueChanged += PtsImgProcesser_bgd_B_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_Dilate") as ParameterSlider).ValueChanged += PtsImgProcesser_Dilate_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_GaussianSize1") as ParameterSlider).ValueChanged += PtsImgProcesser_GaussianSize1_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_LightAnd") as ParameterSlider).ValueChanged += PtsImgProcesser_LightAnd_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_GaussianSize2") as ParameterSlider).ValueChanged += PtsImgProcesser_GaussianSize2_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_Threshold") as ParameterSlider).ValueChanged += PtsImgProcesser_Threshold_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_findAreaTh") as ParameterSlider).ValueChanged += PtsImgProcesser_findAreaTh_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_Rate") as ParameterSlider).ValueChanged += PtsImgProcesser_Rate_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_UseFade") as ParameterCheckbox).ValueChanged += PtsImgProcesser_UseFade_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_contFind") as ParameterCheckbox).ValueChanged += PtsImgProcesser_contFind_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_con_R") as ParameterSlider).ValueChanged += BrightCheck_con_R_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_con_G") as ParameterSlider).ValueChanged += BrightCheck_con_G_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_con_B") as ParameterSlider).ValueChanged += BrightCheck_con_B_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_bgd_R") as ParameterSlider).ValueChanged += BrightCheck_bgd_R_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_bgd_G") as ParameterSlider).ValueChanged += BrightCheck_bgd_G_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_bgd_B") as ParameterSlider).ValueChanged += BrightCheck_bgd_B_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_Dilate") as ParameterSlider).ValueChanged += BrightCheck_Dilate_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_GaussianSize1") as ParameterSlider).ValueChanged += BrightCheck_GaussianSize1_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_LightAnd") as ParameterSlider).ValueChanged += BrightCheck_LightAnd_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_GaussianSize2") as ParameterSlider).ValueChanged += BrightCheck_GaussianSize2_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_Threshold") as ParameterSlider).ValueChanged += BrightCheck_Threshold_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_findAreaTh") as ParameterSlider).ValueChanged += BrightCheck_findAreaTh_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_Rate") as ParameterSlider).ValueChanged += BrightCheck_Rate_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_UseFade") as ParameterCheckbox).ValueChanged += BrightCheck_UseFade_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PtsImg_contFind") as ParameterCheckbox).ValueChanged += BrightCheck_contFind_ValueChanged;
 
             (ShadowMediaUIHost.GetUI("PtsImg_con_R") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("PtsImg_con_G") as ParameterSlider).ValueUpdate();
@@ -74,49 +74,49 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         }
 
 
-        private void PtsImgProcesser_UseFade_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_UseFade_ValueChanged(object sender, EventArgs e)
         {
             this.m_UseFade = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
-        private void PtsImgProcesser_contFind_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_contFind_ValueChanged(object sender, EventArgs e)
         {
             this.contFind = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
-        private void PtsImgProcesser_Threshold_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_Threshold_ValueChanged(object sender, EventArgs e)
         {
             this.threshold = (int)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void PtsImgProcesser_findAreaTh_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_findAreaTh_ValueChanged(object sender, EventArgs e)
         {
             this.findAreaTh = (int)(e as ParameterSlider.ChangedValue).Value;
         }
-        
-        private void PtsImgProcesser_Dilate_ValueChanged(object sender, EventArgs e)
+
+        private void BrightCheck_Dilate_ValueChanged(object sender, EventArgs e)
         {
             this.dilateNum = (int)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void PtsImgProcesser_LightAnd_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_LightAnd_ValueChanged(object sender, EventArgs e)
         {
             this.lightRate.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
             this.lightRate.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
             this.lightRate.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void PtsImgProcesser_GaussianSize1_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_GaussianSize1_ValueChanged(object sender, EventArgs e)
         {
             this.gaussianSize1 = (int)(e as ParameterSlider.ChangedValue).Value;
-            if (this.gaussianSize1 % 2 == 0 )
+            if (this.gaussianSize1 % 2 == 0)
             {
                 this.gaussianSize1--;
             }
 
         }
 
-        private void PtsImgProcesser_GaussianSize2_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_GaussianSize2_ValueChanged(object sender, EventArgs e)
         {
             this.gaussianSize2 = (int)(e as ParameterSlider.ChangedValue).Value;
             if (this.gaussianSize2 % 2 == 0)
@@ -126,48 +126,48 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         }
 
-        private void PtsImgProcesser_Rate_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_Rate_ValueChanged(object sender, EventArgs e)
         {
             this.sharpness = (int)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void PtsImgProcesser_con_R_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_con_R_ValueChanged(object sender, EventArgs e)
         {
             this.color.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void PtsImgProcesser_con_G_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_con_G_ValueChanged(object sender, EventArgs e)
         {
             this.color.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void PtsImgProcesser_con_B_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_con_B_ValueChanged(object sender, EventArgs e)
         {
             this.color.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void PtsImgProcesser_bgd_R_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_bgd_R_ValueChanged(object sender, EventArgs e)
         {
             this.colorBack.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void PtsImgProcesser_bgd_G_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_bgd_G_ValueChanged(object sender, EventArgs e)
         {
             this.colorBack.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void PtsImgProcesser_bgd_B_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_bgd_B_ValueChanged(object sender, EventArgs e)
         {
             this.colorBack.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-   
+
 
 
 
@@ -194,13 +194,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 }
             }
             m_lightMask = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, lightRate);
- 
+
 
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
-            Cv2.Dilate(grayimage,grayimage,null,null, this.dilateNum );
+            Cv2.Dilate(grayimage, grayimage, null, null, this.dilateNum);
 
             //ブラーで滑らかにぼかす 一回目
-            Cv2.GaussianBlur(grayimage,grayimage, new Size(this.gaussianSize1, this.gaussianSize1), 0f);
+            Cv2.GaussianBlur(grayimage, grayimage, new Size(this.gaussianSize1, this.gaussianSize1), 0f);
 
 
             //定数乗する
@@ -214,7 +214,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             //二値化
             if (this.threshold != 0)
             {
-                Cv2.Threshold(grayimage,grayimage,this.threshold, 255,OpenCvSharp.ThresholdType.Binary );
+                Cv2.Threshold(grayimage, grayimage, this.threshold, 255, OpenCvSharp.ThresholdType.Binary);
             }
 
             if (this.contFind)
@@ -254,7 +254,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
             else
             {
-                Cv2.CvtColor(grayimage,grayimage, OpenCvSharp.ColorConversion.GrayToBgr);
+                Cv2.CvtColor(grayimage, grayimage, OpenCvSharp.ColorConversion.GrayToBgr);
                 m_buffer += grayimage;
                 //Debug.Log("nocont"   );
             }
@@ -267,12 +267,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         public override string ToString()
         {
-            return "PtsImgProcesser";
+            return "BrightCheck";
         }
 
         public override ImageProcesserType getImageProcesserType()
         {
-            return ImageProcesserType.PtsImgProcesser;
+            return ImageProcesserType.BrightCheck;
         }
 
         public bool IsFirstFrame { get; private set; }

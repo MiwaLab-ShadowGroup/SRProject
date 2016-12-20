@@ -775,9 +775,10 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "PtsImg_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "PtsImg_bgd_B", 255, 0, 0);
         AddFloatUI(parent, "PtsImg_Dilate", 10, 0, 0);
-        AddFloatUI(parent, "PtsImg_GaussianSize", 100, 1, 1);
-        AddFloatUI(parent, "PtsImg_GaussianNum", 10, 0, 1);
-        AddFloatUI(parent, "PtsImg_Threshold", 255, 0, 0);
+        AddFloatUI(parent, "PtsImg_GaussianSize1", 150, 1, 1);
+        AddFloatUI(parent, "PtsImg_LightAnd", 200, 0, 1);
+        AddFloatUI(parent, "PtsImg_GaussianSize2", 150, 1, 1);
+        AddFloatUI(parent, "PtsImg_Threshold", 254, 0, 0);
         AddFloatUI(parent, "PtsImg_findAreaTh", 1000, 0, 100);
         AddFloatUI(parent, "PtsImg_Rate", 200, 1, 60);
         AddBooleanUI(parent, "PtsImg_UseFade", true);
