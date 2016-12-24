@@ -299,13 +299,15 @@ public class KinectImporter : ASensorImporter
             int length_X_Half = this.m_frameDescription.Width / 2;
             int length_Y_Half = this.m_frameDescription.Height / 2;
             int length = m_cameraSpacePoints.Length * 3;
-            float depth = 0;
             int k;
             CameraSpacePoint point;
             //CameraSpacePoint _point;
             //int _count;
             int depthPoint_X;
             int depthPoint_Y;
+
+            Vector3 pos = new Vector3(0, 0, 0);
+            Quaternion quat = Quaternion.Euler(m_kinectRotation_rx, m_kinectRotation_ry, 0);
             float movingLate = 1;
             float potion = 1;
             for (int y = 0; y < length_Y; ++y)
@@ -313,38 +315,34 @@ public class KinectImporter : ASensorImporter
                 for (int x = 0; x < length_X; ++x)
                 {
                     point = this.m_cameraSpacePoints[(y * length_X + x)];
-                    depth = point.Z;
                     ///とりあえずカメラの位置で減算
                     point.decrease(ref this._position);
+                    ///ViewRange変換
+                    point.multiply(m_ViewRange);
 
-                    if (point.X * point.X + point.Z * point.Z > m_CircleCut) { continue; }
+                    //if (point.X * point.X + point.Z * point.Z > m_CircleCut) { continue; }
                     if (point.Y < this.m_bottom) { continue; }
                     if (point.Y > this.m_top) { continue; }
 
-                    ///拡大率の計算
-                    if (point.Z != 0)
-                    {
-                        potion = depth / point.Z;
-                    }
 
-                    if (this._position.Z != 0)
-                    {
-                        movingLate = this._position.Z * 0.005f;
-                    }
-                    else
-                    {
-                        movingLate = 1;
-                    }
+
+                    pos.x = point.X;
+                    pos.y = point.Y;
+                    pos.z = point.Z;
+
+                    pos = quat * pos;
 
 
                     ///新規のXY位置を計算
-                    //depthPoint.X = (x - length_X_Half - this._position.X * 10) * potion + length_X_Half + this._position.X * 10;
-                    //depthPoint.Y = (y - length_Y_Half - this._position.Y * 10) * potion + length_Y_Half + this._position.Y * 10;
-                    depthPoint_X = (int)(((x - length_X_Half - this._position.X / movingLate) * potion + this._position.X / movingLate) * m_ViewRange + length_X_Half);
-                    depthPoint_Y = (int)(((y - length_Y_Half - this._position.Y / movingLate) * potion + this._position.Y / movingLate) * m_ViewRange + length_Y_Half);
+                    depthPoint_X = (int)(length_X_Half - pos.x * length_X_Half / pos.z / m_ViewRange);
+                    depthPoint_Y = (int)(length_Y_Half - pos.y * length_Y_Half /  pos.z/ m_ViewRange);
                     if (depthPoint_X < 0 || depthPoint_X > length_X) continue;
                     if (depthPoint_Y < 0 || depthPoint_Y > length_Y) continue;
-                    if (point.Z < 0) continue;
+                    if (pos.z < 0)
+                    {
+                        continue;
+                    }
+
 
                     k = (((int)depthPoint_Y) * length_X + (int)depthPoint_X) * 3;
                     if (k >= length || k < 0) continue;
