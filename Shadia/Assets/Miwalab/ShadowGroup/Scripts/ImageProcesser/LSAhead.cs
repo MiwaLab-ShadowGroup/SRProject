@@ -6,6 +6,7 @@ using System.Threading;
 using OpenCvSharp.CPlusPlus;
 using UnityEngine;
 using Windows.Kinect;
+using System.IO;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
@@ -56,10 +57,36 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         //骨格
         List<BodyBasePair> basePairList = new List<BodyBasePair>();
+
+        //リストがないときに代入するとりあえずのリスト
         List<Point?> bonePt_buf = new List<Point?>();
+        List<float?> boneRad_buf = new List<float?>();
 
         bool useCubeCurve;
+        float degbuf;
 
+
+        //SCV書き出し
+        bool useRec;
+        //StreamWriter sw;
+        //FileInfo fi;
+
+
+        float? degElbowL;
+        float? degElbowR;
+        float? degShoulderL;
+        float? degShoulderR;
+        float? degNeck;
+        float? degSpineBase;
+        float? degHipL;
+        float? degHipR;
+        float? degKneeL;
+        float? degKneeR;
+        bool recFlag = false;
+
+        Point? onlyElbowL;
+        Matrix4x4 onlyElbowLmat;
+        string fiName = "C:/bonecsv/bonePt6.csv";
 
 
         public LSAhead() : base()
@@ -75,6 +102,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("LSAhead_preFrame") as ParameterSlider).ValueChanged += LSAhead_preFrame_ValueChanged;
             (ShadowMediaUIHost.GetUI("LSAhead_UseFade") as ParameterCheckbox).ValueChanged += LSAhead_UseFade_ValueChanged;
             (ShadowMediaUIHost.GetUI("LSAhead_useCubeCurve") as ParameterCheckbox).ValueChanged += LSAhead_useCubeCurve_ValueChanged;
+            (ShadowMediaUIHost.GetUI("LSAhead_rec") as ParameterCheckbox).ValueChanged += LSAhead_rec_ValueChanged;
 
 
             (ShadowMediaUIHost.GetUI("LSAhead_con_R") as ParameterSlider).ValueUpdate();
@@ -88,6 +116,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("LSAhead_preFrame") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("LSAhead_UseFade") as ParameterCheckbox).ValueUpdate();
             (ShadowMediaUIHost.GetUI("LSAhead_useCubeCurve") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("LSAhead_rec") as ParameterCheckbox).ValueUpdate();
         }
 
 
@@ -102,6 +131,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.useCubeCurve = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
+        private void LSAhead_rec_ValueChanged(object sender, EventArgs e)
+        {
+            this.useRec = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+        }
+
         private void LSAhead_Rate_ValueChanged(object sender, EventArgs e)
         {
             this.sharpness = (int)(e as ParameterSlider.ChangedValue).Value;
@@ -110,11 +144,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private void LSAhead_useFrame_ValueChanged(object sender, EventArgs e)
         {
             this.useFrame = (int)(e as ParameterSlider.ChangedValue).Value;
+
         }
 
         private void LSAhead_preFrame_ValueChanged(object sender, EventArgs e)
         {
             this.preFrame = (int)(e as ParameterSlider.ChangedValue).Value;
+
         }
 
         private void LSAhead_con_R_ValueChanged(object sender, EventArgs e)
@@ -430,7 +466,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                                 }
 
                                 //個数がオーバーしていたら消す
-                                if (this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Count > this.useFrame) this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].RemoveAt(this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Count - 1);
+                                if (this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Count > this.stackNum) this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].RemoveAt(this.Tree_ContsGroup[bufferNum].boneStack[_TrackigBoneList[k]].Count - 1);
 
 
                             }
@@ -458,11 +494,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                             {
                                 if (this.Tree_ContsGroup[i].boneStack.ContainsKey(_TrackigBoneList[k]))
                                 {
-                                   
+
                                     this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Insert(0, null);
-                                   
+
                                     //個数がオーバーしていたら消す
-                                    if (this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Count > this.useFrame) this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].RemoveAt(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Count - 1);
+                                    if (this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Count > this.stackNum) this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].RemoveAt(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[k]].Count - 1);
 
                                 }
                                 //リストがなかったらとりあえず埋める　　勝手にnullになるだろうという期待
@@ -495,7 +531,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                                 this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]].Insert(0, null);
 
                                 //個数がオーバーしていたら消す
-                                if (this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]].Count > this.useFrame) this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]].RemoveAt(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]].Count - 1);
+                                if (this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]].Count > this.stackNum) this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]].RemoveAt(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]].Count - 1);
 
 
                             }
@@ -569,8 +605,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
 
             //骨格情報ツリー完成
-            //------------------------------------------------------
-
+            //---------------------------------------------------
             //ここから最小二乗法
             //タイムテーブルを作成　マイナス方向に作る //最初はとりあえず埋めとく
             if (this.t1.Count == 0)
@@ -588,6 +623,199 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             if (this.t1.Count > this.stackNum) this.t1.RemoveAt(this.t1.Count - 1);
 
 
+            //------------------------------------------------------
+            //各関節ごとの角度を算出
+
+            for (int i = 0; i < this.Tree_ContsGroup.Count; ++i)
+            {
+                this.Tree_ContsGroup[i].moveMats.Clear();
+                //全部入っているor全部入っていない　なのでチェックするのは何でもいい　とりあえずエルボー
+                if (this.Tree_ContsGroup[i].boneRadstack.ContainsKey(JointType.ElbowLeft))
+                {
+                    //SpineBase
+                    this.Tree_ContsGroup[i].boneRadstack[JointType.SpineBase].Insert(0, GetBaseBoneRad(this.Tree_ContsGroup[i].boneStack));
+                    if (this.Tree_ContsGroup[i].boneRadstack[JointType.SpineBase].Count > stackNum) this.Tree_ContsGroup[i].boneRadstack[JointType.SpineBase].RemoveAt(this.Tree_ContsGroup[i].boneRadstack[JointType.SpineBase].Count - 1);
+
+                    this.degbuf = LSRadPredict(this.Tree_ContsGroup[i].boneRadstack[JointType.SpineBase], this.useFrame, this.preFrame);
+                    //Debug.Log("this.Tree_ContsGroup[i].boneRadstack[JointType.SpineBase] ; " + this.Tree_ContsGroup[i].boneRadstack[JointType.SpineBase][0]);
+                    //Debug.Log("degbuf ; " + this.degbuf);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.SpineBase, GetMoveBoneMat(this.Tree_ContsGroup[i].boneStack, JointType.SpineBase, this.degbuf, Matrix4x4.identity));
+                    if (this.degbuf == 0)
+                    {
+                        this.degSpineBase = null;
+                    }
+                    else
+                    {
+                        //this.degSpineBase = this.degbuf;
+                        this.degSpineBase =  this.Tree_ContsGroup[i].boneRadstack[JointType.SpineBase][0] - this.degbuf ;
+                    }
+
+                    //ShoulderLeft
+                    this.Tree_ContsGroup[i].boneRadstack[JointType.ShoulderLeft].Insert(0, GetBoneRad(this.Tree_ContsGroup[i].boneStack, JointType.ElbowLeft, JointType.SpineMid));
+                    if (this.Tree_ContsGroup[i].boneRadstack[JointType.ShoulderLeft].Count > stackNum) this.Tree_ContsGroup[i].boneRadstack[JointType.ShoulderLeft].RemoveAt(this.Tree_ContsGroup[i].boneRadstack[JointType.ShoulderLeft].Count - 1);
+
+                    this.degbuf = LSRadPredict(this.Tree_ContsGroup[i].boneRadstack[JointType.ShoulderLeft], this.useFrame, this.preFrame);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.ShoulderLeft, GetMoveBoneMat(this.Tree_ContsGroup[i].boneStack, JointType.ShoulderLeft, this.degbuf, this.Tree_ContsGroup[i].moveMats[JointType.SpineBase]));
+                    if (this.degbuf == 0)
+                    {
+                        this.degShoulderL = null;
+                    }
+                    else
+                    {
+                        //this.degShoulderL= this.degbuf;
+                        this.degShoulderL = this.Tree_ContsGroup[i].boneRadstack[JointType.ShoulderLeft][0] - this.degbuf;
+                    }
+
+                    //ElbowLeft
+                    this.Tree_ContsGroup[i].boneRadstack[JointType.ElbowLeft].Insert(0, GetBoneRad(this.Tree_ContsGroup[i].boneStack, JointType.WristLeft, JointType.ElbowLeft));
+                    if (this.Tree_ContsGroup[i].boneRadstack[JointType.ElbowLeft].Count > stackNum) this.Tree_ContsGroup[i].boneRadstack[JointType.ElbowLeft].RemoveAt(this.Tree_ContsGroup[i].boneRadstack[JointType.ElbowLeft].Count - 1);
+
+                    this.degbuf = LSRadPredict(this.Tree_ContsGroup[i].boneRadstack[JointType.ElbowLeft], this.useFrame, this.preFrame);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.ElbowLeft, GetMoveBoneMat(this.Tree_ContsGroup[i].boneStack, JointType.ElbowLeft, this.degbuf, this.Tree_ContsGroup[i].moveMats[JointType.ShoulderLeft]));
+
+                    //Elbowleftだけを先行させたモデルの作成 handleftと呼称
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.HandLeft, GetMoveBoneMat(this.Tree_ContsGroup[i].boneStack, JointType.ElbowLeft, this.degbuf, Matrix4x4.identity));
+
+
+                    if (this.degbuf == 0)
+                    {
+                        this.degElbowL = null;
+                    }
+                    else
+                    {
+                        //this.degElbowL = this.degbuf;
+                        this.degElbowL =  this.Tree_ContsGroup[i].boneRadstack[JointType.ElbowLeft][0] - this.degbuf ;
+                    }
+
+
+
+
+
+                    //ShoulderRight
+                    this.Tree_ContsGroup[i].boneRadstack[JointType.ShoulderRight].Insert(0, GetBoneRad(this.Tree_ContsGroup[i].boneStack, JointType.ElbowRight, JointType.SpineMid));
+                    if (this.Tree_ContsGroup[i].boneRadstack[JointType.ShoulderRight].Count > stackNum) this.Tree_ContsGroup[i].boneRadstack[JointType.ShoulderRight].RemoveAt(this.Tree_ContsGroup[i].boneRadstack[JointType.ShoulderRight].Count - 1);
+
+                    this.degbuf = LSRadPredict(this.Tree_ContsGroup[i].boneRadstack[JointType.ShoulderRight], this.useFrame, this.preFrame);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.ShoulderRight, GetMoveBoneMat(this.Tree_ContsGroup[i].boneStack, JointType.ShoulderRight, this.degbuf, this.Tree_ContsGroup[i].moveMats[JointType.SpineBase]));
+                    if (this.degbuf == 0)
+                    {
+                        this.degShoulderR = null;
+                    }
+                    else
+                    {
+                        this.degShoulderR = this.degbuf;
+                    }
+
+
+                    //ElbowRight
+                    this.Tree_ContsGroup[i].boneRadstack[JointType.ElbowRight].Insert(0, GetBoneRad(this.Tree_ContsGroup[i].boneStack, JointType.WristRight, JointType.ElbowRight));
+                    if (this.Tree_ContsGroup[i].boneRadstack[JointType.ElbowRight].Count > stackNum) this.Tree_ContsGroup[i].boneRadstack[JointType.ElbowRight].RemoveAt(this.Tree_ContsGroup[i].boneRadstack[JointType.ElbowRight].Count - 1);
+
+                    this.degbuf = LSRadPredict(this.Tree_ContsGroup[i].boneRadstack[JointType.ElbowRight], this.useFrame, this.preFrame);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.ElbowRight, GetMoveBoneMat(this.Tree_ContsGroup[i].boneStack, JointType.ElbowRight, this.degbuf, this.Tree_ContsGroup[i].moveMats[JointType.ShoulderRight]));
+                    if (this.degbuf == 0)
+                    {
+                        this.degElbowR = null;
+                    }
+                    else
+                    {
+                        this.degElbowR = this.degbuf;
+                    }
+
+                    //Neck
+                    this.Tree_ContsGroup[i].boneRadstack[JointType.Neck].Insert(0, GetBoneRad(this.Tree_ContsGroup[i].boneStack, JointType.Head, JointType.SpineMid));
+                    if (this.Tree_ContsGroup[i].boneRadstack[JointType.Neck].Count > stackNum) this.Tree_ContsGroup[i].boneRadstack[JointType.Neck].RemoveAt(this.Tree_ContsGroup[i].boneRadstack[JointType.Neck].Count - 1);
+
+                    this.degbuf = LSRadPredict(this.Tree_ContsGroup[i].boneRadstack[JointType.Neck], this.useFrame, this.preFrame);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.Neck, GetMoveBoneMat(this.Tree_ContsGroup[i].boneStack, JointType.Neck, this.degbuf, this.Tree_ContsGroup[i].moveMats[JointType.SpineBase]));
+                    if (this.degbuf == 0)
+                    {
+                        this.degNeck = null;
+                    }
+                    else
+                    {
+                        //this.degNeck = this.degbuf;
+                        this.degNeck =this.Tree_ContsGroup[i].boneRadstack[JointType.Neck][0] - this.degbuf ;
+                    }
+
+                    //HipLeft
+                    this.Tree_ContsGroup[i].boneRadstack[JointType.HipLeft].Insert(0, GetBoneRad(this.Tree_ContsGroup[i].boneStack, JointType.KneeLeft, JointType.SpineBase));
+                    if (this.Tree_ContsGroup[i].boneRadstack[JointType.HipLeft].Count > stackNum) this.Tree_ContsGroup[i].boneRadstack[JointType.HipLeft].RemoveAt(this.Tree_ContsGroup[i].boneRadstack[JointType.HipLeft].Count - 1);
+
+                    //this.degbuf = LSRadPredict(this.Tree_ContsGroup[i].boneRadstack[JointType.], this.useFrame, this.preFrame);
+                    //this.Tree_ContsGroup[i].moveMats.Add(JointType., GetMoveBoneMat(this.Tree_ContsGroup[i].boneStack, JointType., this.degbuf, this.Tree_ContsGroup[i].moveMats[JointType.]));
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.HipLeft, Matrix4x4.identity);
+
+                    //KneeKeft
+                    this.Tree_ContsGroup[i].boneRadstack[JointType.KneeLeft].Insert(0, GetBoneRad(this.Tree_ContsGroup[i].boneStack, JointType.AnkleLeft, JointType.KneeLeft));
+                    if (this.Tree_ContsGroup[i].boneRadstack[JointType.KneeLeft].Count > stackNum) this.Tree_ContsGroup[i].boneRadstack[JointType.KneeLeft].RemoveAt(this.Tree_ContsGroup[i].boneRadstack[JointType.KneeLeft].Count - 1);
+
+                    //this.degbuf = LSRadPredict(this.Tree_ContsGroup[i].boneRadstack[JointType.], this.useFrame, this.preFrame);
+                    //this.Tree_ContsGroup[i].moveMats.Add(JointType., GetMoveBoneMat(this.Tree_ContsGroup[i].boneStack, JointType., this.degbuf, this.Tree_ContsGroup[i].moveMats[JointType.]));
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.KneeLeft, Matrix4x4.identity);
+
+                    //HipRight
+                    this.Tree_ContsGroup[i].boneRadstack[JointType.HipRight].Insert(0, GetBoneRad(this.Tree_ContsGroup[i].boneStack, JointType.KneeRight, JointType.SpineBase));
+                    if (this.Tree_ContsGroup[i].boneRadstack[JointType.HipRight].Count > stackNum) this.Tree_ContsGroup[i].boneRadstack[JointType.HipRight].RemoveAt(this.Tree_ContsGroup[i].boneRadstack[JointType.HipRight].Count - 1);
+
+                    //this.degbuf = LSRadPredict(this.Tree_ContsGroup[i].boneRadstack[JointType.], this.useFrame, this.preFrame);
+                    //this.Tree_ContsGroup[i].moveMats.Add(JointType., GetMoveBoneMat(this.Tree_ContsGroup[i].boneStack, JointType., this.degbuf, this.Tree_ContsGroup[i].moveMats[JointType.]));
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.HipRight, Matrix4x4.identity);
+
+                    //KneeRight
+                    this.Tree_ContsGroup[i].boneRadstack[JointType.KneeRight].Insert(0, GetBoneRad(this.Tree_ContsGroup[i].boneStack, JointType.AnkleRight, JointType.KneeRight));
+                    if (this.Tree_ContsGroup[i].boneRadstack[JointType.KneeRight].Count > stackNum) this.Tree_ContsGroup[i].boneRadstack[JointType.KneeRight].RemoveAt(this.Tree_ContsGroup[i].boneRadstack[JointType.KneeRight].Count - 1);
+
+                    //this.degbuf = LSRadPredict(this.Tree_ContsGroup[i].boneRadstack[JointType.], this.useFrame, this.preFrame);
+                    //this.Tree_ContsGroup[i].moveMats.Add(JointType., GetMoveBoneMat(this.Tree_ContsGroup[i].boneStack, JointType., this.degbuf, this.Tree_ContsGroup[i].moveMats[JointType.]));
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.KneeRight, Matrix4x4.identity);
+                }
+                else
+                {
+
+                    //空ならすべてにnullのリストを入れる
+                    this.boneRad_buf.Clear();
+                    for (int l = 0; l < this.stackNum; ++l)
+                    {
+                        this.boneRad_buf.Add(null);
+                    }
+                    this.Tree_ContsGroup[i].boneRadstack.Add(JointType.ElbowLeft, new List<float?>(this.boneRad_buf));
+                    this.Tree_ContsGroup[i].boneRadstack.Add(JointType.ShoulderLeft, new List<float?>(this.boneRad_buf));
+                    this.Tree_ContsGroup[i].boneRadstack.Add(JointType.ElbowRight, new List<float?>(this.boneRad_buf));
+                    this.Tree_ContsGroup[i].boneRadstack.Add(JointType.ShoulderRight, new List<float?>(this.boneRad_buf));
+                    this.Tree_ContsGroup[i].boneRadstack.Add(JointType.Neck, new List<float?>(this.boneRad_buf));
+                    this.Tree_ContsGroup[i].boneRadstack.Add(JointType.KneeLeft, new List<float?>(this.boneRad_buf));
+                    this.Tree_ContsGroup[i].boneRadstack.Add(JointType.HipLeft, new List<float?>(this.boneRad_buf));
+                    this.Tree_ContsGroup[i].boneRadstack.Add(JointType.KneeRight, new List<float?>(this.boneRad_buf));
+                    this.Tree_ContsGroup[i].boneRadstack.Add(JointType.HipRight, new List<float?>(this.boneRad_buf));
+                    this.Tree_ContsGroup[i].boneRadstack.Add(JointType.SpineBase, new List<float?>(this.boneRad_buf));
+
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.ElbowLeft, Matrix4x4.identity);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.ShoulderLeft, Matrix4x4.identity);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.ElbowRight, Matrix4x4.identity);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.ShoulderRight, Matrix4x4.identity);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.Neck, Matrix4x4.identity);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.KneeLeft, Matrix4x4.identity);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.HipLeft, Matrix4x4.identity);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.KneeRight, Matrix4x4.identity);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.HipRight, Matrix4x4.identity);
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.SpineBase, Matrix4x4.identity);
+
+                    this.degElbowL = null;
+                    this.degElbowR = null;
+                    this.degShoulderL = null;
+                    this.degShoulderR = null;
+                    this.degNeck = null;
+                    this.degSpineBase = null;
+                    this.degHipL = null;
+                    this.degHipR = null;
+                    this.degKneeL = null;
+                    this.degKneeR = null;
+
+                    this.Tree_ContsGroup[i].moveMats.Add(JointType.HandLeft, Matrix4x4.identity);
+                }
+            }
+
             //-------------------------------------------------------
 
             //骨格点を先行させたリストを作る
@@ -598,21 +826,123 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                 for (int j = 0; j < _TrackigBoneList.Count; ++j)
                 {
+                    /*
                     if (!this.useCubeCurve)
                     {
-                    //二次曲線フィッティング
-                    this.Tree_ContsGroup[i].preBonePoints.Add(_TrackigBoneList[j], LeastSquarePredict(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]], this.useFrame, this.preFrame));
+                        //二次曲線フィッティング
+                        this.Tree_ContsGroup[i].preBonePoints.Add(_TrackigBoneList[j], LeastSquarePredict(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]], this.useFrame, this.preFrame));
                     }
                     else
                     {
-                    //三次曲線フィッティング
-                    this.Tree_ContsGroup[i].preBonePoints.Add(_TrackigBoneList[j],LeastSquareCubePredict(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]], this.useFrame, this.preFrame));
+                        //三次曲線フィッティング
+                        this.Tree_ContsGroup[i].preBonePoints.Add(_TrackigBoneList[j], LeastSquareCubePredict(this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]], this.useFrame, this.preFrame));
                     }
+                    */
+
+
+
                 }
+
+                //角度で回転させたもの
+
+
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.WristLeft, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.WristLeft][0], this.Tree_ContsGroup[i].moveMats[JointType.ElbowLeft]));
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.ElbowLeft, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.ElbowLeft][0], this.Tree_ContsGroup[i].moveMats[JointType.ShoulderLeft]));
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.WristRight, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.WristRight][0], this.Tree_ContsGroup[i].moveMats[JointType.ElbowRight]));
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.ElbowRight, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.ElbowRight][0], this.Tree_ContsGroup[i].moveMats[JointType.ShoulderRight]));
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.SpineBase, this.Tree_ContsGroup[i].boneStack[JointType.SpineBase][0]);
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.Head, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.Head][0], this.Tree_ContsGroup[i].moveMats[JointType.Neck]));
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.AnkleLeft, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.AnkleLeft][0], this.Tree_ContsGroup[i].moveMats[JointType.KneeLeft]));
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.KneeLeft, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.KneeLeft][0], this.Tree_ContsGroup[i].moveMats[JointType.HipLeft]));
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.AnkleRight, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.AnkleRight][0], this.Tree_ContsGroup[i].moveMats[JointType.KneeRight]));
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.KneeRight, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.KneeRight][0], this.Tree_ContsGroup[i].moveMats[JointType.HipRight]));
+
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.ShoulderLeft, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.ShoulderLeft][0], this.Tree_ContsGroup[i].moveMats[JointType.SpineBase]));
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.ShoulderRight, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.ShoulderRight][0], this.Tree_ContsGroup[i].moveMats[JointType.SpineBase]));
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.SpineMid, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.SpineMid][0], this.Tree_ContsGroup[i].moveMats[JointType.SpineBase]));
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.Neck, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.Neck][0], this.Tree_ContsGroup[i].moveMats[JointType.SpineBase]));
+
+                this.Tree_ContsGroup[i].preBonePoints.Add(JointType.HandLeft, MoveBonePoint(this.Tree_ContsGroup[i].boneStack[JointType.WristLeft][0], this.Tree_ContsGroup[i].moveMats[JointType.HandLeft]));
             }
 
+            //-------------------------------------------------------
+            //SCV書き出し
+            if (this.useRec)
+            {
+                //毎回書く部分
+                if (this.Tree_ContsGroup.Count > 0)
+                {
+                    //"SpineBase,Neck,ShoulderLeft,ElbowLeft,ShoulderRight,ElbowRight,HipLeft,KneeLeft,HipRight,KneeRight,  ,SpineBase,Neck,ShoulderLeft,ElbowLeft,ShoulderRight,ElbowRight,HipLeft,KneeLeft,HipRight,KneeRight");
+                    StreamWriter sw;
+                    FileInfo fi;
+                    fi = new FileInfo(fiName);
+                    sw = fi.AppendText();
+                    //オンになって一回だけ処理
+                    if (this.recFlag == false)
+                    {
+                        sw.WriteLine("takeframe," + this.useFrame + ",preFrame," + this.preFrame);
+                        sw.Flush();
+                        sw.WriteLine("SpineBase, preSpineBase,Neck,preNeck,ShoulderLeft,preShoulderLeft,ElbowLeft,preElbowLeft,HipLeft,preHipLeft,KneeLeft,preKneeLeft,,WristLeftPosX,LSWristLeftPosX,onlyLSWristLeftPosX,x:Now-Pre,x:Now-onlyPre,WristLeftPosY,LSWristLeftPosY,onlyLSWristLeftPosY,y:Now-Pre,y:Now-onlyPre,,ElbowLeftX,preElbowLeftX,,ElbowLeftY,preElbowLeftY,,ShoulderLeftX,preShoulderLeftX,,ShoulderLeftY,preShoulderLeftY,,SpineBaseX,SpineBaseY");
+                        sw.Flush();
+                        this.recFlag = true;
+                    }
+                    //それぞれの関節の角度を書き出すとき
+                    //ElbowLeftのみを先行させたときの手先の座標位置の違い
+                    sw.WriteLine(this.Tree_ContsGroup[0].boneRadstack[JointType.SpineBase][0] + "," +
+                             this.degSpineBase + "," +
+                             this.Tree_ContsGroup[0].boneRadstack[JointType.Neck][0] + "," +
+                             this.degNeck + "," +
+                             this.Tree_ContsGroup[0].boneRadstack[JointType.ShoulderLeft][0] + "," +
+                             this.degShoulderL + "," +
+                             this.Tree_ContsGroup[0].boneRadstack[JointType.ElbowLeft][0] + "," +
+                             this.degElbowL + "," +
+                             this.Tree_ContsGroup[0].boneRadstack[JointType.HipLeft][0] + "," +
+                             this.degHipL + "," +
+                             this.Tree_ContsGroup[0].boneRadstack[JointType.KneeLeft][0] + "," +
+                             this.degKneeL + ",," +
+
+                             this.Tree_ContsGroup[0].boneStack[JointType.WristLeft][0].Value.X + "," +
+                             this.Tree_ContsGroup[0].preBonePoints[JointType.WristLeft].Value.X + "," +
+                             this.Tree_ContsGroup[0].preBonePoints[JointType.HandLeft].Value.X + ",,," +
+                             //Mathf.Abs(this.Tree_ContsGroup[0].boneStack[JointType.WristLeft][0].Value.X - this.Tree_ContsGroup[0].preBonePoints[JointType.WristLeft].Value.X) + "," +
+                             //Mathf.Abs(this.Tree_ContsGroup[0].boneStack[JointType.WristLeft][0].Value.X - this.Tree_ContsGroup[0].preBonePoints[JointType.HandLeft].Value.X) + "," +
+                             this.Tree_ContsGroup[0].boneStack[JointType.WristLeft][0].Value.Y + "," +
+                             this.Tree_ContsGroup[0].preBonePoints[JointType.WristLeft].Value.Y + "," +
+                             this.Tree_ContsGroup[0].preBonePoints[JointType.HandLeft].Value.Y + ",,,," +
+                              //Mathf.Abs(this.Tree_ContsGroup[0].boneStack[JointType.WristLeft][0].Value.X - this.Tree_ContsGroup[0].preBonePoints[JointType.WristLeft].Value.X) + "," +
+                              //Mathf.Abs(this.Tree_ContsGroup[0].boneStack[JointType.WristLeft][0].Value.X - this.Tree_ContsGroup[0].preBonePoints[JointType.HandLeft].Value.X)
+                              this.Tree_ContsGroup[0].boneStack[JointType.ElbowLeft][0].Value.X + "," +
+                             this.Tree_ContsGroup[0].preBonePoints[JointType.ElbowLeft].Value.X + ",," +
+
+                             this.Tree_ContsGroup[0].boneStack[JointType.ElbowLeft][0].Value.Y + "," +
+                             this.Tree_ContsGroup[0].preBonePoints[JointType.ElbowLeft].Value.Y + ",," +
+
+                             this.Tree_ContsGroup[0].boneStack[JointType.ShoulderLeft][0].Value.X + "," +
+                             this.Tree_ContsGroup[0].preBonePoints[JointType.ShoulderLeft].Value.X + ",," +
+
+                             this.Tree_ContsGroup[0].boneStack[JointType.ShoulderLeft][0].Value.Y + "," +
+                             this.Tree_ContsGroup[0].preBonePoints[JointType.ShoulderLeft].Value.Y + ",," +
+
+                             this.Tree_ContsGroup[0].boneStack[JointType.SpineBase][0].Value.X + "," +
+                             this.Tree_ContsGroup[0].boneStack[JointType.SpineBase][0].Value.Y);
+
+                    //"ShoulderLeftX,preShoulderLeftX,,ShoulderLeftY,preShoulderLeftY,,SpineBaseX,SpineBaseY"
+                    sw.Flush();
+                    sw.Close();
+                    fi = null;
+                }
+            }
+            else
+            {
+                this.recFlag = false;
+
+            }
+
+
+
+            //------------------------------------------------------------------------------------
             //描画
-            Cv2.CvtColor(m_buffer, m_buffer, OpenCvSharp.ColorConversion.BgrToHsv);
+            //Cv2.CvtColor(m_buffer, m_buffer, OpenCvSharp.ColorConversion.BgrToHsv);
 
             for (int i = 0; i < this.Tree_ContsGroup.Count; ++i)
             {
@@ -630,52 +960,60 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 {
                     if (this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]][0] != null)
                     {
-                        Cv2.Circle(m_buffer, (Point)this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]][0], 3, this.Tree_ContsGroup[i].color);
+                        //Cv2.Circle(m_buffer, (Point)this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]][0], 3, this.Tree_ContsGroup[i].color);
 
                     }
                     if (this.Tree_ContsGroup[i].preBonePoints[_TrackigBoneList[j]] != null)
                     {
-                    Cv2.Circle(m_buffer, (Point)this.Tree_ContsGroup[i].preBonePoints[_TrackigBoneList[j]], 3, new Scalar(this.Tree_ContsGroup[i].color.Val0 + 40, this.Tree_ContsGroup[i].color.Val1, this.Tree_ContsGroup[i].color.Val2));
+                        //Cv2.Circle(m_buffer, (Point)this.Tree_ContsGroup[i].preBonePoints[_TrackigBoneList[j]], 3, new Scalar(this.Tree_ContsGroup[i].color.Val0 + 40, this.Tree_ContsGroup[i].color.Val1, this.Tree_ContsGroup[i].color.Val2));
 
                     }
 
                 }
 
+                //Elbowleftのみ動かすとき
+                if (this.Tree_ContsGroup.Count > 0)
+                {
+                    if (this.Tree_ContsGroup[0].boneStack[JointType.ElbowLeft][0] != null && this.onlyElbowL != null)
+                    {
+                        Cv2.Line(m_buffer, (Point)this.Tree_ContsGroup[0].boneStack[JointType.ElbowLeft][0], (Point)this.onlyElbowL, new Scalar(10, 255, 255));
+
+                    }
+                }
 
                 //骨格点の描画
 
                 for (int j = 0; j < _TrackigBoneList.Count; ++j)
                 {
                     if (_BoneConectMap.ContainsKey(_TrackigBoneList[j]))
-                        {
+                    {
                         if (this.Tree_ContsGroup[i].boneStack.ContainsKey(_TrackigBoneList[j]))
                         {
-                            if (this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]][0] != null &&this.Tree_ContsGroup[i].boneStack[_BoneConectMap[_TrackigBoneList[j]]][0] != null)
-                            {
-                              Cv2.Line(m_buffer, (Point)this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]][0], (Point)this.Tree_ContsGroup[i].boneStack[_BoneConectMap[_TrackigBoneList[j]]][0], this.Tree_ContsGroup[i].color);
-                            }
+
                             if (this.Tree_ContsGroup[i].preBonePoints[_TrackigBoneList[j]] != null && this.Tree_ContsGroup[i].preBonePoints[_BoneConectMap[_TrackigBoneList[j]]] != null)
                             {
-                            Cv2.Line(m_buffer, (Point)this.Tree_ContsGroup[i].preBonePoints[_TrackigBoneList[j]], (Point)this.Tree_ContsGroup[i].preBonePoints[_BoneConectMap[_TrackigBoneList[j]]], new Scalar(this.Tree_ContsGroup[i].color.Val0 + 40, this.Tree_ContsGroup[i].color.Val1, this.Tree_ContsGroup[i].color.Val2));
+                                //Cv2.Line(m_buffer, (Point)this.Tree_ContsGroup[i].preBonePoints[_TrackigBoneList[j]], (Point)this.Tree_ContsGroup[i].preBonePoints[_BoneConectMap[_TrackigBoneList[j]]], new Scalar(this.Tree_ContsGroup[i].color.Val0 + 40, this.Tree_ContsGroup[i].color.Val1, this.Tree_ContsGroup[i].color.Val2));
+                                Cv2.Line(m_buffer, (Point)this.Tree_ContsGroup[i].preBonePoints[_TrackigBoneList[j]], (Point)this.Tree_ContsGroup[i].preBonePoints[_BoneConectMap[_TrackigBoneList[j]]], new Scalar(255, 255, 10));
+                            }
+                            if (this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]][0] != null && this.Tree_ContsGroup[i].boneStack[_BoneConectMap[_TrackigBoneList[j]]][0] != null)
+                            {
+                                //Cv2.Line(m_buffer, (Point)this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]][0], (Point)this.Tree_ContsGroup[i].boneStack[_BoneConectMap[_TrackigBoneList[j]]][0], this.Tree_ContsGroup[i].color);
+                                Cv2.Line(m_buffer, (Point)this.Tree_ContsGroup[i].boneStack[_TrackigBoneList[j]][0], (Point)this.Tree_ContsGroup[i].boneStack[_BoneConectMap[_TrackigBoneList[j]]][0], new Scalar(255, 255, 255));
+                            }
+
+                            //Elbowleftのみ動かすとき
+                            if (this.Tree_ContsGroup[i].boneStack[JointType.ElbowLeft][0] != null && this.Tree_ContsGroup[i].preBonePoints[JointType.HandLeft] != null)
+                            {
+                                Cv2.Line(m_buffer, (Point)this.Tree_ContsGroup[i].boneStack[JointType.ElbowLeft][0], (Point)this.Tree_ContsGroup[i].preBonePoints[JointType.HandLeft], new Scalar(10, 255, 255));
+
                             }
                         }
                     }
                 }
             }
 
-            Cv2.CvtColor(m_buffer, m_buffer, OpenCvSharp.ColorConversion.HsvToBgr);
 
-
-
-
-
-
-
-
-
-
-
-
+            //Cv2.CvtColor(m_buffer, m_buffer, OpenCvSharp.ColorConversion.HsvToBgr);
 
             dst += m_buffer;
             //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
@@ -707,22 +1045,30 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             public Point contCenter { get; set; }
             public List<Point> contCenterList { get; set; }
             private List<List<Point>> buf { get; set; }
+            public Dictionary<JointType, Matrix4x4> moveMats { get; set; }
 
+            //現在のボーンの位置
             public Dictionary<JointType, List<Point?>> boneStack { get; set; }
+            //先行させたボーンの位置
             public Dictionary<JointType, Point?> preBonePoints { get; set; }
 
+            //現在のボーンの角度
+            public Dictionary<JointType, List<float?>> boneRadstack { get; set; }
 
             //新しく作るとき　　　※ストック分の数値は全部ゼロにする
             public StackContsGroup(int? id, List<Point> contList, Point centerPt, int stacklim)
             {
                 this.trackingId = id;
                 this.contCenter = centerPt;
-                this.color = new Scalar(UnityEngine.Random.Range(0, 180), 240, 240);
+                this.color = new Scalar(UnityEngine.Random.Range(90, 270), 240, 240);
                 this.contsStack = new List<List<Point>>();
                 this.contCenterList = new List<Point>();
                 this.buf = new List<List<Point>>();
                 this.boneStack = new Dictionary<JointType, List<Point?>>();
+                this.boneRadstack = new Dictionary<JointType, List<float?>>();
                 this.preBonePoints = new Dictionary<JointType, Point?>();
+                this.moveMats = new Dictionary<JointType, Matrix4x4>();
+
 
                 for (int a = 0; a < stacklim; ++a)
                 {
@@ -730,9 +1076,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     this.contCenterList.Add(centerPt);
                     //this.contsStack.Add(contList);
                 }
-
-
-
             }
 
             //新しい値を追加するとき
@@ -744,8 +1087,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 this.contCenterList.Insert(0, centerPt);
                 if (this.contCenterList.Count > stacklim) this.contCenterList.RemoveAt(this.contCenterList.Count - 1);
             }
-
-
 
 
 
@@ -841,6 +1182,154 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
         }
 
+        //関節の角度を180°表記で算出する
+        public float? GetBoneRad(Dictionary<JointType, List<Point?>> bonePointList, JointType farJtTop, JointType nearJtTop)
+        {
+            if (bonePointList[farJtTop][0] != null && bonePointList[_BoneMap[farJtTop]][0] != null && bonePointList[nearJtTop][0] != null && bonePointList[_BoneMap[nearJtTop]][0] != null)
+            {
+                Vector3 farBoneVec = new Vector3(bonePointList[farJtTop][0].Value.X - bonePointList[_BoneMap[farJtTop]][0].Value.X, bonePointList[farJtTop][0].Value.Y - bonePointList[_BoneMap[farJtTop]][0].Value.Y);
+                Vector3 nearBoneVec = new Vector3(bonePointList[nearJtTop][0].Value.X - bonePointList[_BoneMap[nearJtTop]][0].Value.X, bonePointList[nearJtTop][0].Value.Y - bonePointList[_BoneMap[nearJtTop]][0].Value.Y);
+
+                return Mathf.Sign(Vector3.Cross(farBoneVec, nearBoneVec).z) * Vector3.Angle(nearBoneVec, farBoneVec);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        //spinebaseの傾きを算出
+        public float? GetBaseBoneRad(Dictionary<JointType, List<Point?>> bonePointList)
+        {
+            if (bonePointList[JointType.SpineBase][0] != null && bonePointList[_BoneMap[JointType.SpineBase]][0] != null)
+            {
+                Vector3 farBoneVec = new Vector3(bonePointList[JointType.SpineBase][0].Value.X - bonePointList[_BoneMap[JointType.SpineBase]][0].Value.X, bonePointList[JointType.SpineBase][0].Value.Y - bonePointList[_BoneMap[JointType.SpineBase]][0].Value.Y);
+                Vector3 nearBoneVec = new Vector3(0, 1, 0);
+
+                return Mathf.Sign(Vector3.Cross(farBoneVec, nearBoneVec).z) * Vector3.Angle(nearBoneVec, farBoneVec);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        //骨格点変換
+        public Point? MoveBonePoint(Dictionary<JointType, List<Point?>> bonePointList, Point? movePt, JointType pivotJt, float deg, Matrix4x4 preMat)
+        {
+            if (movePt == null)
+            {
+                return null;
+            }
+            else
+            {
+                Matrix4x4 ptMat = Matrix4x4.zero;
+                ptMat.m00 = (float)movePt.Value.X;
+                ptMat.m01 = (float)movePt.Value.Y;
+                ptMat.m02 = 1;
+
+                Matrix4x4 goOriMat = Matrix4x4.identity;
+                goOriMat.m02 = -(float)bonePointList[pivotJt][0].Value.X;
+                goOriMat.m12 = -(float)bonePointList[pivotJt][0].Value.Y;
+
+                Matrix4x4 backOriMat = Matrix4x4.identity;
+                backOriMat.m02 = (float)bonePointList[pivotJt][0].Value.X;
+                backOriMat.m12 = (float)bonePointList[pivotJt][0].Value.Y;
+
+                Matrix4x4 rotMat = Matrix4x4.identity;
+                rotMat.m00 = (float)Math.Cos(deg * Mathf.Deg2Rad);
+                rotMat.m01 = (float)-Math.Sin(deg * Mathf.Deg2Rad);
+                rotMat.m10 = (float)Math.Sin(deg * Mathf.Deg2Rad);
+                rotMat.m11 = (float)Math.Cos(deg * Mathf.Deg2Rad);
+
+                Matrix4x4 ansMat = preMat * backOriMat * rotMat * goOriMat * ptMat;
+
+                return new Point(ansMat.m00, ansMat.m01);
+            }
+        }
+
+        //変換行列作成
+        public Matrix4x4 GetMoveBoneMat(Dictionary<JointType, List<Point?>> bonePointList, JointType pivotJt, float deg, Matrix4x4 preMat)
+        {
+            if (bonePointList[pivotJt][0] == null)
+            {
+                return Matrix4x4.identity;
+            }
+            else
+            {
+                Matrix4x4 goOriMat = Matrix4x4.identity;
+                goOriMat.m02 = -(float)bonePointList[pivotJt][0].Value.X;
+                goOriMat.m12 = -(float)bonePointList[pivotJt][0].Value.Y;
+                goOriMat.m33 = 0;
+
+                Matrix4x4 backOriMat = Matrix4x4.identity;
+                backOriMat.m02 = (float)bonePointList[pivotJt][0].Value.X;
+                backOriMat.m12 = (float)bonePointList[pivotJt][0].Value.Y;
+                backOriMat.m33 = 0;
+
+                Matrix4x4 rotMat = Matrix4x4.identity;
+                rotMat.m00 = (float)Math.Cos(deg * Mathf.Deg2Rad);
+                rotMat.m01 = (float)-Math.Sin(deg * Mathf.Deg2Rad);
+                rotMat.m10 = (float)Math.Sin(deg * Mathf.Deg2Rad);
+                rotMat.m11 = (float)Math.Cos(deg * Mathf.Deg2Rad);
+                rotMat.m33 = 0;
+
+
+                //float[,] goOriMatArr = { {1,0, -bonePointList[pivotJt][0].Value.X},
+                //                         {0,1, -bonePointList[pivotJt][0].Value.Y},
+                //                         {0,0,1 } };
+                //Mat goOriMat2 = new Mat(3, 3, MatType.CV_32FC1, goOriMatArr);
+
+                //float[,] backOriMatArr ={ {1,0, bonePointList[pivotJt][0].Value.X},
+                //                          {0,1, bonePointList[pivotJt][0].Value.Y},
+                //                          {0,0,1 } };
+                //Mat backOriMat2 = new Mat(3, 3, MatType.CV_32FC1, backOriMatArr);
+
+
+                //float[,] rotMatArr = { { (float)Math.Cos(deg * Mathf.Deg2Rad), (float)-Math.Sin(deg * Mathf.Deg2Rad),0 },
+                //                     { (float)Math.Sin(deg * Mathf.Deg2Rad), (float)Math.Cos(deg * Mathf.Deg2Rad),0  },
+                //                     {0,0,1 } };
+                //Mat rotMat2 = new Mat(3, 3, MatType.CV_32FC1, rotMatArr);
+
+                //float[,] preMat3x3Arr = { {preMat.m00,preMat.m01, -bonePointList[pivotJt][0].Value.X},
+                //                         {0,1, -bonePointList[pivotJt][0].Value.Y},
+                //                         {0,0,1 } };
+                //Mat preMat3x3 = new Mat(3, 3, MatType.CV_32FC1, goOriMatArr);
+
+
+                ////  あと　　←　　先　:　元　　（行列の順番）
+                //contMat = preMat3x3 * backOriMat * rotMat * goOriMat;
+
+                return preMat * backOriMat * rotMat * goOriMat;
+
+            }
+
+
+
+
+        }
+
+        //骨格点変換
+        public Point? MoveBonePoint(Point? movePt, Matrix4x4 preMat)
+        {
+            if (movePt == null)
+            {
+                return null;
+            }
+            else
+            {
+                Matrix4x4 ptMat = Matrix4x4.zero;
+                ptMat.m00 = (float)movePt.Value.X;
+                ptMat.m10 = (float)movePt.Value.Y;
+                ptMat.m20 = 1;
+
+
+
+                Matrix4x4 ansMat = preMat * ptMat;
+
+                return new Point(ansMat.m00, ansMat.m10);
+            }
+        }
 
         //最小二乗法推測アルゴリズム　　nullがあったら即終了スタイル
         public Point? LeastSquarePredict(List<Point?> bonePointList, int useFeameNum, int preFrameNum)
@@ -989,6 +1478,113 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             return predictPt;
         }
 
+        //最小二乗法推測アルゴリズム　　nullがあったら即終了スタイル 角度バージョン
+        //現在との差を出す
+        public float LSRadPredict(List<float?> boneRadList, int useFeameNum, int preFrameNum)
+        {
+            double bufd;
+
+            //List<double> t1 = new List<double>();
+            List<double> t2 = new List<double>();
+            List<double> t3 = new List<double>();
+            List<double> t4 = new List<double>();
+            List<double> t0d = new List<double>();
+            List<double> t1d = new List<double>();
+            List<double> t2d = new List<double>();
+
+
+            double sumT1 = 0;
+            double sumT2 = 0;
+            double sumT3 = 0;
+            double sumT4 = 0;
+
+            double sumT0D = 0;
+            double sumT1D = 0;
+            double sumT2D = 0;
+
+
+            Matrix4x4 TMat = Matrix4x4.identity;
+            Matrix4x4 invTMat = Matrix4x4.identity;
+            Matrix4x4 DMat = Matrix4x4.zero;
+            Matrix4x4 ansDMat = Matrix4x4.zero;
+
+            //Xから
+            //各数値リストの作成
+            //計算するフレームはもっと少なくてもいいかも
+            for (int i = 0; i < this.t1.Count; ++i)
+            {
+                //トラッキングできていないものが混じっていたら即終了
+                if (boneRadList[i] == null)
+                {
+                    return 0;
+                }
+
+                t2.Add(Mathf.Pow((float)this.t1[i], 2));
+                t3.Add(Mathf.Pow((float)this.t1[i], 3));
+                t4.Add(Mathf.Pow((float)this.t1[i], 4));
+                if (i < boneRadList.Count)
+                {
+                    bufd = (double)boneRadList[i];
+
+                    t0d.Add(bufd);
+                    t1d.Add(this.t1[i] * bufd);
+                    t2d.Add(Mathf.Pow((float)this.t1[i], 2) * bufd);
+                }
+                else
+                {
+                    bufd = (double)boneRadList[boneRadList.Count - 1];
+
+                    t0d.Add(bufd);
+                    t1d.Add(this.t1[i] * bufd);
+                    t2d.Add(Mathf.Pow((float)this.t1[i], 2) * bufd);
+                }
+            }
+
+            //各リストの累計を作る
+            for (int i = 0; i < useFeameNum; ++i)
+            {
+                sumT1 += this.t1[i];
+                sumT2 += t2[i];
+                sumT3 += t3[i];
+                sumT4 += t4[i];
+
+                sumT0D += t0d[i];
+                sumT1D += t1d[i];
+                sumT2D += t2d[i];
+            }
+
+            //行列を作る
+            TMat.m00 = useFeameNum;
+            TMat.m01 = (float)sumT1;
+            TMat.m02 = (float)sumT2;
+            TMat.m03 = 0;
+
+            TMat.m10 = (float)sumT1;
+            TMat.m11 = (float)sumT2;
+            TMat.m12 = (float)sumT3;
+            TMat.m13 = 0;
+
+            TMat.m20 = (float)sumT2;
+            TMat.m21 = (float)sumT3;
+            TMat.m22 = (float)sumT4;
+            TMat.m23 = 0;
+
+            TMat.m30 = 0;
+            TMat.m31 = 0;
+            TMat.m32 = 0;
+            TMat.m33 = 1; //逆行列が存在するためにはここが１じゃないとだめ
+
+            DMat.m00 = (float)sumT0D;
+            DMat.m10 = (float)sumT1D;
+            DMat.m20 = (float)sumT2D;
+
+            //行列の計算
+            ansDMat = TMat.inverse * DMat;
+
+            //座標の計算
+            return -(float)(ansDMat.m00 + ansDMat.m10 * preFrameNum * 0.016 + ansDMat.m20 * preFrameNum * preFrameNum * 0.016f * 0.016f - boneRadList[0]);
+        }
+
         //三次曲線フィッティング
         public Point? LeastSquareCubePredict(List<Point?> bonePointList, int useFeameNum, int preFrameNum)
         {
@@ -1131,7 +1727,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             TMat.m30 = (float)sumT3;
             TMat.m31 = (float)sumT4;
             TMat.m32 = (float)sumT5;
-            TMat.m33 = (float)sumT6; 
+            TMat.m33 = (float)sumT6;
 
             XMat.m00 = (float)sumT0X;
             XMat.m10 = (float)sumT1X;
@@ -1153,6 +1749,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             return predictPt;
         }
+
+
 
 
 
@@ -1235,6 +1833,45 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         { Windows.Kinect.JointType.Neck, Windows.Kinect.JointType.Head },
     };
 
+        //全部で10本の骨として考える　handではなくwrist, footではなくankleを使用 spineBaseがkey  /Headがkey
+        public Dictionary<Windows.Kinect.JointType, Windows.Kinect.JointType> _BoneMap = new Dictionary<Windows.Kinect.JointType, Windows.Kinect.JointType>()
+        {
+            //例
+            //Windows.Kinect.JointType.farJtTop, Windows.Kinect.JointType.nearJtTop },
+            { Windows.Kinect.JointType.AnkleLeft, Windows.Kinect.JointType.KneeLeft },
+            { Windows.Kinect.JointType.KneeLeft,  Windows.Kinect.JointType.SpineBase},
+
+            { Windows.Kinect.JointType.AnkleRight,Windows.Kinect.JointType.KneeRight },
+            { Windows.Kinect.JointType.KneeRight, Windows.Kinect.JointType.SpineBase },
+
+            { Windows.Kinect.JointType.WristLeft, Windows.Kinect.JointType.ElbowLeft },
+            { Windows.Kinect.JointType.ElbowLeft, Windows.Kinect.JointType.ShoulderLeft },
+
+            { Windows.Kinect.JointType.WristRight, Windows.Kinect.JointType.ElbowRight },
+            { Windows.Kinect.JointType.ElbowRight, Windows.Kinect.JointType.ShoulderRight },
+            { Windows.Kinect.JointType.SpineBase, Windows.Kinect.JointType.SpineMid },
+            { Windows.Kinect.JointType.Head, Windows.Kinect.JointType.Neck },
+
+            { Windows.Kinect.JointType.SpineMid, Windows.Kinect.JointType.SpineBase },
+        };
+
+        //全部で10本の骨として考える　handではなくwrist, footではなくankleを使用 spineBaseがkey  /Headがkey
+        public Dictionary<int, Windows.Kinect.JointType> _BoneKeyTable = new Dictionary<int, Windows.Kinect.JointType>()
+        {
+            { 0,Windows.Kinect.JointType.AnkleLeft },
+            { 1,Windows.Kinect.JointType.KneeLeft},
+
+            { 2,Windows.Kinect.JointType.AnkleRight },
+            { 3,Windows.Kinect.JointType.KneeRight  },
+
+            { 4,Windows.Kinect.JointType.WristLeft   },
+            { 5,Windows.Kinect.JointType.ElbowLeft    },
+
+            { 6,Windows.Kinect.JointType.WristRight },
+            { 7,Windows.Kinect.JointType.ElbowRight },
+            { 8,Windows.Kinect.JointType.SpineBase},
+            { 9,Windows.Kinect.JointType.Head},
+        };
 
 
 

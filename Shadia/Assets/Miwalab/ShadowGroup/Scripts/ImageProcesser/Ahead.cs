@@ -22,16 +22,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         }
 
         int sharpness = 180;
-        double accRate;
         double preRotRate;
         double preMoveRate;
         int blurRate;
-        float attractionRate;
         private Mat grayimage = new Mat();
         private Mat dstMat = new Mat();
         List<OpenCvSharp.CPlusPlus.Point> CvPoints = new List<Point>();
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
-        List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours_Buffer = new List<List<Point>>();
         Scalar color;
         Scalar colorBack;
 
@@ -65,14 +62,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         List<Dictionary<Kinect.JointType, double>> List_BoneVels = new List<Dictionary<Kinect.JointType, double>>();
         List<List<Dictionary<Kinect.JointType, double>>> Tree_BoneVels = new List<List<Dictionary<Kinect.JointType, double>>>();
 
-        Dictionary<Kinect.JointType, double> BoneAccs = new Dictionary<Kinect.JointType, double>();
-        List<List<Dictionary<Kinect.JointType, double>>> Tree_BoneAccs = new List<List<Dictionary<Kinect.JointType, double>>>();
-        List<Dictionary<Kinect.JointType, double>> List_BoneAccs = new List<Dictionary<Kinect.JointType, double>>();
-        List<Dictionary<Kinect.JointType, double>> List_PreBoneAccs = new List<Dictionary<Kinect.JointType, double>>();
+       
 
         Dictionary<Kinect.JointType, Point> MoveMatDictionary = new Dictionary<Kinect.JointType, Point>();
         List<Dictionary<Kinect.JointType, Point>> List_moveMat = new List<Dictionary<Kinect.JointType, Point>>();
 
+        List<double> t1 = new List<double>();
+        int stackNum = 50;
+        int useFrame;
+        int preFrame;
         //List<List<double>> baseAttractRad = new List<List<double>>();
         //float baseMoveX;
 
@@ -80,8 +78,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         //List<DepthBody[]> preBodyList = new List<DepthBody[]>();  //更新されてしまってうまくいかない
         float bodyThick = 0.8f;
         int targetContNum;
-        int targetAccContNum;
-        int targetAttContNum;
         int frameCount = 0;
         double speedRate;
         double radAverage;
@@ -107,7 +103,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         double maxRad = 0.1;
         int recBaseFrame = 20;
-        Scalar pix;
 
 
         public Ahead() : base()
@@ -254,7 +249,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.bodyContList.Clear();
             this.List_BoneRads.Clear();
             this.List_BoneVels.Clear();
-            this.List_BoneAccs.Clear();
 
             if (m_buffer == null)
             {
@@ -311,6 +305,25 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 this.flag = true;
             }
 
+            //---------------------------------------------------
+            //ここから最小二乗法
+            //タイムテーブルを作成　マイナス方向に作る //最初はとりあえず埋めとく
+            if (this.t1.Count == 0)
+            {
+                for (int i = 0; i < this.stackNum; ++i)
+                {
+                    this.t1.Add(-Time.deltaTime);
+                }
+            }
+            for (int i = 0; i < this.t1.Count; ++i)
+            {
+                this.t1[i] -= Time.deltaTime;
+            }
+            this.t1.Insert(0, 0);
+            if (this.t1.Count > this.stackNum) this.t1.RemoveAt(this.t1.Count - 1);
+
+
+            //------------------------------------------------------
 
 
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
@@ -599,72 +612,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
 
 
-            //Boneの角加速度情報リスト作成
-            #region boneAcc TreeUse
-            for (int i = 0; i < this.Tree_BoneVels[0].Count; i++)
-            {
-                this.BoneAccs.Clear();
-                if (this.Tree_BoneVels[1].Count > i)
-                {
-                    if (this.Tree_BoneVels[0][i].ContainsKey(Kinect.JointType.ElbowLeft) && this.Tree_BoneVels[1][i].ContainsKey(Kinect.JointType.ElbowLeft))
-                    {
-
-                        this.BoneAccs.Add(Kinect.JointType.ElbowLeft, this.Tree_BoneVels[0][i][Kinect.JointType.ElbowLeft] - this.Tree_BoneVels[1][i][Kinect.JointType.ElbowLeft]);
-                    }
-                    if (this.Tree_BoneVels[0][i].ContainsKey(Kinect.JointType.ShoulderLeft) && this.Tree_BoneVels[1][i].ContainsKey(Kinect.JointType.ShoulderLeft))
-                    {
-                        this.BoneAccs.Add(Kinect.JointType.ShoulderLeft, this.Tree_BoneVels[0][i][Kinect.JointType.ShoulderLeft] - this.Tree_BoneVels[1][i][Kinect.JointType.ShoulderLeft]);
-                    }
-                    if (this.Tree_BoneVels[0][i].ContainsKey(Kinect.JointType.ElbowRight) && this.Tree_BoneVels[1][i].ContainsKey(Kinect.JointType.ElbowRight))
-                    {
-                        this.BoneAccs.Add(Kinect.JointType.ElbowRight, this.Tree_BoneVels[0][i][Kinect.JointType.ElbowRight] - this.Tree_BoneVels[1][i][Kinect.JointType.ElbowRight]);
-                    }
-                    if (this.Tree_BoneVels[0][i].ContainsKey(Kinect.JointType.ShoulderRight) && this.Tree_BoneVels[1][i].ContainsKey(Kinect.JointType.ShoulderRight))
-                    {
-                        this.BoneAccs.Add(Kinect.JointType.ShoulderRight, this.Tree_BoneVels[0][i][Kinect.JointType.ShoulderRight] - this.Tree_BoneVels[1][i][Kinect.JointType.ShoulderRight]);
-                    }
-                    if (this.Tree_BoneVels[0][i].ContainsKey(Kinect.JointType.Neck) && this.Tree_BoneVels[1][i].ContainsKey(Kinect.JointType.Neck))
-                    {
-                        this.BoneAccs.Add(Kinect.JointType.Neck, this.Tree_BoneVels[0][i][Kinect.JointType.Neck] - this.Tree_BoneVels[1][i][Kinect.JointType.Neck]);
-                    }
-                    if (this.Tree_BoneVels[0][i].ContainsKey(Kinect.JointType.KneeLeft) && this.Tree_BoneVels[1][i].ContainsKey(Kinect.JointType.KneeLeft))
-                    {
-                        this.BoneAccs.Add(Kinect.JointType.KneeLeft, this.Tree_BoneVels[0][i][Kinect.JointType.KneeLeft] - this.Tree_BoneVels[1][i][Kinect.JointType.KneeLeft]);
-                    }
-                    if (this.Tree_BoneVels[0][i].ContainsKey(Kinect.JointType.HipLeft) && this.Tree_BoneVels[1][i].ContainsKey(Kinect.JointType.HipLeft))
-                    {
-                        this.BoneAccs.Add(Kinect.JointType.HipLeft, this.Tree_BoneVels[0][i][Kinect.JointType.HipLeft] - this.Tree_BoneVels[1][i][Kinect.JointType.HipLeft]);
-                    }
-                    if (this.Tree_BoneVels[0][i].ContainsKey(Kinect.JointType.KneeRight) && this.Tree_BoneVels[1][i].ContainsKey(Kinect.JointType.KneeRight))
-                    {
-                        this.BoneAccs.Add(Kinect.JointType.KneeRight, this.Tree_BoneVels[0][i][Kinect.JointType.KneeRight] - this.Tree_BoneVels[1][i][Kinect.JointType.KneeRight]);
-                    }
-                    if (this.Tree_BoneVels[0][i].ContainsKey(Kinect.JointType.HipRight) && this.Tree_BoneVels[1][i].ContainsKey(Kinect.JointType.HipRight))
-                    {
-                        this.BoneAccs.Add(Kinect.JointType.HipRight, this.Tree_BoneVels[0][i][Kinect.JointType.HipRight] - this.Tree_BoneVels[1][i][Kinect.JointType.HipRight]);
-                    }
-                    if (this.Tree_BoneVels[0][i].ContainsKey(Kinect.JointType.SpineBase) && this.Tree_BoneVels[1][i].ContainsKey(Kinect.JointType.SpineBase))
-                    {
-                        this.BoneAccs.Add(Kinect.JointType.SpineBase, this.Tree_BoneVels[0][i][Kinect.JointType.SpineBase] - this.Tree_BoneVels[1][i][Kinect.JointType.SpineBase]);
-                    }
-
-                }
-                this.List_BoneAccs.Add(new Dictionary<Kinect.JointType, double>(this.BoneAccs));
-
-            }
-            //角加速度情報ツリーを更新
-            if (this.Tree_BoneAccs.Count == 0)
-            {
-                this.Tree_BoneAccs.Insert(0, new List<Dictionary<Kinect.JointType, double>>(this.List_BoneAccs));
-                this.Tree_BoneAccs.Insert(0, new List<Dictionary<Kinect.JointType, double>>(this.List_BoneAccs));
-                this.Tree_BoneAccs.Insert(0, new List<Dictionary<Kinect.JointType, double>>(this.List_BoneAccs));
-                this.Tree_BoneAccs.Insert(0, new List<Dictionary<Kinect.JointType, double>>(this.List_BoneAccs));
-                this.Tree_BoneAccs.Insert(0, new List<Dictionary<Kinect.JointType, double>>(this.List_BoneAccs));
-            }
-            this.Tree_BoneAccs.Insert(0, new List<Dictionary<Kinect.JointType, double>>(this.List_BoneAccs));
-            if (this.Tree_BoneAccs.Count > 10) this.Tree_BoneAccs.RemoveAt(this.Tree_BoneAccs.Count - 1);
-
-            #endregion
 
             //SpineBase速度ツリーを作成
             this.nowBaseVels.Clear();
@@ -710,14 +657,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 targetContNum = i + 1;
                 if (targetContNum == List_BoneRads.Count) targetContNum = 0;
 
-                //加速度の入れ替え対象ナンバー
-                targetAccContNum = i + 1;
-                if (targetAccContNum >= List_BoneAccs.Count) targetAccContNum = 0;
-
-                //傾きの入れ替え対象ナンバー
-                targetAttContNum = i + 1;
-                if (targetAttContNum >= Tree_BaseVel[0].Count) targetAttContNum = 0;
-
+              
+               
                 this.SwapBodyMats.Clear();
 
 
@@ -1121,19 +1062,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
 
 
-
-
-            this.List_Contours_Buffer = this.List_Contours;
-
             this.count += (0.01);
             if (this.count > 2 * Math.PI) this.count = 0;
 
-            //チェック用
-            if (this.count == 0)
-            {
-                Debug.Log(this.List_BoneAccs.Count);
-
-            }
+      
 
             //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
             //dst += m_buffer;
@@ -1301,16 +1233,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             return (float)Math.Sqrt(Math.Pow(pt1.X, 2) + (Math.Pow(pt1.Y, 2)));
         }
 
-        private bool InCircleCheck(Point checkPt, Vec2f bone, Vec2f boneCtl, float r)
-        {
-            bool bl = false;
-            if (Math.Sqrt(Math.Pow((checkPt.X - (bone.Item0 + boneCtl.Item0) / 2), 2 + Math.Pow(checkPt.Y - (bone.Item1 + boneCtl.Item1) / 2, 2))) < r)
-            {
-                bl = true;
-            }
-
-            return bl;
-        }
+      
 
         private float LineToPointLength(Vec2f bone, Vec2f bisector, Point pt)
         {
@@ -1678,6 +1601,22 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             {
                 boneRad *= -1;   // これで左曲がりがマイナス　右曲がりがプラス
             }
+            //vector2 ver
+            /*
+            Vector2 farBoneVec = new Vector2(BodyDataOnDepthImage[bodyNum].JointDepth[farJtTop].position.x - BodyDataOnDepthImage[bodyNum].JointDepth[_BoneMap[farJtTop]].position.x,
+                                             BodyDataOnDepthImage[bodyNum].JointDepth[farJtTop].position.y - BodyDataOnDepthImage[bodyNum].JointDepth[_BoneMap[farJtTop]].position.y);
+            Vector2 nearBoneVec = new Vector2(BodyDataOnDepthImage[bodyNum].JointDepth[nearJtTop].position.x - BodyDataOnDepthImage[bodyNum].JointDepth[_BoneMap[nearJtTop]].position.x,
+                                              BodyDataOnDepthImage[bodyNum].JointDepth[nearJtTop].position.y - BodyDataOnDepthImage[bodyNum].JointDepth[_BoneMap[nearJtTop]].position.y);
+            Vector3 farBoneVec3 = new Vector3(BodyDataOnDepthImage[bodyNum].JointDepth[farJtTop].position.x - BodyDataOnDepthImage[bodyNum].JointDepth[_BoneMap[farJtTop]].position.x,
+                                            BodyDataOnDepthImage[bodyNum].JointDepth[farJtTop].position.y - BodyDataOnDepthImage[bodyNum].JointDepth[_BoneMap[farJtTop]].position.y, 0);
+            Vector3 nearBoneVec3 = new Vector3(BodyDataOnDepthImage[bodyNum].JointDepth[nearJtTop].position.x - BodyDataOnDepthImage[bodyNum].JointDepth[_BoneMap[nearJtTop]].position.x,
+                                              BodyDataOnDepthImage[bodyNum].JointDepth[nearJtTop].position.y - BodyDataOnDepthImage[bodyNum].JointDepth[_BoneMap[nearJtTop]].position.y, 0);
+            if (farJtTop == Kinect.JointType.Head)
+            {
+                Debug.Log("point ; " + boneRad * 180 / Math.PI + ", Vec2d ; " + Vector2.Angle(nearBoneVec, farBoneVec) + ", vec3 ; " + Mathf.Sign(Vector3.Cross(farBoneVec3, nearBoneVec3).z) * Vector3.Angle(nearBoneVec, farBoneVec));
+            }
+            */
+
             return boneRad;
         }
 
@@ -1734,6 +1673,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             return bl;
         }
+
+       
 
 
         public class BodyContor   //すべての輪郭点のクラス

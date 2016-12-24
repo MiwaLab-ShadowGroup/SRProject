@@ -433,17 +433,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
         public  class StackContsGroup
         {
             public int? trackingId { get; set; }
