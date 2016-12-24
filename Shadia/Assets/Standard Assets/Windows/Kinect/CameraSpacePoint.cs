@@ -53,6 +53,17 @@ namespace Windows.Kinect
             this.Y -= point.Y;
             this.Z -= point.Z;
         }
+
+        /// <summary>
+        /// é¿êîî{
+        /// </summary>
+        /// <param name="point"></param>
+        public void multiply(float value)
+        {
+            this.X *= value;
+            this.Y *= value;
+            this.Z *= value;
+        }
     }
 
 }
