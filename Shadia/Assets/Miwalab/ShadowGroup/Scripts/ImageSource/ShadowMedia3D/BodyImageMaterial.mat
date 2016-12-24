@@ -120,7 +120,7 @@ Material:
       second: 8
     - first:
         name: _VertZMin
-      second: 0
+      second: 0.46845278
     - first:
         name: _ZWrite
       second: 1

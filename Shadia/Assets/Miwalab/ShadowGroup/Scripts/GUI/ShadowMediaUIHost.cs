@@ -235,6 +235,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingLSAhead(m_PanelDictionary[ImageProcesserType.LSAhead.ToString()]);
         this.CreateUIsImageporcessingMixColor(m_PanelDictionary[ImageProcesserType.MixColor.ToString()]);
         this.CreateUIsImageporcessingPtsImgProcesser(m_PanelDictionary[ImageProcesserType.PtsImgProcesser.ToString()]);
+        this.CreateUIsImageporcessingBrightCheck(m_PanelDictionary[ImageProcesserType.BrightCheck.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
         this.CreateUIsImageporcessingFlowParticlesShadow(m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()]);
         this.CreateUIsImageporcessingPainterShadow(m_PanelDictionary[ImageProcesserType.PainterShadow.ToString()]);
@@ -360,6 +361,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.PtsImgProcesser:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new PtsImgProcesser()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.PtsImgProcesser.ToString()];
+                break;
+            case ImageProcesserType.BrightCheck:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new BrightCheck()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.BrightCheck.ToString()];
                 break;
             case ImageProcesserType.EachMoveParticle:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new Miwalab.ShadowGroup.ImageProcesser.EachMoveParticle()));
@@ -785,7 +790,25 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "PtsImg_contFind", false);
         m_lastUpdatedHeight += 10;
     }
-    
+
+    private void CreateUIsImageporcessingBrightCheck(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Bright_bright", 255, 0, 255);
+        AddFloatUI(parent, "Bright_pt_B_x", 600, -100, 200);
+        AddFloatUI(parent, "Bright_pt_B_y", 600, -100, 200);
+        AddFloatUI(parent, "Bright_pt_D_x", 600, -100, 200);
+        AddFloatUI(parent, "Bright_pt_D_y", 600, -100, 200);
+        AddFloatUI(parent, "Bright_rad_x" ,1,0,1);
+        AddFloatUI(parent, "Bright_rad_y", 1, 0, 1);
+        AddFloatUI(parent, "Bright_rad_size", 100, 1, 50);
+
+        AddFloatUI(parent, "Bright_angle", 360, -360, 360);
+        AddBooleanUI(parent, "Bright_vsbGLD", true);
+        AddBooleanUI(parent, "Bright_vsbTxt", true);
+        m_lastUpdatedHeight += 10;
+    }
+
     private void CreateUIsImageporcessingCanny(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
@@ -835,10 +858,11 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "LSAhead_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "LSAhead_bgd_B", 255, 0, 0);
         AddFloatUI(parent, "LSAhead_Rate", 200, 10, 100);
-        AddFloatUI(parent, "LSAhead_useFrame", 40, 2, 8);
-        AddFloatUI(parent, "LSAhead_preFrame", 20, 0, 4);
+        AddFloatUI(parent, "LSAhead_useFrame", 40, 2, 15);
+        AddFloatUI(parent, "LSAhead_preFrame", 20, 0, 7);
         AddBooleanUI(parent, "LSAhead_UseFade", false);
         AddBooleanUI(parent, "LSAhead_useCubeCurve", false);
+        AddBooleanUI(parent, "LSAhead_rec", false);
         m_lastUpdatedHeight += 10;
 
     }

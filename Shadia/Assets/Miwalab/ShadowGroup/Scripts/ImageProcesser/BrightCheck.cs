@@ -6,6 +6,7 @@ using System.Threading;
 using OpenCvSharp.CPlusPlus;
 using OpenCvSharp;
 using UnityEngine;
+using System.IO;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
@@ -14,166 +15,133 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
-
             this.Update(ref src, ref dst);
-
         }
 
-        int sharpness = 6;
+
         private Mat grayimage = new Mat();
         private Mat dstMat = new Mat();
         // Mat dstMat = new Mat()
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
         Scalar color;
-        Scalar colorBack;
-        Scalar lightRate;
-        int dilateNum;
-        int gaussianSize1;
-        int gaussianSize2;
-        int threshold;
-        int findAreaTh;
-        float lightAnd;
+        Scalar colorBack = new Scalar(0, 0, 0);
 
+        double ellipsePt_B_x;
+        double ellipsePt_B_y;
 
+        double ellipsePt_D_x;
+        double ellipsePt_D_y;
 
-        bool contFind;
+        double radius_x;
+        double radius_y;
+        double radius_size;
+        double angle;
+
+        float hInput;
+        float vInput;
+
+        bool vsbGLD;
+        bool vsbTxt;
+        float brightTxt;
 
         public BrightCheck() : base()
         {
-            (ShadowMediaUIHost.GetUI("PtsImg_con_R") as ParameterSlider).ValueChanged += BrightCheck_con_R_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_con_G") as ParameterSlider).ValueChanged += BrightCheck_con_G_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_con_B") as ParameterSlider).ValueChanged += BrightCheck_con_B_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_R") as ParameterSlider).ValueChanged += BrightCheck_bgd_R_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_G") as ParameterSlider).ValueChanged += BrightCheck_bgd_G_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_B") as ParameterSlider).ValueChanged += BrightCheck_bgd_B_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_Dilate") as ParameterSlider).ValueChanged += BrightCheck_Dilate_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_GaussianSize1") as ParameterSlider).ValueChanged += BrightCheck_GaussianSize1_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_LightAnd") as ParameterSlider).ValueChanged += BrightCheck_LightAnd_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_GaussianSize2") as ParameterSlider).ValueChanged += BrightCheck_GaussianSize2_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_Threshold") as ParameterSlider).ValueChanged += BrightCheck_Threshold_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_findAreaTh") as ParameterSlider).ValueChanged += BrightCheck_findAreaTh_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_Rate") as ParameterSlider).ValueChanged += BrightCheck_Rate_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_UseFade") as ParameterCheckbox).ValueChanged += BrightCheck_UseFade_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_contFind") as ParameterCheckbox).ValueChanged += BrightCheck_contFind_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Bright_bright") as ParameterSlider).ValueChanged += BrightCheck_bright_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Bright_pt_B_x") as ParameterSlider).ValueChanged += BrightCheck_pt_B_x_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Bright_pt_B_y") as ParameterSlider).ValueChanged += BrightCheck_pt_B_y_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Bright_pt_D_x") as ParameterSlider).ValueChanged += BrightCheck_pt_D_x_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Bright_pt_D_y") as ParameterSlider).ValueChanged += BrightCheck_pt_D_y_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Bright_rad_x") as ParameterSlider).ValueChanged += BrightCheck_rad_x_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Bright_rad_y") as ParameterSlider).ValueChanged += BrightCheck_rad_y_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Bright_rad_size") as ParameterSlider).ValueChanged += BrightCheck_rad_size_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Bright_angle") as ParameterSlider).ValueChanged += BrightCheck_angle_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Bright_vsbGLD") as ParameterCheckbox).ValueChanged += BrightCheck_vsbGLD_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Bright_vsbTxt") as ParameterCheckbox).ValueChanged += BrightCheck_vsbTxt_ValueChanged;
 
-            (ShadowMediaUIHost.GetUI("PtsImg_con_R") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_con_G") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_con_B") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_R") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_G") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_B") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_Dilate") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_GaussianSize1") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_LightAnd") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_GaussianSize2") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_Threshold") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_findAreaTh") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_Rate") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_UseFade") as ParameterCheckbox).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_contFind") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Bright_bright") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Bright_pt_B_x") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Bright_pt_B_y") as ParameterSlider).ValueUpdate(); 
+            (ShadowMediaUIHost.GetUI("Bright_pt_D_y") as ParameterSlider).ValueUpdate(); 
+            (ShadowMediaUIHost.GetUI("Bright_pt_D_y") as ParameterSlider).ValueUpdate();                                                                                        
+            (ShadowMediaUIHost.GetUI("Bright_rad_x") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Bright_rad_y") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Bright_rad_size") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Bright_angle") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Bright_vsbGLD") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Bright_vsbTxt") as ParameterCheckbox).ValueUpdate();
         }
 
 
-        private void BrightCheck_UseFade_ValueChanged(object sender, EventArgs e)
+
+        private void BrightCheck_vsbGLD_ValueChanged(object sender, EventArgs e)
         {
-            this.m_UseFade = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+            this.vsbGLD = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
-        private void BrightCheck_contFind_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_vsbTxt_ValueChanged(object sender, EventArgs e)
         {
-            this.contFind = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+            this.vsbTxt = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
-        private void BrightCheck_Threshold_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_bright_ValueChanged(object sender, EventArgs e)
         {
-            this.threshold = (int)(e as ParameterSlider.ChangedValue).Value;
-        }
-
-        private void BrightCheck_findAreaTh_ValueChanged(object sender, EventArgs e)
-        {
-            this.findAreaTh = (int)(e as ParameterSlider.ChangedValue).Value;
-        }
-
-        private void BrightCheck_Dilate_ValueChanged(object sender, EventArgs e)
-        {
-            this.dilateNum = (int)(e as ParameterSlider.ChangedValue).Value;
-        }
-
-        private void BrightCheck_LightAnd_ValueChanged(object sender, EventArgs e)
-        {
-            this.lightRate.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
-            this.lightRate.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
-            this.lightRate.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
-        }
-
-        private void BrightCheck_GaussianSize1_ValueChanged(object sender, EventArgs e)
-        {
-            this.gaussianSize1 = (int)(e as ParameterSlider.ChangedValue).Value;
-            if (this.gaussianSize1 % 2 == 0)
-            {
-                this.gaussianSize1--;
-            }
-
-        }
-
-        private void BrightCheck_GaussianSize2_ValueChanged(object sender, EventArgs e)
-        {
-            this.gaussianSize2 = (int)(e as ParameterSlider.ChangedValue).Value;
-            if (this.gaussianSize2 % 2 == 0)
-            {
-                this.gaussianSize2--;
-            }
-
-        }
-
-        private void BrightCheck_Rate_ValueChanged(object sender, EventArgs e)
-        {
-            this.sharpness = (int)(e as ParameterSlider.ChangedValue).Value;
-        }
-
-        private void BrightCheck_con_R_ValueChanged(object sender, EventArgs e)
-        {
-            this.color.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void BrightCheck_con_G_ValueChanged(object sender, EventArgs e)
-        {
-            this.color.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void BrightCheck_con_B_ValueChanged(object sender, EventArgs e)
-        {
+            //this.color.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
+            //this.color.Val1 = this.color.Val0;
+            //this.color.Val2 = this.color.Val0;
             this.color.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
-
+            this.color.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
+            this.color.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void BrightCheck_bgd_R_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_pt_B_x_ValueChanged(object sender, EventArgs e)
         {
-            this.colorBack.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
-
+            this.ellipsePt_B_x = (double)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void BrightCheck_bgd_G_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_pt_B_y_ValueChanged(object sender, EventArgs e)
         {
-            this.colorBack.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
-
+            this.ellipsePt_B_y = (double)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        private void BrightCheck_bgd_B_ValueChanged(object sender, EventArgs e)
+        private void BrightCheck_pt_D_x_ValueChanged(object sender, EventArgs e)
         {
-            this.colorBack.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
-
+            this.ellipsePt_D_x = (double)(e as ParameterSlider.ChangedValue).Value;
         }
+
+        private void BrightCheck_pt_D_y_ValueChanged(object sender, EventArgs e)
+        {
+            this.ellipsePt_D_y = (double)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void BrightCheck_rad_x_ValueChanged(object sender, EventArgs e)
+        {
+            this.radius_x = (double)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void BrightCheck_rad_y_ValueChanged(object sender, EventArgs e)
+        {
+            this.radius_y = (double)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void BrightCheck_rad_size_ValueChanged(object sender, EventArgs e)
+        {
+            this.radius_size = (double)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+
+        private void BrightCheck_angle_ValueChanged(object sender, EventArgs e)
+        {
+            this.angle = (double)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+        
 
 
 
 
 
         Mat m_buffer;
-        Mat m_lightMask;
-        bool m_UseFade;
+
         private void Update(ref Mat src, ref Mat dst)
         {
             this.List_Contours.Clear();
@@ -184,82 +152,63 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
             else
             {
-                if (this.m_UseFade)
-                {
-                    m_buffer *= 0.9;
-                }
-                else
-                {
-                    m_buffer *= 0;
-                }
+                m_buffer *= 0;
             }
-            m_lightMask = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, lightRate);
 
+            dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
 
-            Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
-            Cv2.Dilate(grayimage, grayimage, null, null, this.dilateNum);
+            //キー入力
+            this.hInput = Input.GetAxis("Horizontal");
+            this.hInput = Math.Sign(this.hInput);
 
-            //ブラーで滑らかにぼかす 一回目
-            Cv2.GaussianBlur(grayimage, grayimage, new Size(this.gaussianSize1, this.gaussianSize1), 0f);
+            this.vInput = Input.GetAxis("Vertical");
+            this.vInput = Math.Sign(this.vInput  );
 
+          
+            this.color.Val0 += this.hInput;
+            this.color.Val0 += 2 * this.vInput;
 
-            //定数乗する
-            Cv2.CvtColor(m_lightMask, m_lightMask, OpenCvSharp.ColorConversion.BgrToGray);
-            grayimage = grayimage.Mul(m_lightMask);
-
-            //ブラーで滑らかにぼかす 一回目
-            Cv2.GaussianBlur(grayimage, grayimage, new Size(this.gaussianSize2, this.gaussianSize2), 0f);
-
-
-            //二値化
-            if (this.threshold != 0)
+            if(this.color.Val0 > 255)
             {
-                Cv2.Threshold(grayimage, grayimage, this.threshold, 255, OpenCvSharp.ThresholdType.Binary);
+                this.color.Val0 = 255;
             }
-
-            if (this.contFind)
+            if (this.color.Val0 < 0)
             {
-
-                dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
-
-                Point[][] contour;//= grayimage.FindContoursAsArray(OpenCvSharp.ContourRetrieval.External, OpenCvSharp.ContourChain.ApproxSimple);
-                HierarchyIndex[] hierarchy;
-
-                Cv2.FindContours(grayimage, out contour, out hierarchy, OpenCvSharp.ContourRetrieval.External, OpenCvSharp.ContourChain.ApproxNone);
-
-                List<OpenCvSharp.CPlusPlus.Point> CvPoints = new List<Point>();
-
-                for (int i = 0; i < contour.Length; i++)
-                {
-
-                    CvPoints.Clear();
-                    if (Cv2.ContourArea(contour[i]) > this.findAreaTh)
-                    {
-
-                        for (int j = 0; j < contour[i].Length; j += contour[i].Length / this.sharpness + 1)
-                        {
-
-                            //絶対五回のはず
-                            CvPoints.Add(contour[i][j]);
-                        }
-
-                        this.List_Contours.Add(new List<Point>(CvPoints));
-
-                    }
-
-                }
-                var _contour = List_Contours.ToArray();
-
-                Cv2.DrawContours(m_buffer, _contour, -1, color, -1, OpenCvSharp.LineType.Link8);
+                this.color.Val0 = 0;
             }
-            else
+
+            this.color.Val1 = this.color.Val0;
+            this.color.Val2 = this.color.Val0;
+
+         
+
+
+
+            Cv2.Ellipse(m_buffer, new Point(this.ellipsePt_B_x, this.ellipsePt_B_y), new Size(this.radius_x * this.radius_size, this.radius_y * this.radius_size), 0, 0, angle, new Scalar(255,255,255), -1);
+            Cv2.Ellipse(m_buffer, new Point(this.ellipsePt_D_x, this.ellipsePt_D_y), new Size(this.radius_x * this.radius_size, this.radius_y * this.radius_size), 0, 0, angle, color, -1);
+
+
+            if (this.vsbGLD)
             {
-                Cv2.CvtColor(grayimage, grayimage, OpenCvSharp.ColorConversion.GrayToBgr);
-                m_buffer += grayimage;
-                //Debug.Log("nocont"   );
+                Cv2.Circle(m_buffer, src.Width-10, src.Height-10, 10, new Scalar(255, 200, 100),3);
+                Cv2.Circle(m_buffer, src.Width-10, 10, 10, new Scalar(255, 200, 100),3);
+                Cv2.Circle(m_buffer, 10, src.Height-10, 10, new Scalar(255, 200, 100),3);
+                Cv2.Circle(m_buffer, 10, 10, 5, new Scalar(255, 200, 100),3);
+                Cv2.Circle(m_buffer, src.Width / 2, 10, 10, new Scalar(255, 200, 100),3);
+                Cv2.Circle(m_buffer, src.Width / 2, src.Height-10, 10, new Scalar(255, 200, 100),3);
+
+
+                Cv2.Circle(m_buffer, new Point(this.ellipsePt_B_x, this.ellipsePt_B_y), 20, new Scalar(255, 200, 100));
+
             }
 
+            //テキスト表示
+            if (this.vsbTxt)
+            {
+                this.brightTxt = (float)this.color.Val0;
+                Cv2.PutText(m_buffer, this.brightTxt.ToString(),new Point(90,400),FontFace.HersheySimplex,1,new Scalar(255,255,255));
 
+            }
 
             dst += m_buffer;
 
