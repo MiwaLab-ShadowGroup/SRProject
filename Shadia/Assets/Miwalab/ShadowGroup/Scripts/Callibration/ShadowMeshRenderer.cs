@@ -610,6 +610,13 @@ public class ShadowMeshRenderer : MonoBehaviour
         }
     }
 
+    public void resetInptPositionInverse(int index)
+    {
+        UVDiff[index] = new Vector2(0, 0);
+        UpdatePos();
+
+    }
+
 
     void CreateMesh(int width, int height)
     {

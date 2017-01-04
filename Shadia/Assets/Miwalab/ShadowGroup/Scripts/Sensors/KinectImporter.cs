@@ -317,14 +317,18 @@ public class KinectImporter : ASensorImporter
                     point = this.m_cameraSpacePoints[(y * length_X + x)];
                     ///とりあえずカメラの位置で減算
                     point.decrease(ref this._position);
-                    ///ViewRange変換
-                    point.multiply(m_ViewRange);
+                    
 
                     //if (point.X * point.X + point.Z * point.Z > m_CircleCut) { continue; }
                     if (point.Y < this.m_bottom) { continue; }
                     if (point.Y > this.m_top) { continue; }
-
-
+                    ///拡大率の計算
+                    if (point.X * point.X + point.Z * point.Z > m_CircleCut)
+                    {
+                        continue;
+                    }
+                    ///ViewRange変換
+                    point.multiply(m_ViewRange);
 
                     pos.x = point.X;
                     pos.y = point.Y;
