@@ -103,7 +103,12 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     public Text _debugText;
 
-   
+    public GameObject ButterflySet;
+    public GameObject FishSet;
+    public GameObject TigerSet;
+    private List<GameObject> List_backGround;
+
+
     protected List<Dropdown> m_MenuList;
     protected Dictionary<string, GameObject> m_PanelDictionary;
     public virtual void Start()
@@ -203,6 +208,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsBackgroundFish(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Fish.ToString()]);
         this.CreateUIsBackgroundTiger(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Tiger.ToString()]);
         this.CreateUIsGeneric();
+        //代入の順番はGenericに合わせてください
+        this.List_backGround = new List<GameObject>() {this.ButterflySet,this.FishSet,this.TigerSet };
 
         this.m_meshrenderer.ForEach(p => p.SetUpUIs());
         this.m_Sensor.setUpUI();
@@ -1215,38 +1222,24 @@ public class ShadowMediaUIHost : MonoBehaviour
     #endregion
 
     #region background
-    public GameObject ButterflySet;
-    public GameObject FishSet;
-    public GameObject TigerSet;
+ 
     public void ChangeBackgroundTypeSettingOptionTo(int number)
     {
         Miwalab.ShadowGroup.Background.BackgroundType type = (Miwalab.ShadowGroup.Background.BackgroundType)number;
 
-        switch (type)
+        this.m_currentBackgroundTypeSettingPanel = this.m_PanelDictionary[type.ToString()];
+        this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
+        
+        for (int i = 0; i < this.List_backGround.Count; ++i)
         {
-            case Miwalab.ShadowGroup.Background.BackgroundType.Butterfly:
-                //一回作って使いまわす
-                this.m_currentBackgroundTypeSettingPanel = this.m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Butterfly.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
-                FishSet.SetActive(false);
-                TigerSet.SetActive(false);
-                ButterflySet.SetActive(true);
-                break;
-            case Miwalab.ShadowGroup.Background.BackgroundType.Fish:
-                this.m_currentBackgroundTypeSettingPanel = this.m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Fish.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
-                FishSet.SetActive(true);
-                TigerSet.SetActive(false);
-                ButterflySet.SetActive(false);
-                break;
-            case Miwalab.ShadowGroup.Background.BackgroundType.Tiger:
-                this.m_currentBackgroundTypeSettingPanel = this.m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Tiger.ToString()];
-                this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
-                FishSet.SetActive(false);
-                TigerSet.SetActive(true);
-                ButterflySet.SetActive(false);
-                break;
-
+            if (i == number)
+            {
+                this.List_backGround[i].SetActive(true);
+            }
+            else
+            {
+                this.List_backGround[i].SetActive(false);
+            }
         }
 
     }
