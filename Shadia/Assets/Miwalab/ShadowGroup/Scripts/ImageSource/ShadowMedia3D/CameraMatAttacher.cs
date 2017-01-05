@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using OpenCvSharp.CPlusPlus;
+using System.Runtime.InteropServices;
 
 [RequireComponent(typeof(Camera))]
 public class CameraMatAttacher : MonoBehaviour
@@ -10,14 +11,14 @@ public class CameraMatAttacher : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        
+
         _Texture = new Texture2D(512, 424, TextureFormat.RGB24, false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void Attach(ref Mat mat)
@@ -26,15 +27,10 @@ public class CameraMatAttacher : MonoBehaviour
         //don't forget that you need to specify rendertexture before you call readpixels
         //otherwise it will read screen pixels.
         _Texture.ReadPixels(new UnityEngine.Rect(0, 0, _RenderTexture.width, _RenderTexture.height), 0, 0);
-        unsafe
-        {
-            var srcData = _Texture.GetRawTextureData();
-            byte* dstData = (byte*)mat.Data;
-            for (int i = 0; i < 512 * 424 * 3; ++i)
-            {
-                dstData[i] = srcData[512 * 424 * 3 - i-1];
-            }
-        }
+        _Texture.Apply();
+        var srcData = _Texture.GetRawTextureData();
+        Marshal.Copy(srcData, 0, mat.Data, 512 * 424 * 3);
+        Cv2.Flip(mat, mat, OpenCvSharp.FlipMode.XY);
         RenderTexture.active = null;
     }
 }

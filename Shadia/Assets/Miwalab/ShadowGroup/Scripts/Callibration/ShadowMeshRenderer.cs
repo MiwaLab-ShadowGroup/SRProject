@@ -602,7 +602,7 @@ public class ShadowMeshRenderer : MonoBehaviour
                 (ShadowMediaUIHost.GetUI("Clb_I_BR_Y" + CallibNumber) as ParameterSlider).m_slider.value = temp.y;
                 break;
             case UIPointSphereSrcScript.PointType.Top:
-                this.
+                
                 break;
             case UIPointSphereSrcScript.PointType.Bottom:
                 break;

@@ -23,10 +23,12 @@ public class MatAttacher : MonoBehaviour {
         {
             p.SetMaterial(material);
         }
-	}
-	
-	// Update is called once per frame
-	void Update () {
+        material.mainTexture = tex;
+
+    }
+
+    // Update is called once per frame
+    void Update () {
         if (importer == null)
         {
             return;
@@ -37,13 +39,12 @@ public class MatAttacher : MonoBehaviour {
         }
         byte[] data = new byte[0];
         try {
-            data = importer.getCvMat().ToBytes(".PNG");
+            data = importer.getCvMat().ToBytes(".png");
         }
         catch
         {
             Debug.Log("trying now...");
         }
         tex.LoadImage(data);
-        material.mainTexture = tex;
     }
 }
