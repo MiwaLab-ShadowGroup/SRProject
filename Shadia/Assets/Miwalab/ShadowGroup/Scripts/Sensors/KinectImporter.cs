@@ -44,6 +44,8 @@ public class KinectImporter : ASensorImporter
     public GameObject ReadData;
     private bool IsArchive = false;
 
+    private bool m_useBody = true;
+
     public bool IsDepthStream { get; private set; }
 
     public float m_kinectRotation_rx = 0;
@@ -179,14 +181,13 @@ public class KinectImporter : ASensorImporter
 
         foreach (var imageProcesser in this.m_ImagerProcesserList)
         {
-            imageProcesser.SetBody(_bodyManager.GetData());
-
-            this.RSIM.SetSendSkeletons(ref imageProcesser.depthBodyData, _bodyManager.GetData());
-            this.RSIM.GetReceivedSkeletons(ref imageProcesser.depthBodyData, _bodyManager.GetData());
-
-
-            imageProcesser.UpdateBodyIndexList();
-
+            if (this.m_useBody)
+            {
+                imageProcesser.SetBody(_bodyManager.GetData());
+                this.RSIM.SetSendSkeletons(ref imageProcesser.depthBodyData, _bodyManager.GetData());
+                this.RSIM.GetReceivedSkeletons(ref imageProcesser.depthBodyData, _bodyManager.GetData());
+                imageProcesser.UpdateBodyIndexList();
+            }
             imageProcesser.ImageProcess(ref this.m_mat, ref this.m_mat);
 
         }
@@ -236,8 +237,6 @@ public class KinectImporter : ASensorImporter
 
             Vector3 pos =new Vector3(0,0,0);
             Quaternion quat = Quaternion.Euler(m_kinectRotation_rx, m_kinectRotation_ry, 0);
-            float movingLate = 1;
-            float potion = 1;
             for (int y = 0; y < length_Y; ++y)
             {
                 for (int x = 0; x < length_X; ++x)
@@ -257,14 +256,11 @@ public class KinectImporter : ASensorImporter
                         continue;
                     }
 
-                    
-
                     pos.x = point.X;
                     pos.y = point.Y;
                     pos.z = point.Z;
 
                     pos = quat * pos;
-                    
 
                     ///新規のXY位置を計算
                     depthPoint_X = (int)(length_X_Half- pos.x * length_X_Half /pos.z);
@@ -308,8 +304,6 @@ public class KinectImporter : ASensorImporter
 
             Vector3 pos = new Vector3(0, 0, 0);
             Quaternion quat = Quaternion.Euler(m_kinectRotation_rx, m_kinectRotation_ry, 0);
-            float movingLate = 1;
-            float potion = 1;
             for (int y = 0; y < length_Y; ++y)
             {
                 for (int x = 0; x < length_X; ++x)
@@ -317,14 +311,18 @@ public class KinectImporter : ASensorImporter
                     point = this.m_cameraSpacePoints[(y * length_X + x)];
                     ///とりあえずカメラの位置で減算
                     point.decrease(ref this._position);
-                    ///ViewRange変換
-                    point.multiply(m_ViewRange);
+                    
 
                     //if (point.X * point.X + point.Z * point.Z > m_CircleCut) { continue; }
                     if (point.Y < this.m_bottom) { continue; }
                     if (point.Y > this.m_top) { continue; }
-
-
+                    ///拡大率の計算
+                    if (point.X * point.X + point.Z * point.Z > m_CircleCut)
+                    {
+                        continue;
+                    }
+                    ///ViewRange変換
+                    point.multiply(m_ViewRange);
 
                     pos.x = point.X;
                     pos.y = point.Y;
@@ -441,8 +439,8 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Archive") as ParameterCheckbox).ValueChanged += KinectImporter_ValueChanged;
 
         (ShadowMediaUIHost.GetUI("Kinect_Depth") as ParameterCheckbox).ValueChanged += KinectImporter_KinectDepth_ValueChanged;
-
-
+        (ShadowMediaUIHost.GetUI("kinect_use_bone") as ParameterCheckbox).ValueChanged += KinectImporter_kinect_use_bone_ValueChanged;
+        
 
         (ShadowMediaUIHost.GetUI("Kinect_x_min") as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Kinect_x_max") as ParameterSlider).ValueUpdate();
@@ -463,6 +461,11 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_Depth") as ParameterCheckbox).ValueUpdate();
 
 
+    }
+
+    private void KinectImporter_kinect_use_bone_ValueChanged(object sender, EventArgs e)
+    {
+        m_useBody = (e as ParameterCheckbox.ChangedValue).Value;
     }
 
     private void Kinect_light_r_ValueChanged(object sender, EventArgs e)

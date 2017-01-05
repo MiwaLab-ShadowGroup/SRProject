@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#define REMOTE_BONE_USE
+
+using UnityEngine;
 using System.Collections;
 using Miwalab.ShadowGroup.Network;
 using Miwalab.ShadowGroup.Thread;

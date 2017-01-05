@@ -10,6 +10,8 @@ public class UIPointSphereSrcScript : MonoBehaviour
         RightTop,
         LeftBottom,
         RightBottom,
+        Top,
+        Bottom,
         Other
     }
 
@@ -20,13 +22,16 @@ public class UIPointSphereSrcScript : MonoBehaviour
 
     public ShadowMeshRenderer _Renderer { set; get; }
     public int _uvIndex { set; get; }
+    private MeshRenderer _MeshRenderer { set; get; }
+    private bool _IsSelected { set; get; }
+    private Color _PrevColor { set; get; }
 
     public PointType _pointType { set; get; }
 
     // Use this for initialization
     void Start()
     {
-
+        this._MeshRenderer = GetComponent<MeshRenderer>();
     }
 
     // Update is called once per frame
@@ -34,7 +39,7 @@ public class UIPointSphereSrcScript : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && (Input.GetKey(KeyCode.LeftControl) || (Input.GetKey(KeyCode.RightControl))))
         {
-            if (this._pointType == PointType.Other)
+            if (this._pointType == PointType.Top || this._pointType == PointType.Bottom)
             {
                 if (!(Input.GetKey(KeyCode.LeftShift) || (Input.GetKey(KeyCode.RightShift))))
                 {
