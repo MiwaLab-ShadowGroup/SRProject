@@ -218,7 +218,6 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.ImportSettingPanelSet(false);
         this.CallibrationSettingPanelSet(false);
         this.m_Sensor.AddImageProcesser(new Normal());
-
     }
 
 
@@ -987,6 +986,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "Kinect_ViewRange", 4, 0.1f, 1);
         AddFloatUI(parent, "Kinect_CircleCut", 64, 0, 25);
+        AddBooleanUI(parent, "kinect_use_bone", true);
     }
 
     private void CreateUIsImportNetwork(GameObject parent)
@@ -1048,6 +1048,10 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += 10;
         AddButtonUI(parent, "Clb_I_Save" + num);
         AddButtonUI(parent, "Clb_I_Load" + num);
+
+        AddButtonUI(parent, "Save_ClbUV" + num);
+        AddButtonUI(parent, "Load_ClbUV" + num);
+
     }
 
     protected void CreateUIsCallibrationExport(GameObject parent, int num)
@@ -1089,6 +1093,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
         AddButtonUI(parent, "Clb_E_Save" + num);
         AddButtonUI(parent, "Clb_E_Load" + num);
+
     }
 
     protected void CreateUIsCameraCllibration(GameObject parent, int num)

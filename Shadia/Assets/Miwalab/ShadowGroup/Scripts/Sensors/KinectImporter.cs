@@ -44,6 +44,8 @@ public class KinectImporter : ASensorImporter
     public GameObject ReadData;
     private bool IsArchive = false;
 
+    private bool m_useBody = true;
+
     public bool IsDepthStream { get; private set; }
 
     public float m_kinectRotation_rx = 0;
@@ -60,6 +62,10 @@ public class KinectImporter : ASensorImporter
     #region 3D
     public BodyImage3D BodyImage3D;
     public CameraMatAttacher CameraAttacher;
+    #endregion
+
+    #region Circle
+    public Mat m_mat3DObjectsRendered;
     #endregion
 
 
@@ -88,7 +94,7 @@ public class KinectImporter : ASensorImporter
                 m_frameDescription = m_sensor.DepthFrameSource.FrameDescription;
                 m_depthFrameSource = m_sensor.DepthFrameSource;
                 this.m_mat = new Mat(new Size(m_frameDescription.Width, m_frameDescription.Height), this.m_matType);
-
+                this.m_mat3DObjectsRendered = m_mat.Clone(); 
             }
             m_cameraSpacePoints = new CameraSpacePoint[m_frameDescription.Width * m_frameDescription.Height];
         }
@@ -168,6 +174,11 @@ public class KinectImporter : ASensorImporter
             case Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia2D:
                 this.ConvertDepthToMat();
                 break;
+            case Miwalab.ShadowGroup.Core.ShadowMediaMode.CircleShadow:
+                this.CameraAttacher.Attach(ref m_mat3DObjectsRendered);
+                this.ConvertDepthToMat();
+                this.m_mat += m_mat3DObjectsRendered;
+                break;
         }
 
         this.RSIM.SetSendMat(m_mat);
@@ -179,14 +190,13 @@ public class KinectImporter : ASensorImporter
 
         foreach (var imageProcesser in this.m_ImagerProcesserList)
         {
-            imageProcesser.SetBody(_bodyManager.GetData());
-
-            this.RSIM.SetSendSkeletons(ref imageProcesser.depthBodyData, _bodyManager.GetData());
-            this.RSIM.GetReceivedSkeletons(ref imageProcesser.depthBodyData, _bodyManager.GetData());
-
-
-            imageProcesser.UpdateBodyIndexList();
-
+            if (this.m_useBody)
+            {
+                imageProcesser.SetBody(_bodyManager.GetData());
+                this.RSIM.SetSendSkeletons(ref imageProcesser.depthBodyData, _bodyManager.GetData());
+                this.RSIM.GetReceivedSkeletons(ref imageProcesser.depthBodyData, _bodyManager.GetData());
+                imageProcesser.UpdateBodyIndexList();
+            }
             imageProcesser.ImageProcess(ref this.m_mat, ref this.m_mat);
 
         }
@@ -236,8 +246,6 @@ public class KinectImporter : ASensorImporter
 
             Vector3 pos =new Vector3(0,0,0);
             Quaternion quat = Quaternion.Euler(m_kinectRotation_rx, m_kinectRotation_ry, 0);
-            float movingLate = 1;
-            float potion = 1;
             for (int y = 0; y < length_Y; ++y)
             {
                 for (int x = 0; x < length_X; ++x)
@@ -257,14 +265,11 @@ public class KinectImporter : ASensorImporter
                         continue;
                     }
 
-                    
-
                     pos.x = point.X;
                     pos.y = point.Y;
                     pos.z = point.Z;
 
                     pos = quat * pos;
-                    
 
                     ///新規のXY位置を計算
                     depthPoint_X = (int)(length_X_Half- pos.x * length_X_Half /pos.z);
@@ -308,8 +313,6 @@ public class KinectImporter : ASensorImporter
 
             Vector3 pos = new Vector3(0, 0, 0);
             Quaternion quat = Quaternion.Euler(m_kinectRotation_rx, m_kinectRotation_ry, 0);
-            float movingLate = 1;
-            float potion = 1;
             for (int y = 0; y < length_Y; ++y)
             {
                 for (int x = 0; x < length_X; ++x)
@@ -317,14 +320,18 @@ public class KinectImporter : ASensorImporter
                     point = this.m_cameraSpacePoints[(y * length_X + x)];
                     ///とりあえずカメラの位置で減算
                     point.decrease(ref this._position);
-                    ///ViewRange変換
-                    point.multiply(m_ViewRange);
+                    
 
                     //if (point.X * point.X + point.Z * point.Z > m_CircleCut) { continue; }
                     if (point.Y < this.m_bottom) { continue; }
                     if (point.Y > this.m_top) { continue; }
-
-
+                    ///拡大率の計算
+                    if (point.X * point.X + point.Z * point.Z > m_CircleCut)
+                    {
+                        continue;
+                    }
+                    ///ViewRange変換
+                    point.multiply(m_ViewRange);
 
                     pos.x = point.X;
                     pos.y = point.Y;
@@ -441,8 +448,8 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Archive") as ParameterCheckbox).ValueChanged += KinectImporter_ValueChanged;
 
         (ShadowMediaUIHost.GetUI("Kinect_Depth") as ParameterCheckbox).ValueChanged += KinectImporter_KinectDepth_ValueChanged;
-
-
+        (ShadowMediaUIHost.GetUI("kinect_use_bone") as ParameterCheckbox).ValueChanged += KinectImporter_kinect_use_bone_ValueChanged;
+        
 
         (ShadowMediaUIHost.GetUI("Kinect_x_min") as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Kinect_x_max") as ParameterSlider).ValueUpdate();
@@ -463,6 +470,11 @@ public class KinectImporter : ASensorImporter
         (ShadowMediaUIHost.GetUI("Kinect_Depth") as ParameterCheckbox).ValueUpdate();
 
 
+    }
+
+    private void KinectImporter_kinect_use_bone_ValueChanged(object sender, EventArgs e)
+    {
+        m_useBody = (e as ParameterCheckbox.ChangedValue).Value;
     }
 
     private void Kinect_light_r_ValueChanged(object sender, EventArgs e)
