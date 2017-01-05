@@ -11,7 +11,8 @@ public class UIPointSphereSrcScript : MonoBehaviour
         LeftBottom,
         RightBottom,
         Top,
-        Bottom
+        Bottom,
+        Other
     }
 
     private bool _isDragged;
