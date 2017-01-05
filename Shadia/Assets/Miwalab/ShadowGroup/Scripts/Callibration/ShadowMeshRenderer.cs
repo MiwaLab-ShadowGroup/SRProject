@@ -601,10 +601,13 @@ public class ShadowMeshRenderer : MonoBehaviour
                 (ShadowMediaUIHost.GetUI("Clb_I_BR_X" + CallibNumber) as ParameterSlider).m_slider.value = temp.x;
                 (ShadowMediaUIHost.GetUI("Clb_I_BR_Y" + CallibNumber) as ParameterSlider).m_slider.value = temp.y;
                 break;
-            case UIPointSphereSrcScript.PointType.Other:
-
+            case UIPointSphereSrcScript.PointType.Top:
+                this.
+                break;
+            case UIPointSphereSrcScript.PointType.Bottom:
+                break;
+            default:
                 UVDiff[index] = temp - @default;
-
                 UpdatePos();
                 break;
         }

@@ -198,7 +198,6 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.ImportSettingPanelSet(false);
         this.CallibrationSettingPanelSet(false);
         this.m_Sensor.AddImageProcesser(new Normal());
-
     }
 
 
@@ -941,6 +940,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "Kinect_ViewRange", 4, 0.1f, 1);
         AddFloatUI(parent, "Kinect_CircleCut", 64, 0, 25);
+        AddBooleanUI(parent, "kinect_use_bone", true);
     }
 
     private void CreateUIsImportNetwork(GameObject parent)
