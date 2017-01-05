@@ -114,6 +114,9 @@ public class ShadowMeshRenderer : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Clb_I_Save" + CallibNumber) as ParameterButton).Clicked += Clb_I_Save_Clicked;
         (ShadowMediaUIHost.GetUI("Clb_I_Load" + CallibNumber) as ParameterButton).Clicked += Clb_I_Load_Clicked;
 
+        (ShadowMediaUIHost.GetUI("Save_ClbUV" + CallibNumber) as ParameterButton).Clicked += Save_ClbUV_Clicked; ;
+        (ShadowMediaUIHost.GetUI("Load_ClbUV" + CallibNumber) as ParameterButton).Clicked += Load_ClbUV_Clicked; ;
+
 
         (ShadowMediaUIHost.GetUI("Clb_E_TL_X" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_TL_XChanged;
         (ShadowMediaUIHost.GetUI("Clb_E_TL_Y" + CallibNumber) as ParameterSlider).ValueChanged += Clb_E_TL_YChanged;
@@ -175,7 +178,7 @@ public class ShadowMeshRenderer : MonoBehaviour
                 item.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
                 item.GetComponent<MeshRenderer>().material.color = Color.red;
             }
-            else if (i == (Row ) * (Col + 1))//leftTop
+            else if (i == (Row ) * (Col + 1))//leftBottom
             {
                 script._pointType = UIPointSphereSrcScript.PointType.LeftBottom;
                 item.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
@@ -186,6 +189,18 @@ public class ShadowMeshRenderer : MonoBehaviour
                 script._pointType = UIPointSphereSrcScript.PointType.RightBottom;
                 item.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
                 item.GetComponent<MeshRenderer>().material.color = Color.red;
+            }
+            else if (i != 0 && i < Col )//Top
+            {
+                script._pointType = UIPointSphereSrcScript.PointType.Top;
+                item.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+                item.GetComponent<MeshRenderer>().material.color = Color.cyan;
+            }
+            else if ((Row) * (Col + 1) < i && i <(Row + 1) * (Col + 1) - 1)//Bottom
+            {
+                script._pointType = UIPointSphereSrcScript.PointType.Bottom;
+                item.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+                item.GetComponent<MeshRenderer>().material.color = Color.cyan;
             }
             else
             {
@@ -211,6 +226,42 @@ public class ShadowMeshRenderer : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Clb_E_TR_X" + CallibNumber) as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Clb_E_TR_Y" + CallibNumber) as ParameterSlider).ValueUpdate();
         (ShadowMediaUIHost.GetUI("Clb_E_Vsbl" + CallibNumber) as ParameterCheckbox).ValueUpdate();
+    }
+
+    private void Load_ClbUV_Clicked(object sender, EventArgs e)
+    {
+        string str = "";
+        OpenFileDialog.OpenFileDialog.Read(ref str);
+        if (str == "")
+        {
+            return;
+        }
+
+        Miwalab.ShadowGroup.Data.CallibrationUVImportDocument CID = new Miwalab.ShadowGroup.Data.CallibrationUVImportDocument();
+        CID.Load(str);
+        CID.SetValue(this);
+        UpdatePos();
+    }
+
+    private void Save_ClbUV_Clicked(object sender, EventArgs e)
+    {
+        string str = "";
+        OpenFileDialog.OpenFileDialog.Save(ref str);
+        if (str == "")
+        {
+            return;
+        }
+
+        Regex reg = new Regex(@"\.CID$");
+        if (!reg.IsMatch(str))
+        {
+            str += ".CID";
+        }
+        Miwalab.ShadowGroup.Data.CallibrationUVImportDocument CID = new Miwalab.ShadowGroup.Data.CallibrationUVImportDocument();
+
+        CID.SetupField(this);
+        CID.Save(str);
+
     }
 
     private void clb_i_condence_changed(object sender, EventArgs e)
@@ -602,9 +653,35 @@ public class ShadowMeshRenderer : MonoBehaviour
                 (ShadowMediaUIHost.GetUI("Clb_I_BR_Y" + CallibNumber) as ParameterSlider).m_slider.value = temp.y;
                 break;
             case UIPointSphereSrcScript.PointType.Top:
-                this.
+                UVDiff[index] = temp - @default;//動かした点はそのまま
+                for (int j = 1; j < Row + 2; j++)
+                {
+                    if(j != Row + 1)
+                    {
+                        //最後の点以外を直線になるよう動かす
+                        UVDiff[index + j * (Col + 1)] = ((temp - @default) / Row * ((Row) - j));
+                    }
+                    else
+                    {
+                       
+                    }
+                }
+                UpdatePos();
                 break;
             case UIPointSphereSrcScript.PointType.Bottom:
+                UVDiff[index] = temp - @default;
+                for (int j = 1; j < Row + 2; j++)
+                {
+                    if (j != Row + 1)
+                    {
+                        UVDiff[index - j * (Col + 1)] = ((temp - @default) / Row * ((Row) - j));
+                    }
+                    else
+                    {
+
+                    }
+                }
+                UpdatePos();
                 break;
             default:
                 UVDiff[index] = temp - @default;
@@ -612,6 +689,8 @@ public class ShadowMeshRenderer : MonoBehaviour
                 break;
         }
     }
+
+   
 
     public void resetInptPositionInverse(int index)
     {
