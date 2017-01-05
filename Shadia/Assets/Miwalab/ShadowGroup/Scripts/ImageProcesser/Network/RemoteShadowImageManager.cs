@@ -1,4 +1,4 @@
-﻿#define REMOTE_BONE_USE
+﻿//#define USE_REMOTE_BONE
 
 using UnityEngine;
 using System.Collections;
@@ -37,23 +37,29 @@ public class RemoteShadowImageManager : MonoBehaviour
     #region　send
     public Mat _SendMat;
     AutoResetEvent _AutoResetEventSender;
+#if USE_REMOTE_BONE
     public byte[] _SendBoneData;
     public UDP_PACKETS_CODER.UDP_PACKETS_ENCODER _Encorder_Bone;
+#endif
     #endregion
 
     #region receive
     public Mat _ReceivedMat;
-    public AImageProcesser.DepthBody[] _ReceivedBodyData;
     AutoResetEvent _AutoResetEventReceiver;
+#if USE_REMOTE_BONE
     public UDP_PACKETS_CODER.UDP_PACKETS_DECODER _Decorder_Bone;
+    public AImageProcesser.DepthBody[] _ReceivedBodyData;
+#endif
     #endregion
 
 
     #region ID
     public readonly NetworkSettings.NetworkSetting SENDID = NetworkSettings.SETTINGS.RemoteShadowImageManager_Sender;
     public readonly NetworkSettings.NetworkSetting RECEIVEID = NetworkSettings.SETTINGS.RemoteShadowImageManager_Receiver;
+#if USE_REMOTE_BONE
     public readonly NetworkSettings.NetworkSetting SENDIDBONE = NetworkSettings.SETTINGS.RemoteShadowImageManager_Sender_Bone;
     public readonly NetworkSettings.NetworkSetting RECEIVEIDBONE = NetworkSettings.SETTINGS.RemoteShadowImageManager_Receiver_Bone;
+#endif
     #endregion
     // Use this for initialization
     void Start()
@@ -90,14 +96,16 @@ public class RemoteShadowImageManager : MonoBehaviour
 
         _nHost.AddClient(SENDID, 30);
         _nHost.AddClient(RECEIVEID, -1);
-        _nHost.AddClient(SENDIDBONE, 30);
-        _nHost.AddClient(RECEIVEIDBONE, -1);
-
         _nHost.Connect(SENDID, CIPC_CS_Unity.CLIENT.MODE.Sender);
         _nHost.Connect(RECEIVEID, CIPC_CS_Unity.CLIENT.MODE.Receiver);
+
+#if USE_REMOTE_BONE
+
+        _nHost.AddClient(SENDIDBONE, 30);
+        _nHost.AddClient(RECEIVEIDBONE, -1);
         _nHost.Connect(SENDIDBONE, CIPC_CS_Unity.CLIENT.MODE.Sender);
         _nHost.Connect(RECEIVEIDBONE, CIPC_CS_Unity.CLIENT.MODE.Receiver);
-
+#endif
         this.isInitialzedCIPCClient = true;
     }
 
@@ -118,6 +126,7 @@ public class RemoteShadowImageManager : MonoBehaviour
 
     public void SetSendSkeletons(ref AImageProcesser.DepthBody[] skeletonData, Body[] capturedBody)
     {
+#if USE_REMOTE_BONE
         if (skeletonData == null) return;
         if (capturedBody == null) return;
         lock (SyncObject_Sender)
@@ -154,10 +163,11 @@ public class RemoteShadowImageManager : MonoBehaviour
             }
             this._SendBoneData = _Encorder_Bone.data;
         }
+#endif
     }
-
     public void GetReceivedSkeletons(ref AImageProcesser.DepthBody[] skeletonData, Body[] bodyLength)
     {
+#if USE_REMOTE_BONE
         if (this._ReceivedBodyData == null)
         {
             return;
@@ -170,8 +180,8 @@ public class RemoteShadowImageManager : MonoBehaviour
             }
             Array.Copy(_ReceivedBodyData, 0, skeletonData, bodyLength.Length, _ReceivedBodyData.Length);
         }
+#endif
     }
-
 
     public Mat GetReceiveMat()
     {
@@ -188,8 +198,10 @@ public class RemoteShadowImageManager : MonoBehaviour
         if (_nHost == null) return;
         this._nHost.RemoveClient(SENDID);
         this._nHost.RemoveClient(RECEIVEID);
+#if USE_REMOTE_BONE
         this._nHost.RemoveClient(SENDIDBONE);
         this._nHost.RemoveClient(RECEIVEIDBONE);
+#endif
     }
 
     private void ReceiveMethod()
@@ -208,6 +220,7 @@ public class RemoteShadowImageManager : MonoBehaviour
                         _ReceivedMat = Cv2.ImDecode(data, OpenCvSharp.LoadMode.Color);
                     }
 
+#if USE_REMOTE_BONE
 
                     byte[] dataBone = _nHost.Receive(RECEIVEIDBONE, ref available);
                     if (dataBone != null)
@@ -244,6 +257,7 @@ public class RemoteShadowImageManager : MonoBehaviour
                         }
 
                     }
+#endif
 
 
                 }
@@ -268,10 +282,12 @@ public class RemoteShadowImageManager : MonoBehaviour
                     {
                         _nHost.Send(SENDID, _SendMat.ToBytes(".png"));
                     }
-                    if(_SendBoneData != null)
+#if USE_REMOTE_BONE
+                    if (_SendBoneData != null)
                     {
                         _nHost.Send(SENDIDBONE, _SendBoneData);
                     }
+#endif
                 }
                 _AutoResetEventSender.WaitOne();
             }

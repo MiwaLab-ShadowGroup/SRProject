@@ -64,6 +64,10 @@ public class KinectImporter : ASensorImporter
     public CameraMatAttacher CameraAttacher;
     #endregion
 
+    #region Circle
+    public Mat m_mat3DObjectsRendered;
+    #endregion
+
 
     #region 送受信用
 
@@ -90,7 +94,7 @@ public class KinectImporter : ASensorImporter
                 m_frameDescription = m_sensor.DepthFrameSource.FrameDescription;
                 m_depthFrameSource = m_sensor.DepthFrameSource;
                 this.m_mat = new Mat(new Size(m_frameDescription.Width, m_frameDescription.Height), this.m_matType);
-
+                this.m_mat3DObjectsRendered = m_mat.Clone(); 
             }
             m_cameraSpacePoints = new CameraSpacePoint[m_frameDescription.Width * m_frameDescription.Height];
         }
@@ -169,6 +173,11 @@ public class KinectImporter : ASensorImporter
                 break;
             case Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia2D:
                 this.ConvertDepthToMat();
+                break;
+            case Miwalab.ShadowGroup.Core.ShadowMediaMode.CircleShadow:
+                this.CameraAttacher.Attach(ref m_mat3DObjectsRendered);
+                this.ConvertDepthToMat();
+                this.m_mat += m_mat3DObjectsRendered;
                 break;
         }
 

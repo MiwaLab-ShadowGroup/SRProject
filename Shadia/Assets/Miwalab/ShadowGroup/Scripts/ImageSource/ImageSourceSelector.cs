@@ -5,6 +5,7 @@ public class ImageSourceSelector : MonoBehaviour {
 
     public GameObject ImageSource2D;
     public GameObject ImageSource3D;
+    public GameObject ImageSourceCircle;
 
     // Use this for initialization
     void Start () {
@@ -18,10 +19,17 @@ public class ImageSourceSelector : MonoBehaviour {
             case Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia2D:
                 ImageSource2D.SetActive(true);
                 ImageSource3D.SetActive(false);
+                ImageSourceCircle.SetActive(false);
                 break;
             case Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia3D:
                 ImageSource2D.SetActive(true);
                 ImageSource3D.SetActive(true);
+                ImageSourceCircle.SetActive(false);
+                break;
+            case Miwalab.ShadowGroup.Core.ShadowMediaMode.CircleShadow:
+                ImageSource2D.SetActive(true);
+                ImageSource3D.SetActive(false);
+                ImageSourceCircle.SetActive(true);
                 break;
         }
 	}
