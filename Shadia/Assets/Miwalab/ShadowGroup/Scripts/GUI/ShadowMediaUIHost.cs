@@ -1002,6 +1002,10 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += 10;
         AddButtonUI(parent, "Clb_I_Save" + num);
         AddButtonUI(parent, "Clb_I_Load" + num);
+
+        AddButtonUI(parent, "Save_ClbUV" + num);
+        AddButtonUI(parent, "Load_ClbUV" + num);
+
     }
 
     protected void CreateUIsCallibrationExport(GameObject parent, int num)
@@ -1043,6 +1047,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
         AddButtonUI(parent, "Clb_E_Save" + num);
         AddButtonUI(parent, "Clb_E_Load" + num);
+
     }
 
     protected void CreateUIsCameraCllibration(GameObject parent, int num)
