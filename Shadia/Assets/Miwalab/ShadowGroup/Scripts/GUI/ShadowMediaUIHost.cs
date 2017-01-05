@@ -953,6 +953,14 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "Kinect_Depth", false);
 
+        AddFloatUI(parent, "kinect_height", 5, 0, 0.85f);
+        AddFloatUI(parent, "kinect_angle", 180, -180, -90);
+        AddFloatUI(parent, "kinect_radius", 10, 0, 5.4f);
+
+        
+        
+        
+
     }
 
     private void CreateUIsImportKinectAditional(GameObject parent)
