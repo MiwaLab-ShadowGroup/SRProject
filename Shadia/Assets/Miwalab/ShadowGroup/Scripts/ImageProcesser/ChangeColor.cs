@@ -84,11 +84,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             }
             m_colorBuffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, color);
+            m_buffer = m_colorBuffer.Mul(src);
+
 
             dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
-            
-            m_buffer += src.Mul(this.m_colorBuffer);
-
             dst += m_buffer;
 
             //dst += m_buffer;
