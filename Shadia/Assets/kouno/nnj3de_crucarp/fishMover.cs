@@ -11,7 +11,6 @@ public class fishMover : MonoBehaviour {
     private bool Gone;
     private bool Jump;
     public GameObject jellyfish;
-    public Camera cam;
 
 
     private float changeTargetSqrDistance = 0.01f;
@@ -89,29 +88,7 @@ public class fishMover : MonoBehaviour {
             }
 
         }
-        //if (Input.GetKeyDown(KeyCode.J))
-        //{
-        //    preHeight = this.cam.transform.position.y;
-        //    targetHeight = this.cam.transform.position.y - 10f ;
-        //    Jump = true;
-
-        //}
-        //if (Jump)
-        //{
-        //    if(this.cam.transform.position.y > targetHeight)
-        //    {
-        //        this.cam.transform.Translate(new Vector3(0, -1, 0) * 0.5f * Time.deltaTime);
-        //    }
-        //    else {
-        //        Jump = false;
-        //    }
-        //}
-        //if(this.cam.transform.position.y < preHeight)
-        //{
-        //    this.cam.transform.Translate(new Vector3(0, 1, 0) * 0.5f * Time.deltaTime);
-        //}
-
-
+  
 
 
         if (!Gone)
