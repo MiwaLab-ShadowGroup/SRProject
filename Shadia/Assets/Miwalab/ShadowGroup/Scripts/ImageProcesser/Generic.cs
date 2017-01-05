@@ -138,6 +138,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         BrightCheck,
 
         /// <summary>
+        /// Normal影の色を変えるバージョン（B5河野）
+        /// </summary>
+        ChangeColor,
+
+        /// <summary>
+        /// 輪郭ごとに色の違う影（B5河野）
+        /// </summary>
+        PersonalColor,
+
+        /// <summary>
         /// 一定方向に流れるパーティクル
         /// </summary>
         FlowParticlesShadow,

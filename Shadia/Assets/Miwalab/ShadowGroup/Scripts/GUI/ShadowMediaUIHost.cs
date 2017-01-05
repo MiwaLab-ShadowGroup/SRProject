@@ -254,6 +254,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingLeastSquare(m_PanelDictionary[ImageProcesserType.LeastSquare.ToString()]);
         this.CreateUIsImageporcessingLSAhead(m_PanelDictionary[ImageProcesserType.LSAhead.ToString()]);
         this.CreateUIsImageporcessingMixColor(m_PanelDictionary[ImageProcesserType.MixColor.ToString()]);
+        this.CreateUIsImageporcessingChangeColor(m_PanelDictionary[ImageProcesserType.ChangeColor.ToString()]);
+        this.CreateUIsImageporcessingPersonalColor(m_PanelDictionary[ImageProcesserType.PersonalColor.ToString()]);
         this.CreateUIsImageporcessingPtsImgProcesser(m_PanelDictionary[ImageProcesserType.PtsImgProcesser.ToString()]);
         this.CreateUIsImageporcessingBrightCheck(m_PanelDictionary[ImageProcesserType.BrightCheck.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
@@ -377,6 +379,14 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.MixColor:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new MixColor()));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.MixColor.ToString()];
+                break;
+            case ImageProcesserType.PersonalColor:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new PersonalColor()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.PersonalColor.ToString()];
+                break;
+            case ImageProcesserType.ChangeColor:
+                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new ChangeColor()));
+                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.ChangeColor.ToString()];
                 break;
             case ImageProcesserType.PtsImgProcesser:
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new PtsImgProcesser()));
@@ -901,9 +911,25 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "MixColor_Mix", 100, 1, 50);
         AddBooleanUI(parent, "MixColor_UseFade", false);
         m_lastUpdatedHeight += 10;
+    }
 
-      
+    private void CreateUIsImageporcessingPersonalColor(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
 
+        AddBooleanUI(parent, "PersonalColor_UseFade", false);
+        m_lastUpdatedHeight += 10;
+    }
+
+    private void CreateUIsImageporcessingChangeColor(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "ChangeColor_con_R", 255, 0, 0);
+        AddFloatUI(parent, "ChangeColor_con_G", 255, 0, 0);
+        AddFloatUI(parent, "ChangeColor_con_B", 255, 0, 200);
+
+        AddBooleanUI(parent, "ChangeColor_UseFade", false);
+        m_lastUpdatedHeight += 10;
     }
 
     private void CreateUIsImageporcessingSpike(GameObject parent)
