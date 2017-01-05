@@ -9,6 +9,7 @@ namespace Miwalab.ShadowGroup.Background
     {
         Butterfly,
         Fish,
+        Tiger,
         Count,
     }
     class Generic

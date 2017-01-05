@@ -95,12 +95,19 @@ public class ShadowMediaUIHost : MonoBehaviour
     public Dropdown AfterEffectSettingMenu;
     public Dropdown ArchiveSettingMenu;
     public Dropdown GenericSettingMenu;
+    public Dropdown BackgroundTypeSettingMenu;
     public List<ShadowMeshRenderer> m_meshrenderer = new List<ShadowMeshRenderer>();
 
     public GameObject SettingPanel;
     public Canvas MainCanvas;
 
     public Text _debugText;
+
+    public GameObject ButterflySet;
+    public GameObject FishSet;
+    public GameObject TigerSet;
+    private List<GameObject> List_backGround;
+
 
     protected List<Dropdown> m_MenuList;
     protected Dictionary<string, GameObject> m_PanelDictionary;
@@ -134,12 +141,18 @@ public class ShadowMediaUIHost : MonoBehaviour
         {
             this.GenericSettingMenu.options.Add(new Dropdown.OptionData(((Miwalab.ShadowGroup.Core.ApplicationSettings.GenericSettingOption)i).ToString()));
         }
+        for (int i = 0; i < (int)Miwalab.ShadowGroup.Background.BackgroundType.Count; ++i)
+        {
+            this.BackgroundTypeSettingMenu.options.Add(new Dropdown.OptionData(((Miwalab.ShadowGroup.Background.BackgroundType)i).ToString()));
+        }
+
         m_MenuList.Add(this.ImageProcessingMenu);
         m_MenuList.Add(this.ImportSettingMenu);
         m_MenuList.Add(this.CallibrationSettingMenu);
         m_MenuList.Add(this.AfterEffectSettingMenu);
         m_MenuList.Add(this.ArchiveSettingMenu);
         m_MenuList.Add(this.GenericSettingMenu);
+        m_MenuList.Add(this.BackgroundTypeSettingMenu);
 
         foreach (var menu in this.m_MenuList)
         {
@@ -157,6 +170,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.m_currentAfterEffectSettingPanel = m_PanelDictionary[AfterEffectSettingType.Fade.ToString()];
         this.m_currentArchiveSettingPanel = m_PanelDictionary[ArchiveSettingType.Save.ToString()];
         this.m_currentGenericSettingPanel = m_PanelDictionary[Miwalab.ShadowGroup.Core.ApplicationSettings.GenericSettingOption.Mode.ToString()];
+        this.m_currentBackgroundTypeSettingPanel = m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Butterfly.ToString()];
+
 
         //UI初期化
         this.SetupUIsImageprocess();
@@ -189,7 +204,12 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsArchivePlay(m_PanelDictionary[ArchiveSettingType.Play.ToString()]);
         this.CreateUIsArchiveRobot(m_PanelDictionary[ArchiveSettingType.Robot.ToString()]);
 
+        this.CreateUIsBackgroundButterfly(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Butterfly.ToString()]);
+        this.CreateUIsBackgroundFish(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Fish.ToString()]);
+        this.CreateUIsBackgroundTiger(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Tiger.ToString()]);
         this.CreateUIsGeneric();
+        //代入の順番はGenericに合わせてください
+        this.List_backGround = new List<GameObject>() {this.ButterflySet,this.FishSet,this.TigerSet };
 
         this.m_meshrenderer.ForEach(p => p.SetUpUIs());
         this.m_Sensor.setUpUI();
@@ -1191,6 +1211,70 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_currentGenericSettingPanel.SetActive(value);
 
     }
+    private GameObject m_currentBackgroundTypeSettingPanel;
+     public void BackgroundTypeSettingPanelSet(bool value)
+    {
+        m_currentBackgroundTypeSettingPanel.SetActive(value);
+
+    }
+
 
     #endregion
+
+    #region background
+ 
+    public void ChangeBackgroundTypeSettingOptionTo(int number)
+    {
+        Miwalab.ShadowGroup.Background.BackgroundType type = (Miwalab.ShadowGroup.Background.BackgroundType)number;
+
+        this.m_currentBackgroundTypeSettingPanel = this.m_PanelDictionary[type.ToString()];
+        this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
+        
+        for (int i = 0; i < this.List_backGround.Count; ++i)
+        {
+            if (i == number)
+            {
+                this.List_backGround[i].SetActive(true);
+            }
+            else
+            {
+                this.List_backGround[i].SetActive(false);
+            }
+        }
+
+    }
+
+    private void CreateUIsBackgroundButterfly(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Butterfly_R", 1f, 0, 1f);
+        AddFloatUI(parent, "Butterfly_G", 1f, 0, 1f);
+        AddFloatUI(parent, "Butterfly_B", 1f, 0, 1f);
+        m_lastUpdatedHeight += 10;
+        AddFloatUI(parent, "Particle_Size", 1f, 0.1f, 0.5f);
+        AddFloatUI(parent, "Particle_Num", 200, 0, 200);
+        m_lastUpdatedHeight += 10;
+        AddButtonUI(parent, "Particle_FadeWhite");
+        AddButtonUI(parent, "Particle_FadeBlack");
+    }
+
+    private void CreateUIsBackgroundFish(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+      
+
+    }
+
+    private void CreateUIsBackgroundTiger(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Tiger_Size", 2, 0.1f, 1);
+        AddFloatUI(parent, "Tiger_theta0", 3.14f, -3.14f, 0);
+        AddFloatUI(parent, "Tiger_radius", 4, 1, 2.5f);
+        AddFloatUI(parent, "Tiger_spdRate", 2, 0, 1);
+
+    }
+
+# endregion
+
 }
