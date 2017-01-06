@@ -974,9 +974,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsImportNetwork(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddTextUI(parent, "Network_CIPCServerIP");
-        AddTextUI(parent, "Network_CIPCServerPort");
-        AddButtonUI(parent, "Network_CIPCServerConnect");
+
         AddBooleanUI(parent, "Network_Send", false);
         AddBooleanUI(parent, "Network_Receive", false);
     }
@@ -1098,6 +1096,11 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddEnumUI(parent, "core_shadow_media_mode", Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia2D);
+        m_lastUpdatedHeight += 5;
+        AddEnumUI(parent, "core_blending_mode", Miwalab.ShadowGroup.ImageSource.ImageSorceBlender.BlendMode.Normal);
+        m_lastUpdatedHeight += 5;
+
+
         AddBooleanUI(parent, "core_switch_objects", false);
     }
 

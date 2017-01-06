@@ -7,7 +7,7 @@ public class MatAttacher : MonoBehaviour {
     public ASensorImporter importer;
     public Texture2D tex;
     public Vector2 textureSize;
-    public Material material;
+    public Miwalab.ShadowGroup.ImageSource.ImageSorceBlender _blender;
 
     public List<ProjectionPlane> m_ProjectionPlane = new List<ProjectionPlane>();
 	// Use this for initialization
@@ -19,13 +19,14 @@ public class MatAttacher : MonoBehaviour {
         }
         tex = new Texture2D((int)textureSize.x, (int)textureSize.y);
 
-        foreach(var p in this.m_ProjectionPlane)
-        {
-            p.SetMaterial(material);
-        }
+        _blender._matattacher = this;
+
+        var material = _blender.gameObject.GetComponent<MeshRenderer>().sharedMaterial;
+        this.setMaterial(material);
         material.mainTexture = tex;
 
     }
+    
 
     // Update is called once per frame
     void Update () {
@@ -46,5 +47,14 @@ public class MatAttacher : MonoBehaviour {
             Debug.Log("trying now...");
         }
         tex.LoadImage(data);
+    }
+
+
+    public void setMaterial(Material material)
+    {
+        foreach (var p in this.m_ProjectionPlane)
+        {
+            p.SetMaterial(material);
+        }
     }
 }
