@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Miwalab.ShadowGroup.Background;
 using UnityEngine;
 using System;
+using Miwalab.ShadowGroup.Network;
 
 public class CircleMover : MonoBehaviour
 {
@@ -55,6 +56,9 @@ public class CircleMover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+
+
         this.transform.localScale = new Vector3(this.objScale, this.objScale, this.objScale);
 
         this.hInput = Input.GetAxis("Horizontal");
