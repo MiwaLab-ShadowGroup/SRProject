@@ -3,13 +3,15 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+		_BlendModeSrc("BlendModeSrc", float) = 0
+		_BlendModeDrc("BlendModeDst", float) = 0
 	}
 	SubShader
 	{
 		Tags { "RenderType"="Opaque" }
 		LOD 100
 		Cull off
-		Blend One One
+		Blend [_BlendModeSrc][_BlendModeDst]
 		Pass
 		{
 			CGPROGRAM
