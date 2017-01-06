@@ -46,12 +46,21 @@ namespace Miwalab.ShadowGroup.Network
         TargetIndex _sendTargetIndex2 = TargetIndex.second;
         IPEndPoint _sendTarget1;
         IPEndPoint _sendTarget2;
+        IPEndPoint _sendTargetMesh1;
+        IPEndPoint _sendTargetMesh2;
 
         //一応二つずつ
         private UDPClient _sendClient1;
         private UDPClient _sendClient2;
         private UDPClient _receiveClient1;
         private UDPClient _receiveClient2;
+
+        private UDPClient _sendMeshClient1;
+        private UDPClient _sendMeshClient2;
+        private UDPClient _receiveMeshClient1;
+        private UDPClient _receiveMeshClient2;
+
+
         public object SyncObject_Receiver1 = new object();
         public object SyncObject_Receiver2 = new object();
         public bool _IsSend = false;
@@ -82,6 +91,12 @@ namespace Miwalab.ShadowGroup.Network
             _sendClient2 = new UDPClient(Network.NetworkSettings.SETTINGS.SendClient2Port);
             _receiveClient1 = new UDPClient(Network.NetworkSettings.SETTINGS.ReceiveClient1Port);
             _receiveClient2 = new UDPClient(Network.NetworkSettings.SETTINGS.ReceiveClient2Port);
+
+            _receiveMeshClient1 = new UDPClient(NetworkSettings.SETTINGS.ReceiveMeshClient1Port);
+            _receiveMeshClient2 = new UDPClient(NetworkSettings.SETTINGS.ReceiveMeshClient2Port);
+
+            _sendMeshClient1 = new UDPClient(NetworkSettings.SETTINGS.SendMeshClient1Port);
+            _sendMeshClient2 = new UDPClient(NetworkSettings.SETTINGS.SendMeshClient2Port);
 
             _networkPlane1.Initialzie(_matAttacher, _doubleSideShader);
             _networkPlane2.Initialzie(_matAttacher, _doubleSideShader);
@@ -120,8 +135,16 @@ namespace Miwalab.ShadowGroup.Network
             int targetPort2 = _sendTargetIndex2 == TargetIndex.first ? Network.NetworkSettings.SETTINGS.ReceiveClient1Port
                 : Network.NetworkSettings.SETTINGS.ReceiveClient2Port;
 
+            int targetMeshPort1 = _sendTargetIndex1 == TargetIndex.first ? Network.NetworkSettings.SETTINGS.ReceiveMeshClient1Port
+                : Network.NetworkSettings.SETTINGS.ReceiveMeshClient2Port;
+            int targetMeshPort2 = _sendTargetIndex2 == TargetIndex.first ? Network.NetworkSettings.SETTINGS.ReceiveMeshClient1Port
+                : Network.NetworkSettings.SETTINGS.ReceiveMeshClient2Port;
+
+
             _sendTarget1 = new IPEndPoint(IPAddress.Parse((ShadowMediaUIHost.GetUI("RSIM_Sender1_TargetIP") as ParameterText).m_valueText.text), targetPort1);
             _sendTarget2 = new IPEndPoint(IPAddress.Parse((ShadowMediaUIHost.GetUI("RSIM_Sender2_TargetIP") as ParameterText).m_valueText.text), targetPort2);
+            _sendTargetMesh1 = new IPEndPoint(IPAddress.Parse((ShadowMediaUIHost.GetUI("RSIM_Sender1_TargetIP") as ParameterText).m_valueText.text), targetMeshPort1);
+            _sendTargetMesh2 = new IPEndPoint(IPAddress.Parse((ShadowMediaUIHost.GetUI("RSIM_Sender2_TargetIP") as ParameterText).m_valueText.text), targetMeshPort2);
 
         }
 
@@ -146,6 +169,7 @@ namespace Miwalab.ShadowGroup.Network
 
         public void SendAllClient(byte[] data)
         {
+            if (!_IsSend) return;
             //とりあえずメインスレッド
             switch (this._sendMode)
             {
@@ -160,6 +184,47 @@ namespace Miwalab.ShadowGroup.Network
                     {
                         _sendClient1.Send(data, _sendTarget1);
                         _sendClient2.Send(data, _sendTarget2);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        public void SendAllClientMesh(Vector3[] vertices, Vector2[] uvs)
+        {
+            if (!_IsSend) return;
+            UDP_PACKETS_CODER.UDP_PACKETS_ENCODER enc = new UDP_PACKETS_CODER.UDP_PACKETS_ENCODER();
+            for(int i = 0; i < vertices.Length; ++i)
+            {
+                float x,y,z,u,v;
+                x = vertices[i].x;
+                y = vertices[i].y;
+                z = vertices[i].z;
+                u = uvs[i].x;
+                v = uvs[i].y;
+                enc += x;
+                enc += y;
+                enc += z;
+
+                enc += u;
+                enc += v;
+            }
+            byte[] data = enc.data;
+
+            //とりあえずメインスレッド
+            switch (this._sendMode)
+            {
+                case SendMode.To1Client:
+                    if (_sendTargetMesh1 != null)
+                    {
+                        _sendMeshClient1.Send(data, _sendTargetMesh1);
+                    }
+                    break;
+                case SendMode.To2Client:
+                    if (_sendTargetMesh1 != null && _sendTargetMesh2 != null)
+                    {
+                        _sendMeshClient1.Send(data, _sendTargetMesh1);
+                        _sendMeshClient2.Send(data, _sendTargetMesh2);
                     }
                     break;
                 default:
@@ -185,6 +250,12 @@ namespace Miwalab.ShadowGroup.Network
                     {
                         _networkPlane2.SetupTexture(data);
                     }
+
+                    byte[] meshData = _receiveMeshClient2.Receive(ref available);
+                    if (data != null)
+                    {
+                        _networkPlane2.SetupMesh(meshData);
+                    }
                 }
                 catch
                 {
@@ -205,6 +276,11 @@ namespace Miwalab.ShadowGroup.Network
                     if (data != null)
                     {
                         _networkPlane1.SetupTexture(data);
+                    }
+                    byte[] meshData = _receiveMeshClient1.Receive(ref available);
+                    if (data != null)
+                    {
+                        _networkPlane1.SetupMesh(meshData);
                     }
                 }
                 catch

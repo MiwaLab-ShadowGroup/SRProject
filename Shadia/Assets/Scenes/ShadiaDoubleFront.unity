@@ -2920,6 +2920,10 @@ Prefab:
       propertyPath: debugPlane
       value: 
       objectReference: {fileID: 842574304}
+    - target: {fileID: 11497732, guid: bc2478497808cfc4e9ec04f8426e11c4, type: 2}
+      propertyPath: _RSIM
+      value: 
+      objectReference: {fileID: 770440457}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bc2478497808cfc4e9ec04f8426e11c4, type: 2}
   m_IsPrefabParent: 0

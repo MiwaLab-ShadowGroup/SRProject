@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Miwalab.ShadowGroup.Network;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,6 +30,8 @@ namespace Miwalab.ShadowGroup.Callibration.Network
 
         object syncObject = new object();
         byte[] data;
+        bool _isUpdated = false;
+        byte[] meshData;
 
         public void Initialzie(MatAttacher matAttacher, Shader doubleSideShader)
         {
@@ -48,8 +51,6 @@ namespace Miwalab.ShadowGroup.Callibration.Network
             CreateMesh(Row, Col);
 
             (ShadowMediaUIHost.GetUI("core_network_blend") as ParameterDropdown).ValueChanged += ImageSorceBlender_ValueChanged;
-
-
         }
         public void Update()
         {
@@ -58,6 +59,14 @@ namespace Miwalab.ShadowGroup.Callibration.Network
                 if (data != null)
                 {
                     _mainTexture.LoadImage(data);
+                }
+
+                if (this._isUpdated)
+                {
+                    _mesh.vertices = _vertices;
+                    _mesh.uv = _uv;
+                    _mesh.RecalculateBounds();
+                    this._isUpdated = false;
                 }
             }
         }
@@ -78,7 +87,31 @@ namespace Miwalab.ShadowGroup.Callibration.Network
             }
         }
 
+        public void SetupMesh(byte[] data)
+        {
+            lock (syncObject)
+            {
+                UDP_PACKETS_CODER.UDP_PACKETS_DECODER dec = new UDP_PACKETS_CODER.UDP_PACKETS_DECODER();
+                dec.Source = data;
+                for (int i = 0; i < (Row + 1) * (Col + 1); ++i)
+                {
+                    Vector3 pos = new Vector3();
+                    Vector2 uv = new Vector2();
 
+                    pos.x = dec.get_float();
+                    pos.y = dec.get_float();
+                    pos.z = dec.get_float();
+
+                    uv.x = dec.get_float();
+                    uv.y = dec.get_float();
+
+                    this._vertices[i] = pos;
+                    this._uv[i] = uv;
+                }
+
+                this._isUpdated = true;
+            }
+        }
 
 
         private void ImageSorceBlender_ValueChanged(object sender, EventArgs e)
