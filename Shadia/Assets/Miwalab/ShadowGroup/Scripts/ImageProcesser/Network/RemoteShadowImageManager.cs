@@ -13,7 +13,6 @@ using Miwalab.ShadowGroup.ImageProcesser;
 
 public class RemoteShadowImageManager : MonoBehaviour
 {
-
     ThreadHost _tHost;
 
     #region CIPCServerSetting
@@ -22,8 +21,8 @@ public class RemoteShadowImageManager : MonoBehaviour
     [SerializeField]
     public int CIPCServerPort;
 
-    public object SyncObject_Sender = new object();
-    public object SyncObject_Receiver = new object();
+    public object SyncObject_Receiver1 = new object();
+    public object SyncObject_Receiver2 = new object();
 
 
     public bool _IsSend = false;
@@ -74,7 +73,7 @@ public class RemoteShadowImageManager : MonoBehaviour
 
     public void SetSendMat(Mat mat)
     {
-        lock (SyncObject_Sender)
+        lock (SyncObject_Receiver1)
         {
             if (this._SendMat == null)
             {
@@ -89,7 +88,7 @@ public class RemoteShadowImageManager : MonoBehaviour
     
     public Mat GetReceiveMat()
     {
-        lock (SyncObject_Receiver)
+        lock (SyncObject_Receiver2)
         {
 
             return this._ReceivedMat;
@@ -99,9 +98,7 @@ public class RemoteShadowImageManager : MonoBehaviour
 
     public void OnApplicationQuit()
     {
-        if (_nHost == null) return;
-        this._nHost.RemoveClient(SENDID);
-        this._nHost.RemoveClient(RECEIVEID);
+
 
     }
 
@@ -111,15 +108,15 @@ public class RemoteShadowImageManager : MonoBehaviour
         {
             try
             {
-                lock (SyncObject_Receiver)
+                lock (SyncObject_Receiver2)
                 {
                     int available = 0;
-                    byte[] data = _nHost.Receive(RECEIVEID, ref available);
-                    if (data != null)
-                    {
+                    //byte[] data = _nHost.Receive(RECEIVEID, ref available);
+                    //if (data != null)
+                    //{
 
-                        _ReceivedMat = Cv2.ImDecode(data, OpenCvSharp.LoadMode.Color);
-                    }
+                    //    _ReceivedMat = Cv2.ImDecode(data, OpenCvSharp.LoadMode.Color);
+                    //}
 
 
                 }
@@ -138,11 +135,11 @@ public class RemoteShadowImageManager : MonoBehaviour
         {
             try
             {
-                lock (SyncObject_Sender)
+                lock (SyncObject_Receiver1)
                 {
                     if (_SendMat != null)
                     {
-                        _nHost.Send(SENDID, _SendMat.ToBytes(".png"));
+                        //_nHost.Send(SENDID, _SendMat.ToBytes(".png"));
                     }
                 }
                 _AutoResetEventSender.WaitOne();

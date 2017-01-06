@@ -24,7 +24,6 @@ namespace Miwalab.ShadowGroup.Network
         /// クライアントのリスト
         /// </summary>
         private Dictionary<string, CIPCClient> m_cipcClientList;
-        private Dictionary<string, UDPClient> m_udpClientList;
         private List<int> m_portList;
 
         string CIPCServerIP;
@@ -36,7 +35,6 @@ namespace Miwalab.ShadowGroup.Network
         private NetworkHost(string CIPCServerIP, int CIPCServerPort)
         {
             m_cipcClientList = new Dictionary<string, CIPCClient>();
-            m_udpClientList = new Dictionary<string, UDPClient>();
             m_portList = new List<int>();
             this.CIPCServerIP = CIPCServerIP;
             this.CIPCServerPort = CIPCServerPort;

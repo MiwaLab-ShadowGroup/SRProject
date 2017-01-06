@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace Miwalab.ShadowGroup.Network
 {
-    public class UDPClient : ISenderAndReciever
+    public class UDPClient : IClient
     {
-        private CIPC_CS_Unity.CLIENT.CLIENT m_client;
+        private System.Net.Sockets.UdpClient m_client;
         private int? portNum { set; get; }
         /// <summary>
         /// IPAdressを指定して初期化
         /// </summary>
         /// <param name="port"></param>
-        public UDPClient(int port, string CIPCServerIP, int CIPCServerPort, int fps, string clientName)
+        public UDPClient(int port)
         {
-            Bind(port, CIPCServerIP, CIPCServerPort, fps, clientName);
+            Bind(port);
             portNum = port;
         }
 
@@ -25,17 +26,11 @@ namespace Miwalab.ShadowGroup.Network
         /// バインド すべてのリモートから受信
         /// </summary>
         /// <param name="port"></param>
-        public void Bind(int port, string CIPCServerIP, int CIPCServerPort, int fps, string clientName)
+        public void Bind(int port)
         {
-            m_client = new CIPC_CS_Unity.CLIENT.CLIENT(port, CIPCServerIP, CIPCServerPort, clientName, fps);
+            m_client = new System.Net.Sockets.UdpClient(port);
         }
-
-        public void Connect(MODE mode)
-        {
-            m_client.Setup(mode);
-        }
-
-
+        
         /// <summary>
         /// 終了
         /// </summary>
@@ -51,10 +46,10 @@ namespace Miwalab.ShadowGroup.Network
         /// <returns></returns>
         public byte[] Receive()
         {
-            byte[] data = new byte[0];
+            //全部受信
+            IPEndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
             //毎度初期化しないと限定されてしまう．なんという危険物
-            m_client.Update(ref data);
-            return data;
+            return m_client.Receive(ref remoteEP);
         }
 
         /// <summary>
@@ -64,7 +59,7 @@ namespace Miwalab.ShadowGroup.Network
         /// <returns></returns>
         public byte[] Receive(ref int availe)
         {
-            availe = this.m_client.IsAvailable;
+            availe = this.m_client.Available;
             if (availe > 0)
             {
                 return this.Receive();
@@ -74,7 +69,7 @@ namespace Miwalab.ShadowGroup.Network
 
         public void Send(byte[] data)
         {
-            this.m_client.Update(ref data);
+            this.m_client.Send(data,data.Length);
         }
 
 
