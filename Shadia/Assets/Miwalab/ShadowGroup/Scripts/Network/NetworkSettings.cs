@@ -24,28 +24,10 @@ namespace Miwalab.ShadowGroup.Network
         #region SETTINGS
         public class SETTINGS
         {
-            public readonly static NetworkSetting RemoteShadowImageManager_Sender
-                = new NetworkSetting(
-                    "RemoteShadowImageManager_Sender",
-                    15000
-                    );
-
-            public readonly static NetworkSetting RemoteShadowImageManager_Receiver
-                = new NetworkSetting(
-                    "RemoteShadowImageManager_Receiver",
-                    15001
-                );
-            public readonly static NetworkSetting RemoteShadowImageManager_Sender_Bone
-                = new NetworkSetting(
-                    "RemoteShadowImageManager_Sender_Bone",
-                    15002
-                    );
-
-            public readonly static NetworkSetting RemoteShadowImageManager_Receiver_Bone
-                = new NetworkSetting(
-                    "RemoteShadowImageManager_Receiver_Bone",
-                    15003
-                );
+            public readonly static int SendClient1Port = 15001;
+            public readonly static int SendClient2Port = 15002;
+            public readonly static int ReceiveClient1Port = 15003;
+            public readonly static int ReceiveClient2Port = 15004;
         }
         #endregion
     }

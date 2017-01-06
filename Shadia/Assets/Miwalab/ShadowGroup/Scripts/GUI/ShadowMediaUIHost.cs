@@ -974,6 +974,8 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsImportNetwork(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
+        
+
 
         AddBooleanUI(parent, "Network_Send", false);
         AddBooleanUI(parent, "Network_Receive", false);

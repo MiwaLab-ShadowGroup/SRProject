@@ -180,14 +180,7 @@ public class KinectImporter : ASensorImporter
                 this.m_mat += m_mat3DObjectsRendered;
                 break;
         }
-
-        this.RSIM.SetSendMat(m_mat);
-        Mat mat = this.RSIM.GetReceiveMat();
-        if (mat != null)
-        {
-            m_mat += mat;
-        }
-
+        
         foreach (var imageProcesser in this.m_ImagerProcesserList)
         {
             if (this.m_useBody)
