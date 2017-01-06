@@ -30,6 +30,7 @@ public class CameraMatAttacher : MonoBehaviour
         _Texture.Apply();
         var srcData = _Texture.GetRawTextureData();
         Marshal.Copy(srcData, 0, mat.Data, 512 * 424 * 3);
+        mat = mat.CvtColor(OpenCvSharp.ColorConversion.RgbToBgr);
         Cv2.Flip(mat, mat, OpenCvSharp.FlipMode.XY);
         RenderTexture.active = null;
     }

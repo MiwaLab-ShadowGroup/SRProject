@@ -106,6 +106,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     public GameObject ButterflySet;
     public GameObject FishSet;
     public GameObject TigerSet;
+    public GameObject UnitychanSet;
     private List<GameObject> List_backGround;
 
 
@@ -204,12 +205,15 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsArchivePlay(m_PanelDictionary[ArchiveSettingType.Play.ToString()]);
         this.CreateUIsArchiveRobot(m_PanelDictionary[ArchiveSettingType.Robot.ToString()]);
 
+        this.CreateUIsBackgroundNone(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.None.ToString()]);
+        this.CreateUIsBackgroundCircleCut(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.CircleCut.ToString()]);
         this.CreateUIsBackgroundButterfly(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Butterfly.ToString()]);
         this.CreateUIsBackgroundFish(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Fish.ToString()]);
         this.CreateUIsBackgroundTiger(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Tiger.ToString()]);
+        this.CreateUIsBackgroundUnitychan(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Unitychan.ToString()]);
         this.CreateUIsGeneric();
         //代入の順番はGenericに合わせてください
-        this.List_backGround = new List<GameObject>() {this.ButterflySet,this.FishSet,this.TigerSet };
+        this.List_backGround = new List<GameObject>() { this.ButterflySet,this.FishSet,this.TigerSet,this.UnitychanSet };
 
         this.m_meshrenderer.ForEach(p => p.SetUpUIs());
         this.m_Sensor.setUpUI();
@@ -1270,19 +1274,44 @@ public class ShadowMediaUIHost : MonoBehaviour
 
         this.m_currentBackgroundTypeSettingPanel = this.m_PanelDictionary[type.ToString()];
         this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
-        
-        for (int i = 0; i < this.List_backGround.Count; ++i)
-        {
-            if (i == number)
+        if (number == 0) {
+            for (int i = 0; i < this.List_backGround.Count ; ++i)
             {
-                this.List_backGround[i].SetActive(true);
-            }
-            else
-            {
-                this.List_backGround[i].SetActive(false);
+                    this.List_backGround[i].SetActive(false);
             }
         }
+        else if (number == 1)
+        {
 
+        }
+        else
+        {
+            for (int i = 0; i < this.List_backGround.Count; ++i)
+            {
+                if (i  == number - 2)
+                {
+                    this.List_backGround[i].SetActive(true);
+                }
+                else
+                {
+                    this.List_backGround[i].SetActive(false);
+                }
+            }
+        }
+    }
+
+    private void CreateUIsBackgroundNone(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+
+
+    }
+
+    private void CreateUIsBackgroundCircleCut(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "CircleCut_radius", 5, 0.1f, 3f);
+        AddBooleanUI(parent, "CircleCut_active", true);
     }
 
     private void CreateUIsBackgroundButterfly(GameObject parent)
@@ -1315,7 +1344,13 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Tiger_spdRate", 2, 0, 1);
 
     }
+    private void CreateUIsBackgroundUnitychan(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
 
-# endregion
+
+    }
+
+    #endregion
 
 }
