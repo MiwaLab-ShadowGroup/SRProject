@@ -7,15 +7,13 @@ using System;
 public class CircleMover : MonoBehaviour
 {
     public GameObject inTargetObj;
-
+    
     public float radius = 2;
     public float theta;
     public float thetaZero;
 
     private Vector3 posVec;
 
-    private bool flag = false;
-    private int count = 0;
     private float hInput;
     private float vInput;
 
