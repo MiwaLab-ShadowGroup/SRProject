@@ -5,7 +5,12 @@ using System.Text;
 
 namespace Miwalab.ShadowGroup.Network
 {
-    public interface ICIPCClient
+    public interface IClient
+    {
+
+    }
+
+    public interface ICIPCClient : IClient
     {
         /// <summary>
         /// 自身の情報
