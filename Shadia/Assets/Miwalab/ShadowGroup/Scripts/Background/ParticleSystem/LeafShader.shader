@@ -1,4 +1,4 @@
-﻿Shader "Unlit/LeafShader"
+﻿Shader "MiwaLabShader/LeafShader"
 {
 	Properties
 	{

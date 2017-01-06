@@ -1,4 +1,4 @@
-﻿Shader "Unlit/DoubleSideShader"
+﻿Shader "MiwaLabShader/DoubleSideShader"
 {
 	Properties
 	{
@@ -9,7 +9,7 @@
 		Tags { "RenderType"="Opaque" }
 		LOD 100
 		Cull off
-
+		Blend One One
 		Pass
 		{
 			CGPROGRAM

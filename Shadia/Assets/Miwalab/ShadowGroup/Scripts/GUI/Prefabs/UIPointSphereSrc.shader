@@ -1,4 +1,4 @@
-﻿Shader "Unlit/UIPointSphereSrc"
+﻿Shader "MiwaLabShader/UIPointSphereSrc"
 {
 	Properties
 	{

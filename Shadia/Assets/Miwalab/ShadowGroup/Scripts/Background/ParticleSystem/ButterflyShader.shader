@@ -1,4 +1,4 @@
-﻿Shader "Unlit/ButterflyShader"
+﻿Shader "MiwaLabShader/ButterflyShader"
 {
 	Properties
 	{

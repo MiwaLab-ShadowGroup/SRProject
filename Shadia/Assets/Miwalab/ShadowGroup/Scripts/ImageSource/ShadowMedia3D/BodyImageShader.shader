@@ -1,4 +1,4 @@
-﻿Shader "Unlit/BodyImageShader"
+﻿Shader "MiwaLabShader/BodyImageShader"
 {
 	Properties
 	{
