@@ -6,7 +6,7 @@ using System.Net;
 
 namespace Miwalab.ShadowGroup.Network
 {
-    public interface ISender: IClient
+    public interface ISender: ICIPCClient
     {
         void Send(byte[] data);
     }

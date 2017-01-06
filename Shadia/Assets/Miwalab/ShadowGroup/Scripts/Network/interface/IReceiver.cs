@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Miwalab.ShadowGroup.Network
 {
-    public interface IReceiver:IClient
+    public interface IReceiver:ICIPCClient
     {
         /// <summary>
         /// データを受信するまでスレッド停止
