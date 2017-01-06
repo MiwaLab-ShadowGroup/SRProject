@@ -30,6 +30,11 @@ namespace Miwalab.ShadowGroup.Network
             Nothing
         }
 
+        public enum TargetIndex
+        {
+            first,
+            second
+        }
 
         private SendMode _sendMode;
         private ReceiveMode _receiveMode;
@@ -37,6 +42,8 @@ namespace Miwalab.ShadowGroup.Network
 
         ThreadHost _tHost;
 
+        TargetIndex _sendTargetIndex1 = TargetIndex.first;
+        TargetIndex _sendTargetIndex2 = TargetIndex.second;
         IPEndPoint _sendTarget1;
         IPEndPoint _sendTarget2;
 
@@ -96,6 +103,45 @@ namespace Miwalab.ShadowGroup.Network
             (ShadowMediaUIHost.GetUI("Network_Send") as ParameterCheckbox).ValueChanged += SetIsSend;
             (ShadowMediaUIHost.GetUI("Network_Receive") as ParameterCheckbox).ValueChanged += SetIsReceive;
 
+            (ShadowMediaUIHost.GetUI("RSIM_SenderMode") as ParameterDropdown).ValueChanged += SenderMode_ValueChanged;
+            (ShadowMediaUIHost.GetUI("RSIM_ReceiverMode") as ParameterDropdown).ValueChanged += ReceiveMode_ValueChanged;
+
+            (ShadowMediaUIHost.GetUI("RSIM_Sender1_TargetIndex") as ParameterDropdown).ValueChanged += TargetIndex1_ValueChanged;
+
+            (ShadowMediaUIHost.GetUI("RSIM_Sender2_TargetIndex") as ParameterDropdown).ValueChanged += TargetIndex2_ValueChanged;
+            (ShadowMediaUIHost.GetUI("RSIM_SettingUpdate") as ParameterButton).Clicked += SettingUpdate_Clicked;
+
+        }
+
+        private void SettingUpdate_Clicked(object sender, EventArgs e)
+        {
+            int targetPort1 = _sendTargetIndex1 == TargetIndex.first ? Network.NetworkSettings.SETTINGS.ReceiveClient1Port
+                : Network.NetworkSettings.SETTINGS.ReceiveClient2Port;
+            int targetPort2 = _sendTargetIndex2 == TargetIndex.first ? Network.NetworkSettings.SETTINGS.ReceiveClient1Port
+                : Network.NetworkSettings.SETTINGS.ReceiveClient2Port;
+
+            _sendTarget1 = new IPEndPoint(IPAddress.Parse((ShadowMediaUIHost.GetUI("RSIM_Sender1_TargetIP") as ParameterText).m_valueText.text), targetPort1);
+            _sendTarget2 = new IPEndPoint(IPAddress.Parse((ShadowMediaUIHost.GetUI("RSIM_Sender2_TargetIP") as ParameterText).m_valueText.text), targetPort2);
+
+        }
+
+        private void TargetIndex2_ValueChanged(object sender, EventArgs e)
+        {
+            this._sendTargetIndex2 = (TargetIndex)(e as ParameterDropdown.ChangedValue).Value;
+        }
+
+        private void TargetIndex1_ValueChanged(object sender, EventArgs e)
+        {
+            this._sendTargetIndex1 = (TargetIndex)(e as ParameterDropdown.ChangedValue).Value;
+        }
+
+        private void SenderMode_ValueChanged(object sender, EventArgs e)
+        {
+            this._sendMode = (SendMode)(e as ParameterDropdown.ChangedValue).Value;
+        }
+        private void ReceiveMode_ValueChanged(object sender, EventArgs e)
+        {
+            this._receiveMode = (ReceiveMode)(e as ParameterDropdown.ChangedValue).Value;
         }
 
         public void SendAllClient(byte[] data)
@@ -133,19 +179,16 @@ namespace Miwalab.ShadowGroup.Network
             {
                 try
                 {
-                    lock (SyncObject_Receiver2)
+                    int available = 0;
+                    byte[] data = _receiveClient2.Receive(ref available);
+                    if (data != null)
                     {
-                        int available = 0;
-                        byte[] data = _receiveClient2.Receive(ref available);
-                        if (data != null)
-                        {
-                            _networkPlane2.SetupTexture(data);
-                        }
+                        _networkPlane2.SetupTexture(data);
                     }
                 }
                 catch
                 {
-
+                    Console.WriteLine("nanikamazui");
                 }
             }
             _AutoResetEventReceiver2.WaitOne();
@@ -157,19 +200,16 @@ namespace Miwalab.ShadowGroup.Network
             {
                 try
                 {
-                    lock (SyncObject_Receiver1)
+                    int available = 0;
+                    byte[] data = _receiveClient1.Receive(ref available);
+                    if (data != null)
                     {
-                        int available = 0;
-                        byte[] data = _receiveClient1.Receive(ref available);
-                        if (data != null)
-                        {
-                            _networkPlane1.SetupTexture(data);
-                        }
+                        _networkPlane1.SetupTexture(data);
                     }
                 }
                 catch
                 {
-
+                    Console.WriteLine("nanikamazui");
                 }
             }
             _AutoResetEventReceiver1.WaitOne();

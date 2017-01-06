@@ -40,14 +40,18 @@ public class ParameterDropdown : AParameterUI
     {
         _length = Enum.GetNames(typeof(T)).Length;
         List<string> optionList = new List<string>();
+        int index=0;
         for (int i = 0; i < _length; ++i)
         {
             optionList.Add(((T)(object)i).ToString());
+            if(((T)(object)i).ToString() ==  _default.ToString())
+            {
+               index = i;
+            }
         }
         m_Dropdown.AddOptions(optionList);
-
+        m_Dropdown.value = index;
         m_titleText.text = this.Title;
-        
     }
 
     // Use this for initialization

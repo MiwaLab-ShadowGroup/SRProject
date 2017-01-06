@@ -974,9 +974,18 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsImportNetwork(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        
+        AddEnumUI(parent, "RSIM_SenderMode", Miwalab.ShadowGroup.Network.RemoteShadowImageManager.SendMode.Nothing);
+        AddEnumUI(parent, "RSIM_ReceiverMode", Miwalab.ShadowGroup.Network.RemoteShadowImageManager.ReceiveMode.Nothing);
 
+        AddTextUI(parent, "RSIM_Sender1_TargetIP");
+        AddEnumUI(parent, "RSIM_Sender1_TargetIndex", Miwalab.ShadowGroup.Network.RemoteShadowImageManager.TargetIndex.first);
 
+        AddTextUI(parent, "RSIM_Sender2_TargetIP");
+        AddEnumUI(parent, "RSIM_Sender2_TargetIndex", Miwalab.ShadowGroup.Network.RemoteShadowImageManager.TargetIndex.second);
+
+        AddButtonUI(parent, "RSIM_SettingUpdate");
+
+        m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "Network_Send", false);
         AddBooleanUI(parent, "Network_Receive", false);
     }
