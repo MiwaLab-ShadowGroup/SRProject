@@ -13,6 +13,14 @@ namespace Miwalab.ShadowGroup.Callibration.Network
         public Shader _DoubleSideShader;
         public MatAttacher _matAttacher;
 
+        public readonly int Row = 10;
+        public readonly int Col = 10;
+
+        private Mesh _mesh;
+        private Vector3[] _vertices;
+        private Vector2[] _uv;
+        private int[] _triangles;
+
 
         MeshFilter _mF;
         MeshRenderer _mR;
@@ -37,6 +45,7 @@ namespace Miwalab.ShadowGroup.Callibration.Network
             _material = new Material(_DoubleSideShader);
             _mR.sharedMaterial = _material;
             _material.mainTexture = this._mainTexture;
+            CreateMesh(Row, Col);
 
             (ShadowMediaUIHost.GetUI("core_network_blend") as ParameterDropdown).ValueChanged += ImageSorceBlender_ValueChanged;
 
@@ -65,7 +74,7 @@ namespace Miwalab.ShadowGroup.Callibration.Network
                 {
                     this.data = new byte[data.Length];
                 }
-                data.CopyTo(this.data, 0);
+                this.data = data;
             }
         }
 
@@ -120,6 +129,55 @@ namespace Miwalab.ShadowGroup.Callibration.Network
                 default:
                     break;
             }
+        }
+
+
+        void CreateMesh(int width, int height)
+        {
+            int localWidth = width + 1;
+            int localHeight = height + 1;
+
+            _mesh = new Mesh();
+            _mF.mesh = _mesh;
+
+            _vertices = new Vector3[localWidth * localHeight];
+            _uv = new Vector2[localWidth * localHeight];
+            _triangles = new int[6 * ((localWidth - 1) * (localHeight - 1))];
+
+            int triangleIndex = 0;
+            for (int y = 0; y < localHeight; y++)
+            {
+                for (int x = 0; x < localWidth; x++)
+                {
+                    int index = (y * localWidth) + x;
+
+                    _vertices[index] = new Vector3(x, -y, 0);
+                    _uv[index] = new Vector2(((float)x / (float)localWidth), -((float)y / (float)localHeight));
+
+                    // Skip the last row/col
+                    if (x != (localWidth - 1) && y != (localHeight - 1))
+                    {
+                        int topLeft = index;
+                        int topRight = topLeft + 1;
+                        int bottomLeft = topLeft + localWidth;
+                        int bottomRight = bottomLeft + 1;
+
+                        _triangles[triangleIndex++] = topLeft;
+                        _triangles[triangleIndex++] = topRight;
+                        _triangles[triangleIndex++] = bottomLeft;
+                        _triangles[triangleIndex++] = bottomLeft;
+                        _triangles[triangleIndex++] = topRight;
+                        _triangles[triangleIndex++] = bottomRight;
+
+                    }
+                }
+            }
+
+            _mesh.vertices = _vertices;
+            _mesh.uv = _uv;
+            _mesh.triangles = _triangles;
+            _mesh.RecalculateNormals();
+            _mesh.RecalculateBounds();
         }
     }
 }

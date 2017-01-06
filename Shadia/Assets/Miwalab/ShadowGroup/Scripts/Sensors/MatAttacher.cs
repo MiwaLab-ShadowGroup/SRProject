@@ -51,6 +51,7 @@ public class MatAttacher : MonoBehaviour {
         }
         //ここで送信
         _remoteShadowImageManager.SendAllClient(data);
+        Debug.Log(data.Length);
         //
         
         tex.LoadImage(data);
