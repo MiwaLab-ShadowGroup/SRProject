@@ -12,6 +12,7 @@ namespace Miwalab.ShadowGroup.ImageSource.ShadowMedia3D
         public float _kinectRotation_rx = 0;
         public float _kinectRotation_ry = 0;
 
+     
         private Camera _camera;
 
         void Start()
@@ -40,6 +41,7 @@ namespace Miwalab.ShadowGroup.ImageSource.ShadowMedia3D
 
         private void VirtualLightSource3D_angle_ValueChanged(object sender, EventArgs e)
         {
+          
         }
 
         private void VirtualLightSource3D_height_ValueChanged(object sender, EventArgs e)

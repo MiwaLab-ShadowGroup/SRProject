@@ -34,18 +34,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         int findAreaTh;
         float lightAnd;
 
-       
-
         bool contFind;
+
+        private ImageProcesserType _imgProcesserType;
 
         public PtsImgProcesser() : base()
         {
-            (ShadowMediaUIHost.GetUI("PtsImg_con_R") as ParameterSlider).ValueChanged += PtsImgProcesser_con_R_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_con_G") as ParameterSlider).ValueChanged += PtsImgProcesser_con_G_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_con_B") as ParameterSlider).ValueChanged += PtsImgProcesser_con_B_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_R") as ParameterSlider).ValueChanged += PtsImgProcesser_bgd_R_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_G") as ParameterSlider).ValueChanged += PtsImgProcesser_bgd_G_ValueChanged;
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_B") as ParameterSlider).ValueChanged += PtsImgProcesser_bgd_B_ValueChanged;
+
+            (ShadowMediaUIHost.GetUI("PtsImg_Type") as ParameterDropdown).ValueChanged += PtsImgProcesser_ModeChanged;
             (ShadowMediaUIHost.GetUI("PtsImg_Dilate") as ParameterSlider).ValueChanged += PtsImgProcesser_Dilate_ValueChanged;
             (ShadowMediaUIHost.GetUI("PtsImg_GaussianSize1") as ParameterSlider).ValueChanged += PtsImgProcesser_GaussianSize1_ValueChanged;
             (ShadowMediaUIHost.GetUI("PtsImg_LightAnd") as ParameterSlider).ValueChanged += PtsImgProcesser_LightAnd_ValueChanged;
@@ -56,12 +52,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("PtsImg_UseFade") as ParameterCheckbox).ValueChanged += PtsImgProcesser_UseFade_ValueChanged;
             (ShadowMediaUIHost.GetUI("PtsImg_contFind") as ParameterCheckbox).ValueChanged += PtsImgProcesser_contFind_ValueChanged;
 
-            (ShadowMediaUIHost.GetUI("PtsImg_con_R") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_con_G") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_con_B") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_R") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_G") as ParameterSlider).ValueUpdate();
-            (ShadowMediaUIHost.GetUI("PtsImg_bgd_B") as ParameterSlider).ValueUpdate();
+         
             (ShadowMediaUIHost.GetUI("PtsImg_Dilate") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("PtsImg_GaussianSize1") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("PtsImg_LightAnd") as ParameterSlider).ValueUpdate();
@@ -73,6 +64,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("PtsImg_contFind") as ParameterCheckbox).ValueUpdate();
         }
 
+        private void PtsImgProcesser_ModeChanged(object sender, EventArgs e)
+        {
+            _imgProcesserType = (ImageProcesserType)(e as ParameterDropdown.ChangedValue).Value;
+        }
 
         private void PtsImgProcesser_UseFade_ValueChanged(object sender, EventArgs e)
         {
@@ -130,45 +125,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             this.sharpness = (int)(e as ParameterSlider.ChangedValue).Value;
         }
-
-        private void PtsImgProcesser_con_R_ValueChanged(object sender, EventArgs e)
-        {
-            this.color.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void PtsImgProcesser_con_G_ValueChanged(object sender, EventArgs e)
-        {
-            this.color.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void PtsImgProcesser_con_B_ValueChanged(object sender, EventArgs e)
-        {
-            this.color.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void PtsImgProcesser_bgd_R_ValueChanged(object sender, EventArgs e)
-        {
-            this.colorBack.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void PtsImgProcesser_bgd_G_ValueChanged(object sender, EventArgs e)
-        {
-            this.colorBack.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void PtsImgProcesser_bgd_B_ValueChanged(object sender, EventArgs e)
-        {
-            this.colorBack.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-   
-
+        
 
 
         Mat m_buffer;
