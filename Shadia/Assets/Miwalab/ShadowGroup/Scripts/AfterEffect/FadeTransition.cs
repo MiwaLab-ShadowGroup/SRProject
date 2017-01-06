@@ -10,7 +10,7 @@ namespace Miwalab.ShadowGroup.AfterEffect
     public class FadeTransition : ATransition
     {
         public bool IsTransitioned { set; get; }
-        AShadowImageProcesser m_to;
+        List<AShadowImageProcesser> m_to;
         ASensorImporter Sensor { set; get; }
 
         int Fadein_frame = 50;
@@ -18,7 +18,7 @@ namespace Miwalab.ShadowGroup.AfterEffect
         private bool IsWhite = true;
 
 
-        public FadeTransition(List<AAfterEffect> transitionList,ASensorImporter sensor, AShadowImageProcesser to)
+        public FadeTransition(List<AAfterEffect> transitionList,ASensorImporter sensor, List<AShadowImageProcesser> to)
         {
 
             (ShadowMediaUIHost.GetUI("Frame_of_FadeIn") as ParameterSlider).ValueChanged += Frame_of_FadeIn_ValueChanged;
@@ -76,7 +76,7 @@ namespace Miwalab.ShadowGroup.AfterEffect
                 if (IsTransitioned == false)
                 {
                     Sensor.RemoveAllImageProcesser();
-                    Sensor.AddImageProcesser(m_to);
+                    Sensor.AddImageProcessers(m_to);
                     IsTransitioned = true;
                 }
                 m_fadein.ImageProcess(ref src, ref dst);

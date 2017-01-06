@@ -15,6 +15,10 @@ public abstract class ASensorImporter : MonoBehaviour
     {
         this.m_ImagerProcesserList.Add(ImageProcesser);
     }
+    public void AddImageProcessers(List<AShadowImageProcesser> ImageProcesser)
+    {
+        this.m_ImagerProcesserList.AddRange(ImageProcesser);
+    }
     public void RemoveImageProcesser(int num)
     {
         this.m_ImagerProcesserList.RemoveAt(num);

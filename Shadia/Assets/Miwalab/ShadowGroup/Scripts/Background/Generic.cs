@@ -7,9 +7,12 @@ namespace Miwalab.ShadowGroup.Background
 {
     public enum BackgroundType
     {
+        None,
+        CircleCut,
         Butterfly,
         Fish,
         Tiger,
+        Unitychan,
         Count,
     }
     class Generic
