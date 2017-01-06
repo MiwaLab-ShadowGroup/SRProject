@@ -33,6 +33,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         double outertime;
         double parameter;
 
+        bool inner = true;
+        bool outer = true;
+
         private bool invert;
 
         public bool IsFirstFrame { get; private set; }
@@ -67,6 +70,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Zanzou_ou_tm") as ParameterSlider).ValueChanged += Zanzou_ou_tm_ValueChanged;
             (ShadowMediaUIHost.GetUI("Zanzou_param") as ParameterSlider).ValueChanged += Zanzou_param_ValueChanged;
             (ShadowMediaUIHost.GetUI("Zanzou_Invert") as ParameterCheckbox).ValueChanged += Zanzou_Invert_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Zanzou_Inner") as ParameterCheckbox).ValueChanged += Zanzou_Inner_ValueChanged;
+            (ShadowMediaUIHost.GetUI("Zanzou_Outer") as ParameterCheckbox).ValueChanged += Zanzou_Outer_ValueChanged;
 
             (ShadowMediaUIHost.GetUI("Zanzou_CC_Blue") as ParameterButton).Clicked += Zanzou_CC_Blue_Clicked;
             (ShadowMediaUIHost.GetUI("Zanzou_CC_Orange") as ParameterButton).Clicked += Zanzou_CC_Orange_Clicked;
@@ -84,6 +89,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Zanzou_ou_tm") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Zanzou_param") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Zanzou_Invert") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Zanzou_Inner") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("Zanzou_Outer") as ParameterCheckbox).ValueUpdate();
 
         }
 
@@ -141,6 +148,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private void Zanzou_Invert_ValueChanged(object sender, EventArgs e)
         {
             this.invert = (e as ParameterCheckbox.ChangedValue).Value;
+        }
+
+        private void Zanzou_Inner_ValueChanged(object sender, EventArgs e)
+        {
+            this.inner = (e as ParameterCheckbox.ChangedValue).Value;
+        }
+
+        private void Zanzou_Outer_ValueChanged(object sender, EventArgs e)
+        {
+            this.outer = (e as ParameterCheckbox.ChangedValue).Value;
         }
 
         private void Zanzou_param_ValueChanged(object sender, EventArgs e)
@@ -303,9 +320,28 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 Cv2.CvtColor(innerGrayBuffer2, tmpColorBuffer2, OpenCvSharp.ColorConversion.GrayToBgr);
                 Cv2.Multiply(innerColorBuffer2, tmpColorBuffer2, innerColorBuffer2, 1.0 / 255.0);
 
-                outerColorBuffer2 -= innerColorBuffer2;
+                if(inner == true && outer == true)
+                {
+                    outerColorBuffer2 -= innerColorBuffer2;
 
-                outerColorBuffer2.GaussianBlur(new Size(3, 3), 3).CopyTo(dst);
+                    outerColorBuffer2.GaussianBlur(new Size(3, 3), 3).CopyTo(dst);
+                }
+
+                else if (inner == true && outer == false)
+                {
+
+                    innerColorBuffer2.GaussianBlur(new Size(3, 3), 3).CopyTo(dst);
+                }
+
+                else if (inner == false && outer == true)
+                {
+
+                    outerColorBuffer2.GaussianBlur(new Size(3, 3), 3).CopyTo(dst);
+                }
+                else
+                {
+
+                }
 
 
                 ////***********************************************************

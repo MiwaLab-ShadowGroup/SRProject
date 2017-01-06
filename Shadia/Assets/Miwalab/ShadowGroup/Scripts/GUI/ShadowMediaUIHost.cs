@@ -769,6 +769,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Zanzou_ou_tm", 10, 0, 10);
         AddFloatUI(parent, "Zanzou_param", 1000, 0, 230);
         AddBooleanUI(parent, "Zanzou_Invert", false);
+        AddBooleanUI(parent, "Zanzou_Inner", true);
+        AddBooleanUI(parent, "Zanzou_Outer", true);
 
         m_lastUpdatedHeight += 10;
         //色指定

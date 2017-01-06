@@ -92,11 +92,11 @@ public class Remote3DModelManager : MonoBehaviour
         CIPCServerIP = (ShadowMediaUIHost.GetUI("Network_CIPCServerIP") as ParameterText).m_valueText.text;
         CIPCServerPort = int.Parse((ShadowMediaUIHost.GetUI("Network_CIPCServerPort") as ParameterText).m_valueText.text);
         _nHost = NetworkHost.GetInstance(CIPCServerIP, CIPCServerPort);
-
-        _nHost.AddClient(SENDID, 30);
-        _nHost.AddClient(RECEIVEID, -1);
-        _nHost.Connect(SENDID, CIPC_CS_Unity.CLIENT.MODE.Sender);
-        _nHost.Connect(RECEIVEID, CIPC_CS_Unity.CLIENT.MODE.Receiver);
+        
+        _nHost.AddCIPCClient(SENDID, 30);
+        _nHost.AddCIPCClient(RECEIVEID, -1);
+        _nHost.ConnectCIPC(SENDID, CIPC_CS_Unity.CLIENT.MODE.Sender);
+        _nHost.ConnectCIPC(RECEIVEID, CIPC_CS_Unity.CLIENT.MODE.Receiver);
 
 #if USE_REMOTE_BONE
 
@@ -195,8 +195,8 @@ public class Remote3DModelManager : MonoBehaviour
     public void OnApplicationQuit()
     {
         if (_nHost == null) return;
-        this._nHost.RemoveClient(SENDID);
-        this._nHost.RemoveClient(RECEIVEID);
+        this._nHost.RemoveCIPCClient(SENDID);
+        this._nHost.RemoveCIPCClient(RECEIVEID);
 #if USE_REMOTE_BONE
         this._nHost.RemoveClient(SENDIDBONE);
         this._nHost.RemoveClient(RECEIVEIDBONE);
@@ -212,7 +212,7 @@ public class Remote3DModelManager : MonoBehaviour
                 lock (SyncObject_Receiver)
                 {
                     int available = 0;
-                    byte[] data = _nHost.Receive(RECEIVEID, ref available);
+                    byte[] data = _nHost.ReceiveCIPC(RECEIVEID, ref available);
                     if (data != null)
                     {
 
@@ -279,7 +279,7 @@ public class Remote3DModelManager : MonoBehaviour
                 {
                     if (_SendMat != null)
                     {
-                        _nHost.Send(SENDID, _SendMat.ToBytes(".png"));
+                        _nHost.SendCIPC(SENDID, _SendMat.ToBytes(".png"));
                     }
 #if USE_REMOTE_BONE
                     if (_SendBoneData != null)
