@@ -23,7 +23,7 @@ namespace Miwalab.ShadowGroup.Network
         /// <summary>
         /// クライアントのリスト
         /// </summary>
-        private Dictionary<string, CIPCClient> m_clientList;
+        private Dictionary<string, CIPCClient> m_cipcClientList;
         private List<int> m_portList;
 
         string CIPCServerIP;
@@ -34,7 +34,7 @@ namespace Miwalab.ShadowGroup.Network
         /// </summary>
         private NetworkHost(string CIPCServerIP, int CIPCServerPort)
         {
-            m_clientList = new Dictionary<string, CIPCClient>();
+            m_cipcClientList = new Dictionary<string, CIPCClient>();
             m_portList = new List<int>();
             this.CIPCServerIP = CIPCServerIP;
             this.CIPCServerPort = CIPCServerPort;
@@ -54,9 +54,9 @@ namespace Miwalab.ShadowGroup.Network
             return m_actual;
         }
 
-        public void AddClient(int port, string tag, int fps)
+        public void AddCIPCClient(int port, string tag, int fps)
         {
-            if (m_clientList.ContainsKey(tag))
+            if (m_cipcClientList.ContainsKey(tag))
             {
                 Debug.Log("tag:" + tag + "は存在します．");
                 return;
@@ -65,14 +65,14 @@ namespace Miwalab.ShadowGroup.Network
             {
                 ++port;
                 //再設定
-                AddClient(port, tag, fps);
+                AddCIPCClient(port, tag, fps);
             }
             Debug.Log("port番号:" + port + "が初期化されます.");
             try
             {
                 CIPCClient client = new CIPCClient(port, CIPCServerIP, CIPCServerPort, fps, tag);
                 //タグをつけて記憶
-                m_clientList.Add(tag, client);
+                m_cipcClientList.Add(tag, client);
                 m_portList.Add(port);
             }
             catch (Exception ex)
@@ -82,23 +82,23 @@ namespace Miwalab.ShadowGroup.Network
             return;
         }
 
-        public void AddClient(NetworkSettings.NetworkSetting setting, int fps)
+        public void AddCIPCClient(NetworkSettings.NetworkSetting setting, int fps)
         {
-            this.AddClient(setting.PORT, setting.TAG, fps);
+            this.AddCIPCClient(setting.PORT, setting.TAG, fps);
         }
 
-        public void Connect(NetworkSettings.NetworkSetting setting, CIPC_CS_Unity.CLIENT.MODE mode)
+        public void ConnectCIPC(NetworkSettings.NetworkSetting setting, CIPC_CS_Unity.CLIENT.MODE mode)
         {
-            this.Connect(setting.TAG, mode);
+            this.ConnectCIPC(setting.TAG, mode);
         }
 
-        private void Connect(string tag, MODE mode)
+        private void ConnectCIPC(string tag, MODE mode)
         {
-            if (!this.m_clientList.ContainsKey(tag))
+            if (!this.m_cipcClientList.ContainsKey(tag))
             {
                 return;
             }
-            this.m_clientList[tag].Connect(mode);
+            this.m_cipcClientList[tag].Connect(mode);
         }
 
         /// <summary>
@@ -106,85 +106,85 @@ namespace Miwalab.ShadowGroup.Network
         /// </summary>
         /// <param name="tag"></param>
         /// <param name="data"></param>
-        public void Send(string tag, byte[] data)
+        public void SendCIPC(string tag, byte[] data)
         {
-            if (!this.m_clientList.ContainsKey(tag))
+            if (!this.m_cipcClientList.ContainsKey(tag))
             {
                 return;
             }
-            this.m_clientList[tag].Send(data);
+            this.m_cipcClientList[tag].Send(data);
         }
 
-        public void Send(NetworkSettings.NetworkSetting setting, byte[] data)
+        public void SendCIPC(NetworkSettings.NetworkSetting setting, byte[] data)
         {
-            this.Send(setting.TAG, data);
+            this.SendCIPC(setting.TAG, data);
         }
 
 
-        public void RemoveClient(string tag)
+        public void RemoveCIPCClient(string tag)
         {
-            if (!this.m_clientList.ContainsKey(tag))
+            if (!this.m_cipcClientList.ContainsKey(tag))
             {
                 return;
             }
-            this.m_clientList[tag].Close();
-            this.m_clientList.Remove(tag);
+            this.m_cipcClientList[tag].Close();
+            this.m_cipcClientList.Remove(tag);
         }
-        public void RemoveClient(NetworkSettings.NetworkSetting setting)
+        public void RemoveCIPCClient(NetworkSettings.NetworkSetting setting)
         {
-            this.RemoveClient(setting.TAG);
+            this.RemoveCIPCClient(setting.TAG);
         }
 
 
-        public CIPCClient GetClient(string tag)
+        public CIPCClient GetCIPCClient(string tag)
         {
-            if (!this.m_clientList.ContainsKey(tag))
+            if (!this.m_cipcClientList.ContainsKey(tag))
             {
                 Debug.Log("No tag as" + tag);
                 return null;
             }
-            return this.m_clientList[tag];
+            return this.m_cipcClientList[tag];
         }
-        public CIPCClient GetClient(NetworkSettings.NetworkSetting setting)
+        public CIPCClient GetCIPCClient(NetworkSettings.NetworkSetting setting)
         {
-            return this.GetClient(setting.TAG);
+            return this.GetCIPCClient(setting.TAG);
         }
 
-        public byte[] Receive(string tag)
+        public byte[] ReceiveCIPC(string tag)
         {
-            if (!this.m_clientList.ContainsKey(tag))
+            if (!this.m_cipcClientList.ContainsKey(tag))
             {
                 Debug.Log("No tag as" + tag);
                 return null;
             }
-            return this.m_clientList[tag].Receive();
+            return this.m_cipcClientList[tag].Receive();
         }
-        public byte[] Receive(NetworkSettings.NetworkSetting setting)
+        public byte[] ReceiveCIPC(NetworkSettings.NetworkSetting setting)
         {
-            return Receive(setting.TAG);
+            return ReceiveCIPC(setting.TAG);
         }
 
-        public byte[] Receive(string tag, ref int available)
+        public byte[] ReceiveCIPC(string tag, ref int available)
         {
-            if (!this.m_clientList.ContainsKey(tag))
+            if (!this.m_cipcClientList.ContainsKey(tag))
             {
                 Debug.Log("No tag as" + tag);
                 return null;
             }
-            return this.m_clientList[tag].Receive(ref available);
+            return this.m_cipcClientList[tag].Receive(ref available);
         }
-        public byte[] Receive(NetworkSettings.NetworkSetting setting, ref int available)
+        public byte[] ReceiveCIPC(NetworkSettings.NetworkSetting setting, ref int available)
         {
-            return Receive(setting.TAG, ref available);
+            return ReceiveCIPC(setting.TAG, ref available);
         }
 
-        public void Reset()
+        public void ResetCIPC()
         {
-            foreach (var p in this.m_clientList)
+            foreach (var p in this.m_cipcClientList)
             {
                 p.Value.Close();
             }
-            this.m_clientList.Clear();
+            this.m_cipcClientList.Clear();
             this.m_portList.Clear();
         }
     }

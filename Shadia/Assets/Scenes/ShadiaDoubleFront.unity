@@ -976,7 +976,7 @@ MonoBehaviour:
   importer: {fileID: 903384248}
   tex: {fileID: 0}
   textureSize: {x: 512, y: 424}
-  material: {fileID: 2100000, guid: c3847632b40e1da4980b56a6a7e5419c, type: 2}
+  _blender: {fileID: 842574305}
   m_ProjectionPlane:
   - {fileID: 224287388}
   - {fileID: 306494416}
@@ -1573,13 +1573,25 @@ GameObject:
   - component: {fileID: 842574308}
   - component: {fileID: 842574307}
   - component: {fileID: 842574306}
+  - component: {fileID: 842574305}
   m_Layer: 0
-  m_Name: DebugPlane
+  m_Name: ControlPlane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &842574305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 842574304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f29ed8eb749f7ba46a9a36172a3c3001, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!23 &842574306
 MeshRenderer:
   m_ObjectHideFlags: 0

@@ -74,6 +74,15 @@ Material:
         name: PixelSnap
       second: 0
     - first:
+        name: _BlendModeDrc
+      second: 0
+    - first:
+        name: _BlendModeDst
+      second: 0
+    - first:
+        name: _BlendModeSrc
+      second: 0
+    - first:
         name: _BumpScale
       second: 1
     - first:

@@ -7,6 +7,11 @@ namespace Miwalab.ShadowGroup.Network
 {
     public interface IClient
     {
+
+    }
+
+    public interface ICIPCClient : IClient
+    {
         /// <summary>
         /// 自身の情報
         /// </summary>

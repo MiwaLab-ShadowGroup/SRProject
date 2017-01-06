@@ -1,4 +1,4 @@
-﻿Shader "Unlit/UIPointSphereDst"
+﻿Shader "MiwaLabShader/UIPointSphereDst"
 {
 	Properties
 	{
