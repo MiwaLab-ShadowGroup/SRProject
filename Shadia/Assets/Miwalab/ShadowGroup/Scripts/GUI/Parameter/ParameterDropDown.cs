@@ -35,7 +35,15 @@ public class ParameterDropdown : AParameterUI
 
         this.m_Dropdown.value = value;
     }
-    
+
+    public void ValueUpdate()
+    {
+        if (this.ValueChanged != null)
+        {
+            this.ValueChanged(this, new ChangedValue(m_Dropdown.value));
+        }
+    }
+
     public void initialize<T>(T _default)
     {
         _length = Enum.GetNames(typeof(T)).Length;

@@ -35,14 +35,19 @@ namespace Miwalab.ShadowGroup.Callibration.Network
             _mF = GetComponent<MeshFilter>();
             _mR = GetComponent<MeshRenderer>();
             _material = new Material(_DoubleSideShader);
-            _mR.material = _material;
+            _mR.sharedMaterial = _material;
             _material.mainTexture = this._mainTexture;
+
+            (ShadowMediaUIHost.GetUI("core_network_blend") as ParameterDropdown).ValueChanged += ImageSorceBlender_ValueChanged;
+
 
         }
         public void Update()
         {
-            lock (syncObject) {
-                if (data != null) {
+            lock (syncObject)
+            {
+                if (data != null)
+                {
                     _mainTexture.LoadImage(data);
                 }
             }
@@ -56,7 +61,7 @@ namespace Miwalab.ShadowGroup.Callibration.Network
         {
             lock (syncObject)
             {
-                if(this.data == null)
+                if (this.data == null)
                 {
                     this.data = new byte[data.Length];
                 }
@@ -64,5 +69,57 @@ namespace Miwalab.ShadowGroup.Callibration.Network
             }
         }
 
+
+
+
+        private void ImageSorceBlender_ValueChanged(object sender, EventArgs e)
+        {
+            setBlendMode((e as ParameterDropdown.ChangedValue).Value);
+        }
+
+
+        public enum BlendMode : int
+        {
+            //デフォルト
+            Normal = 0,
+            Additive = 1,
+            SoftAdditive = 2,
+            Substract = 3,
+            Multiply = 4
+        }
+
+        public void setBlendMode(int num)
+        {
+            setBlendModeSettings((BlendMode)num);
+        }
+
+        private void setBlendModeSettings(BlendMode mode)
+        {
+            switch (mode)
+            {
+                case BlendMode.Normal:
+                    _material.SetInt("_BlendModeSrc", (int)UnityEngine.Rendering.BlendMode.One);
+                    _material.SetInt("_BlendModeDst", (int)UnityEngine.Rendering.BlendMode.Zero);
+                    break;
+                case BlendMode.Additive:
+                    _material.SetInt("_BlendModeSrc", (int)UnityEngine.Rendering.BlendMode.One);
+                    _material.SetInt("_BlendModeDst", (int)UnityEngine.Rendering.BlendMode.One);
+                    break;
+                case BlendMode.SoftAdditive:
+                    _material.SetInt("_BlendModeSrc", (int)UnityEngine.Rendering.BlendMode.OneMinusDstColor);
+                    _material.SetInt("_BlendModeDst", (int)UnityEngine.Rendering.BlendMode.One);
+                    break;
+                case BlendMode.Substract:
+                    _material.SetInt("_BlendModeSrc", (int)UnityEngine.Rendering.BlendMode.One);
+                    _material.SetInt("_BlendModeDst", (int)UnityEngine.Rendering.BlendMode.OneMinusDstColor);
+                    break;
+                case BlendMode.Multiply:
+                    _material.SetInt("_BlendModeSrc", (int)UnityEngine.Rendering.BlendMode.DstColor);
+                    _material.SetInt("_BlendModeDst", (int)UnityEngine.Rendering.BlendMode.Zero);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

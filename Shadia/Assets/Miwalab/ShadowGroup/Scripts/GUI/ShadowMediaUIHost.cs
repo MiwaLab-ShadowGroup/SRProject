@@ -1132,6 +1132,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddEnumUI(parent, "core_shadow_media_mode", Miwalab.ShadowGroup.Core.ShadowMediaMode.ShadowMedia2D);
         m_lastUpdatedHeight += 5;
         AddEnumUI(parent, "core_blending_mode", Miwalab.ShadowGroup.ImageSource.ImageSorceBlender.BlendMode.Normal);
+        AddEnumUI(parent, "core_network_blend", Miwalab.ShadowGroup.Callibration.Network.NetworkPlane.BlendMode.Normal);
+        
         m_lastUpdatedHeight += 5;
 
 

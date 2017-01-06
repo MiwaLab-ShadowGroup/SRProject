@@ -26,6 +26,7 @@ namespace Miwalab.ShadowGroup.ImageSource
             _targetMaterial = _renderer.sharedMaterial;
 
             (ShadowMediaUIHost.GetUI("core_blending_mode") as ParameterDropdown).ValueChanged += ImageSorceBlender_ValueChanged;
+            (ShadowMediaUIHost.GetUI("core_blending_mode") as ParameterDropdown).ValueUpdate();
 
         }
 
@@ -62,8 +63,8 @@ namespace Miwalab.ShadowGroup.ImageSource
             switch (mode)
             {
                 case BlendMode.Normal:
-                    _targetMaterial.SetInt("_BlendModeSrc", (int)UnityEngine.Rendering.BlendMode.Zero);
-                    _targetMaterial.SetInt("_BlendModeDst", (int)UnityEngine.Rendering.BlendMode.One);
+                    _targetMaterial.SetInt("_BlendModeSrc", (int)UnityEngine.Rendering.BlendMode.One);
+                    _targetMaterial.SetInt("_BlendModeDst", (int)UnityEngine.Rendering.BlendMode.Zero);
                     break;
                 case BlendMode.Additive:
                     _targetMaterial.SetInt("_BlendModeSrc", (int)UnityEngine.Rendering.BlendMode.One);
