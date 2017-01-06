@@ -22,6 +22,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         Scalar color;
         Scalar colorBack = new Scalar(0, 0, 0);
         bool m_UseFade;
+        bool m_UseBlur;
 
         public ChangeColor() : base()
         {
@@ -29,17 +30,24 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("ChangeColor_con_G") as ParameterSlider).ValueChanged += ChangeColor_con_G_ValueChanged;
             (ShadowMediaUIHost.GetUI("ChangeColor_con_B") as ParameterSlider).ValueChanged += ChangeColor_con_B_ValueChanged;
             (ShadowMediaUIHost.GetUI("ChangeColor_UseFade") as ParameterCheckbox).ValueChanged += ChangeColor_UseFade_ValueChanged;
+            (ShadowMediaUIHost.GetUI("ChangeColor_UseBlur") as ParameterCheckbox).ValueChanged += ChangeColor_UseBlur_ValueChanged;
 
 
             (ShadowMediaUIHost.GetUI("ChangeColor_con_R") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("ChangeColor_con_G") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("ChangeColor_con_B") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("ChangeColor_UseFade") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("ChangeColor_UseBlur") as ParameterCheckbox).ValueUpdate();
         }
 
         private void ChangeColor_UseFade_ValueChanged(object sender, EventArgs e)
         {
             this.m_UseFade = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+        }
+
+        private void ChangeColor_UseBlur_ValueChanged(object sender, EventArgs e)
+        {
+            this.m_UseBlur = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
         private void ChangeColor_con_R_ValueChanged(object sender, EventArgs e)
@@ -84,13 +92,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             }
             m_colorBuffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, color);
-            m_buffer = m_colorBuffer.Mul(src);
+            m_buffer += m_colorBuffer - ~src;
+
+            if (this.m_UseBlur)
+            {
+                Cv2.GaussianBlur(m_buffer, m_buffer, new Size(3, 3), 0f);
+            }
 
 
             dst = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, colorBack);
             dst += m_buffer;
 
-            //dst += m_buffer;
 
 
         }

@@ -23,6 +23,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
         Scalar color;
         Scalar colorBack;
+        int minArea;
 
         List<OpenCvSharp.CPlusPlus.Point> contour_Center = new List<Point>();
         List<StackContsGroup> Tree_ContsGroup = new List<StackContsGroup>();
@@ -44,8 +45,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         public PersonalColor() : base()
         {
             (ShadowMediaUIHost.GetUI("PersonalColor_UseFade") as ParameterCheckbox).ValueChanged += PersonalColor_UseFade_ValueChanged;
+            (ShadowMediaUIHost.GetUI("PersonalColor_minArea") as ParameterSlider).ValueChanged += PersonalColor_minArea_ValueChanged;
 
             (ShadowMediaUIHost.GetUI("PersonalColor_UseFade") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("PersonalColor_minArea") as ParameterSlider).ValueUpdate();
         }
 
 
@@ -56,41 +59,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         }
 
       
-        private void PersonalColor_con_R_ValueChanged(object sender, EventArgs e)
+        private void PersonalColor_minArea_ValueChanged(object sender, EventArgs e)
         {
-            this.color.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
+            this.minArea = (int)(e as ParameterSlider.ChangedValue).Value;
 
         }
 
-        private void PersonalColor_con_G_ValueChanged(object sender, EventArgs e)
-        {
-            this.color.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void PersonalColor_con_B_ValueChanged(object sender, EventArgs e)
-        {
-            this.color.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void PersonalColor_bgd_R_ValueChanged(object sender, EventArgs e)
-        {
-            this.colorBack.Val2 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void PersonalColor_bgd_G_ValueChanged(object sender, EventArgs e)
-        {
-            this.colorBack.Val1 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
-
-        private void PersonalColor_bgd_B_ValueChanged(object sender, EventArgs e)
-        {
-            this.colorBack.Val0 = (double)(e as ParameterSlider.ChangedValue).Value;
-
-        }
+       
 
         Mat m_buffer;
 
@@ -139,7 +114,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             for (int i = 0; i < contour.Length; i++)
             {
                 this.CvPoints.Clear();
-                if (Cv2.ContourArea(contour[i]) > 30)
+                if (Cv2.ContourArea(contour[i]) > this.minArea)
 
                 {
                     //重心検出処理
