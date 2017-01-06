@@ -33,9 +33,8 @@ public class NetworkOperationObject : MonoBehaviour {
 
         if (nHost != null)
         {
-            nOpe.ChangeToBinary();
-
-            senddata = nOpe.data;
+            
+            senddata = nOpe.GetBinary();
 
             nHost.SendCIPC(setting.TAG,senddata);
 
