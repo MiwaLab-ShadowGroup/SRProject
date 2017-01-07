@@ -83,6 +83,9 @@ Material:
         name: _BlendModeSrc
       second: 0
     - first:
+        name: _BlendOption
+      second: 0
+    - first:
         name: _BumpScale
       second: 1
     - first:

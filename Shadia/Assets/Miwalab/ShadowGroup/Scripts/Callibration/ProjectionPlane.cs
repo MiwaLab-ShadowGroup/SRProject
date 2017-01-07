@@ -11,6 +11,7 @@ public class ProjectionPlane : MonoBehaviour {
     {
         this.m_material = material;
         this.GetComponent<MeshRenderer>().sharedMaterial = material;
+        this.GetComponent<MeshRenderer>().sortingOrder = 0;
     }
     
 }

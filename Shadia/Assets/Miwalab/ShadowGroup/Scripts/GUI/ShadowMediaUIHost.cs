@@ -197,6 +197,9 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsCameraCllibration(m_PanelDictionary[CallibrationSettingType.CameraCllibration1.ToString()], 1);
         this.CreateUIsCameraCllibration(m_PanelDictionary[CallibrationSettingType.CameraCllibration2.ToString()], 2);
 
+        this.CreateUIsRemoteCllibration1(m_PanelDictionary[CallibrationSettingType.RemoteCallibration1.ToString()]);
+        this.CreateUIsRemoteCllibration2(m_PanelDictionary[CallibrationSettingType.RemoteCallibration2.ToString()]);
+
 
         this.CreateUIsAffterEffectFade(m_PanelDictionary[AfterEffectSettingType.Fade.ToString()]);
 
@@ -223,6 +226,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.m_Sensor.AddImageProcesser(new Normal());
     }
 
+    
 
     private void CreateUIsGeneric()
     {
@@ -233,6 +237,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     private void SetupUIsImageprocess()
     {
+        this.CreateUIsImageporcessingSelector(m_PanelDictionary[ImageProcesserType.Selector.ToString()]);
         this.CreateUIsImageporcessingWhite(m_PanelDictionary[ImageProcesserType.White.ToString()]);
         this.CreateUIsImageporcessingNormal(m_PanelDictionary[ImageProcesserType.Normal.ToString()]);
         this.CreateUIsImageporcessingTimeDelay(m_PanelDictionary[ImageProcesserType.TimeDelay.ToString()]);
@@ -267,6 +272,8 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     }
 
+    
+
     public void ChangeGeneralSettingOptionTo(int number)
     {
         var type = (Miwalab.ShadowGroup.Core.ApplicationSettings.GenericSettingOption)number;
@@ -285,139 +292,123 @@ public class ShadowMediaUIHost : MonoBehaviour
     public void ChangeImageProcessingOptionTo(int number)
     {
         ImageProcesserType type = (ImageProcesserType)number;
+        this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[type.ToString()];
+        this.SwitchOffOtherPanelsExceptOf(this.m_currentImageProcesserSettingPanel);
+    }
+
+    public void ChangeImageProcessingTo(int number, bool useProcesser)
+    {
+        ImageProcesserType type = (ImageProcesserType)number;
+
+        List<AShadowImageProcesser> changeTo = new List<AShadowImageProcesser>();
+        if (useProcesser)
+        {
+            changeTo.Add(new PtsImgProcesser());
+        }
+
         switch (type)
         {
             case ImageProcesserType.Normal:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new Normal() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Normal.ToString()];
+                changeTo.Add(new Normal());
                 break;
             case ImageProcesserType.VividNormal:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new VividNormal() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.VividNormal.ToString()];
+                changeTo.Add(new VividNormal());
                 break;
             case ImageProcesserType.Spike:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Spike() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Spike.ToString()];
+                changeTo.Add(new Spike());
                 break;
             case ImageProcesserType.Black:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Black() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Black.ToString()];
+                changeTo.Add(new Black());
                 break;
             case ImageProcesserType.White:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new White() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.White.ToString()];
+                changeTo.Add(new White());
                 break;
             case ImageProcesserType.DoubleAfterImage:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Zanzou() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.DoubleAfterImage.ToString()];
+                changeTo.Add(new Zanzou());
                 break;
             case ImageProcesserType.Polygon:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Polygon() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Polygon.ToString()];
+                changeTo.Add(new Polygon());
                 break;
             case ImageProcesserType.TamuraSkeleton:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new TamuraSkelton() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.TamuraSkeleton.ToString()];
+                changeTo.Add(new TamuraSkelton());
                 break;
             case ImageProcesserType.TimeDelay:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Timedelay() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.TimeDelay.ToString()];
+                changeTo.Add(new Timedelay());
                 break;
             case ImageProcesserType.Particle:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Miwalab.ShadowGroup.ImageProcesser.Particle() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Particle.ToString()];
+                changeTo.Add(new Miwalab.ShadowGroup.ImageProcesser.Particle());
                 break;
             case ImageProcesserType.Particle2D:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Miwalab.ShadowGroup.ImageProcesser.ShadowParticle2D() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Particle2D.ToString()];
+                changeTo.Add(new Miwalab.ShadowGroup.ImageProcesser.ShadowParticle2D());
                 break;
             case ImageProcesserType.ParticleVector:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Miwalab.ShadowGroup.ImageProcesser.ParticleVector() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.ParticleVector.ToString()];
+                changeTo.Add(new Miwalab.ShadowGroup.ImageProcesser.ParticleVector());
                 break;
             case ImageProcesserType.Attraction:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Attraction() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Attraction.ToString()];
+                changeTo.Add(new Attraction());
                 break;
             case ImageProcesserType.Electrical:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Electrical() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Electrical.ToString()];
+                changeTo.Add(new Electrical());
                 break;
             case ImageProcesserType.HandsTo:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new HandsTo() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.HandsTo.ToString()];
+                changeTo.Add(new HandsTo());
                 break;
             case ImageProcesserType.HandElbow:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new HandElbow() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.HandElbow.ToString()];
+                changeTo.Add(new HandElbow());
                 break;
             case ImageProcesserType.MoveShadow:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new MoveShadow() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.MoveShadow.ToString()];
+                changeTo.Add(new MoveShadow());
                 break;
             case ImageProcesserType.Twins:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Twins() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Twins.ToString()];
+                changeTo.Add(new Twins());
                 break;
             case ImageProcesserType.Ahead:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Ahead() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Ahead.ToString()];
+                changeTo.Add(new Ahead());
                 break;
             case ImageProcesserType.Colorful:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Colorful() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Colorful.ToString()];
+                changeTo.Add(new Colorful());
                 break;
             case ImageProcesserType.Canny:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Canny() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Canny.ToString()];
+                changeTo.Add(new Canny());
                 break;
             case ImageProcesserType.LeastSquare:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new LeastSquare() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.LeastSquare.ToString()];
+                changeTo.Add(new LeastSquare());
                 break;
             case ImageProcesserType.LSAhead:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(), new LSAhead() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.LSAhead.ToString()];
+                changeTo.Add(new LSAhead());
                 break;
             case ImageProcesserType.MixColor:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new MixColor() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.MixColor.ToString()];
+                changeTo.Add(new MixColor());
                 break;
             case ImageProcesserType.PersonalColor:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new PersonalColor() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.PersonalColor.ToString()];
+                changeTo.Add(new PersonalColor());
                 break;
             case ImageProcesserType.ChangeColor:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new ChangeColor() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.ChangeColor.ToString()];
+                changeTo.Add(new ChangeColor());
                 break;
             case ImageProcesserType.PtsImgProcesser:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new PtsImgProcesser() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.PtsImgProcesser.ToString()];
+                changeTo.Add(new PtsImgProcesser());
                 break;
             case ImageProcesserType.BrightCheck:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new BrightCheck() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.BrightCheck.ToString()];
+                changeTo.Add(new BrightCheck());
                 break;
             case ImageProcesserType.EachMoveParticle:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Miwalab.ShadowGroup.ImageProcesser.EachMoveParticle() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()];
+                changeTo.Add(new Miwalab.ShadowGroup.ImageProcesser.EachMoveParticle());
                 break;
             case ImageProcesserType.FlowParticlesShadow:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Miwalab.ShadowGroup.ImageProcesser.FlowParticlesShadow() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()];
+                changeTo.Add(new Miwalab.ShadowGroup.ImageProcesser.FlowParticlesShadow());
                 break;
             case ImageProcesserType.PainterShadow:
-                this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new PtsImgProcesser(),new Miwalab.ShadowGroup.ImageProcesser.PainterShadow() }));
-                this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.PainterShadow.ToString()];
+                changeTo.Add(new Miwalab.ShadowGroup.ImageProcesser.PainterShadow());
                 break;
             case ImageProcesserType.CellAutomaton:
                 break;
 
         }
-        this.SwitchOffOtherPanelsExceptOf(this.m_currentImageProcesserSettingPanel);
+        this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, changeTo));
 
     }
+
     public void ChangeImportSettingOptionTo(int number)
     {
         ImportSettingType type = (ImportSettingType)number;
@@ -463,7 +454,12 @@ public class ShadowMediaUIHost : MonoBehaviour
         }
     }
     #region createUIMethods
-
+    private void CreateUIsImageporcessingSelector(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddEnumUI(parent, "IPS_ImgChange", ImageProcesserType.Normal);
+        AddBooleanUI(parent, "IPS_UsePtsImageProcesser", false);
+    }
     private void CreateUIsImageporcessingPainterShadow(GameObject gameObject)
     {
         m_lastUpdatedHeight = 0;
@@ -806,7 +802,6 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsImageporcessingPtsImgProcesser(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddEnumUI(parent, "PtsImg_Type", ImageProcesserType.Normal);
         AddFloatUI(parent, "PtsImg_Dilate", 10, 0, 0);
         AddFloatUI(parent, "PtsImg_GaussianSize1", 150, 1, 1);
         AddFloatUI(parent, "PtsImg_LightAnd", 200, 0, 1);
@@ -1011,6 +1006,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "Network_Send", false);
         AddBooleanUI(parent, "Network_Receive", false);
+        
     }
 
     /// <summary>
@@ -1026,6 +1022,26 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "TimeDelay_DelayTime", 1000, 0, 0);
+    }
+
+    private void CreateUIsRemoteCllibration2(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "RSIM_2_x", 1, -1, 0);
+        AddFloatUI(parent, "RSIM_2_y", 1, -1, 0);
+        AddFloatUI(parent, "RSIM_2_z", 1, -1, 0);
+        AddFloatUI(parent, "RSIM_2_rot", 180, -180, 0);
+
+    }
+
+    private void CreateUIsRemoteCllibration1(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "RSIM_1_x", 1, -1, 0);
+        AddFloatUI(parent, "RSIM_1_y", 1, -1, 0);
+        AddFloatUI(parent, "RSIM_1_z", 1, -1, 0);
+        AddFloatUI(parent, "RSIM_1_rot", 180, -180, 0);
+
     }
 
     protected void CreateUIsCallibrationImport(GameObject parent, int num)

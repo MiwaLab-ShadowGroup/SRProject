@@ -40,7 +40,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         public PtsImgProcesser() : base()
         {
 
-            //(ShadowMediaUIHost.GetUI("PtsImg_Type") as ParameterDropdown).ValueChanged += PtsImgProcesser_ModeChanged;
             (ShadowMediaUIHost.GetUI("PtsImg_Dilate") as ParameterSlider).ValueChanged += PtsImgProcesser_Dilate_ValueChanged;
             (ShadowMediaUIHost.GetUI("PtsImg_GaussianSize1") as ParameterSlider).ValueChanged += PtsImgProcesser_GaussianSize1_ValueChanged;
             (ShadowMediaUIHost.GetUI("PtsImg_LightAnd") as ParameterSlider).ValueChanged += PtsImgProcesser_LightAnd_ValueChanged;

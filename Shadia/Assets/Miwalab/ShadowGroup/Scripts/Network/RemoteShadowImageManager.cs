@@ -126,6 +126,73 @@ namespace Miwalab.ShadowGroup.Network
             (ShadowMediaUIHost.GetUI("RSIM_Sender2_TargetIndex") as ParameterDropdown).ValueChanged += TargetIndex2_ValueChanged;
             (ShadowMediaUIHost.GetUI("RSIM_SettingUpdate") as ParameterButton).Clicked += SettingUpdate_Clicked;
 
+
+            (ShadowMediaUIHost.GetUI("RSIM_1_x") as ParameterSlider).ValueChanged += posX_1_ValueChanged;
+            (ShadowMediaUIHost.GetUI("RSIM_1_y") as ParameterSlider).ValueChanged += posY_1_ValueChanged;
+            (ShadowMediaUIHost.GetUI("RSIM_1_z") as ParameterSlider).ValueChanged += posZ_1_ValueChanged;
+            (ShadowMediaUIHost.GetUI("RSIM_1_rot") as ParameterSlider).ValueChanged += rot_1_ValueChanged;
+
+            (ShadowMediaUIHost.GetUI("RSIM_2_x") as ParameterSlider).ValueChanged += posX_2_ValueChanged;
+            (ShadowMediaUIHost.GetUI("RSIM_2_y") as ParameterSlider).ValueChanged += posY_2_ValueChanged;
+            (ShadowMediaUIHost.GetUI("RSIM_2_z") as ParameterSlider).ValueChanged += posZ_2_ValueChanged;
+            (ShadowMediaUIHost.GetUI("RSIM_2_rot") as ParameterSlider).ValueChanged += rot_2_ValueChanged;
+
+
+        }
+
+
+        private void rot_2_ValueChanged(object sender, EventArgs e)
+        {
+            var value = (e as ParameterSlider.ChangedValue).Value;
+            _networkPlane2.transform.rotation = Quaternion.Euler(0, value, 0);
+        }
+
+        private void posZ_2_ValueChanged(object sender, EventArgs e)
+        {
+            var pos = _networkPlane2.transform.position;
+            var value = (e as ParameterSlider.ChangedValue).Value;
+            _networkPlane2.transform.position = new Vector3(pos.x, pos.y, value);
+        }
+
+        private void posY_2_ValueChanged(object sender, EventArgs e)
+        {
+            var pos = _networkPlane2.transform.position;
+            var value = (e as ParameterSlider.ChangedValue).Value;
+            _networkPlane2.transform.position = new Vector3(pos.x, value, pos.z);
+        }
+
+        private void posX_2_ValueChanged(object sender, EventArgs e)
+        {
+            var pos = _networkPlane2.transform.position;
+            var value = (e as ParameterSlider.ChangedValue).Value;
+            _networkPlane2.transform.position = new Vector3(value, pos.y, pos.z);
+        }
+
+        private void rot_1_ValueChanged(object sender, EventArgs e)
+        {
+            var value = (e as ParameterSlider.ChangedValue).Value;
+            _networkPlane1.transform.rotation = Quaternion.Euler(0, value, 0);
+        }
+
+        private void posZ_1_ValueChanged(object sender, EventArgs e)
+        {
+            var pos = _networkPlane1.transform.position;
+            var value = (e as ParameterSlider.ChangedValue).Value;
+            _networkPlane1.transform.position = new Vector3(pos.x, pos.y, value);
+        }
+
+        private void posY_1_ValueChanged(object sender, EventArgs e)
+        {
+            var pos = _networkPlane1.transform.position;
+            var value = (e as ParameterSlider.ChangedValue).Value;
+            _networkPlane1.transform.position = new Vector3(pos.x, value, pos.z);
+        }
+
+        private void posX_1_ValueChanged(object sender, EventArgs e)
+        {
+            var pos = _networkPlane1.transform.position;
+            var value = (e as ParameterSlider.ChangedValue).Value;
+            _networkPlane1.transform.position = new Vector3(value,pos.y,pos.z);
         }
 
         private void SettingUpdate_Clicked(object sender, EventArgs e)
