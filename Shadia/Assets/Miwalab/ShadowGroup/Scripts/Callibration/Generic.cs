@@ -17,6 +17,8 @@ namespace Miwalab.ShadowGroup.Callibration
         CallibrationExport4,
         CameraCllibration1,
         CameraCllibration2,
+        RemoteCallibration1,
+        RemoteCallibration2,
         Count,
     }
 

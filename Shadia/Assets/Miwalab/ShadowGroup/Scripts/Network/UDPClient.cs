@@ -67,9 +67,9 @@ namespace Miwalab.ShadowGroup.Network
             return null;
         }
 
-        public void Send(byte[] data)
+        public void Send(byte[] data, IPEndPoint target)
         {
-            this.m_client.Send(data,data.Length);
+            this.m_client.Send(data,data.Length, target);
         }
 
 

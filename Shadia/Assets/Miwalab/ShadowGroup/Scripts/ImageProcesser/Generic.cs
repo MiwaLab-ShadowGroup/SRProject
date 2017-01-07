@@ -8,6 +8,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
     public enum ImageProcesserType
     {
         /// <summary>
+        /// 変更
+        /// </summary>
+        Selector,
+
+        /// <summary>
         /// 通常影　自影
         /// </summary>
         Normal,

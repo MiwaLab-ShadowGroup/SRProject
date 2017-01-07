@@ -24,24 +24,22 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private Mat dstMat = new Mat();
         // Mat dstMat = new Mat()
         List<List<OpenCvSharp.CPlusPlus.Point>> List_Contours = new List<List<Point>>();
-        Scalar color;
-        Scalar colorBack;
-        Scalar lightRate;
-        int dilateNum;
-        int gaussianSize1;
-        int gaussianSize2;
-        int threshold;
-        int findAreaTh;
-        float lightAnd;
+        Scalar color = Scalar.White;
+        Scalar colorBack = Scalar.Black;
+        Scalar lightRate = new Scalar(1,1,1);
+        int dilateNum = 0;
+        int gaussianSize1 = 1;
+        int gaussianSize2 = 1;
+        int threshold = 0;
+        int findAreaTh = 100;
+        float lightAnd = 1;
 
-        bool contFind;
+        bool contFind = false;
 
-        private ImageProcesserType _imgProcesserType;
 
         public PtsImgProcesser() : base()
         {
 
-            (ShadowMediaUIHost.GetUI("PtsImg_Type") as ParameterDropdown).ValueChanged += PtsImgProcesser_ModeChanged;
             (ShadowMediaUIHost.GetUI("PtsImg_Dilate") as ParameterSlider).ValueChanged += PtsImgProcesser_Dilate_ValueChanged;
             (ShadowMediaUIHost.GetUI("PtsImg_GaussianSize1") as ParameterSlider).ValueChanged += PtsImgProcesser_GaussianSize1_ValueChanged;
             (ShadowMediaUIHost.GetUI("PtsImg_LightAnd") as ParameterSlider).ValueChanged += PtsImgProcesser_LightAnd_ValueChanged;
@@ -64,10 +62,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("PtsImg_contFind") as ParameterCheckbox).ValueUpdate();
         }
 
-        private void PtsImgProcesser_ModeChanged(object sender, EventArgs e)
-        {
-            _imgProcesserType = (ImageProcesserType)(e as ParameterDropdown.ChangedValue).Value;
-        }
 
         private void PtsImgProcesser_UseFade_ValueChanged(object sender, EventArgs e)
         {
@@ -156,6 +150,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             Cv2.CvtColor(src, grayimage, OpenCvSharp.ColorConversion.BgrToGray);
             Cv2.Dilate(grayimage,grayimage,null,null, this.dilateNum );
 
+            if(this.gaussianSize1< 1)
+            {
+                this.gaussianSize1 = 1;
+            }
+
             //ブラーで滑らかにぼかす 一回目
             Cv2.GaussianBlur(grayimage,grayimage, new Size(this.gaussianSize1, this.gaussianSize1), 0f);
 
@@ -163,7 +162,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             //定数乗する
             Cv2.CvtColor(m_lightMask, m_lightMask, OpenCvSharp.ColorConversion.BgrToGray);
             grayimage = grayimage.Mul(m_lightMask);
-
+            if (this.gaussianSize2 < 1)
+            {
+                this.gaussianSize2 = 1;
+            }
             //ブラーで滑らかにぼかす 一回目
             Cv2.GaussianBlur(grayimage, grayimage, new Size(this.gaussianSize2, this.gaussianSize2), 0f);
 

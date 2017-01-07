@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using OpenCvSharp.CPlusPlus;
+using Miwalab.ShadowGroup.Network;
 
 [RequireComponent(typeof(RemoteShadowImageManager))]
 public class SimpleNetworkTest : MonoBehaviour
@@ -28,10 +29,6 @@ public class SimpleNetworkTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(rsim._ReceivedMat == null)
-        {
-            return;
-        }
-         this.texToDraw.LoadImage( rsim._ReceivedMat.ToBytes(".png"));
+   
     }
 }

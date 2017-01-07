@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Miwalab.ShadowGroup.Network;
 
 public class ShadowMeshRenderer : MonoBehaviour
 {
@@ -41,12 +42,9 @@ public class ShadowMeshRenderer : MonoBehaviour
     public int Col = 10;
 
     private Mesh _Mesh;
-    private Vector3[] _Vertices;
-
+    public Vector3[] _Vertices { set; get; }
     public Vector2[] UVDiff { set; get; }
-
-
-    private Vector2[] _UV;
+    public Vector2[] _UV { set; get; }
     private int[] _Triangles;
 
     public GameObject PointObjectDst;
@@ -85,6 +83,8 @@ public class ShadowMeshRenderer : MonoBehaviour
     bool _UseUpperBtm;
 
     float _CondenceRate;
+    
+    public RemoteShadowImageManager _RSIM;
 
     // Use this for initialization
     public void SetUpUIs()
@@ -607,6 +607,10 @@ public class ShadowMeshRenderer : MonoBehaviour
 
         //頂点に変更があったらメッシュ再構築
         this.RefreshData();
+        if (this._RSIM != null)
+        {
+            this._RSIM.SendAllClientMesh(_Vertices, _UV);
+        }
     }
 
     /// <summary>

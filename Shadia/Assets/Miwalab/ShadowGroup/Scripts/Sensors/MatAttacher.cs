@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Miwalab.ShadowGroup.Network;
 
 public class MatAttacher : MonoBehaviour {
 
@@ -8,10 +9,12 @@ public class MatAttacher : MonoBehaviour {
     public Texture2D tex;
     public Vector2 textureSize;
     public Miwalab.ShadowGroup.ImageSource.ImageSorceBlender _blender;
+    public RemoteShadowImageManager _remoteShadowImageManager;
 
     public List<ProjectionPlane> m_ProjectionPlane = new List<ProjectionPlane>();
 	// Use this for initialization
 	void Start () {
+        Debug.Assert(_remoteShadowImageManager != null);
 	    if(importer == null)
         {
             Debug.Log("CameraImporter is not attached.");
@@ -46,6 +49,10 @@ public class MatAttacher : MonoBehaviour {
         {
             Debug.Log("trying now...");
         }
+        //ここで送信
+        _remoteShadowImageManager.SendAllClient(data);
+        //
+        
         tex.LoadImage(data);
     }
 
