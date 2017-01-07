@@ -12,7 +12,10 @@ namespace Miwalab.ShadowGroup.ImageSource.ShadowMedia3D
         public float _kinectRotation_rx = 0;
         public float _kinectRotation_ry = 0;
 
-     
+        public float _virtualLightRotation_y = 0;
+        public bool virtualLightDivide = false;
+
+        public KinectImporter.LightSourceMode _lightMode;
         private Camera _camera;
 
         void Start()
@@ -26,13 +29,20 @@ namespace Miwalab.ShadowGroup.ImageSource.ShadowMedia3D
             (ShadowMediaUIHost.GetUI("Kinect_light_r") as ParameterSlider).ValueChanged += VirtualLightSource3D_light_r_ValueChanged;
             (ShadowMediaUIHost.GetUI("Kinect_LightMode") as ParameterDropdown).ValueChanged += VirtualLightSource3D_LightModeChanged;
             (ShadowMediaUIHost.GetUI("Kinect_ViewRange") as ParameterSlider).ValueChanged += VirtualLightSource3D_ViewRangeChanged;
+            (ShadowMediaUIHost.GetUI("kinect_divide") as ParameterCheckbox).ValueChanged += VirtualLightSource3D_divide_ValueChanged;
+
 
             (ShadowMediaUIHost.GetUI("kinect_height") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("kinect_angle") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("kinect_radius") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Kinect_rot_x") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("Kinect_rot_y") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("kinect_divide") as ParameterCheckbox).ValueUpdate();
+        }
 
+        private void VirtualLightSource3D_divide_ValueChanged(object sender, EventArgs e)
+        {
+            this.virtualLightDivide = (bool)(e as ParameterCheckbox.ChangedValue).Value;
         }
 
         private void VirtualLightSource3D_radius_ValueChanged(object sender, EventArgs e)
@@ -41,8 +51,14 @@ namespace Miwalab.ShadowGroup.ImageSource.ShadowMedia3D
 
         private void VirtualLightSource3D_angle_ValueChanged(object sender, EventArgs e)
         {
-          
+            if (this.virtualLightDivide)
+            {
+                _virtualLightRotation_y = -(e as ParameterSlider.ChangedValue).Value;
+                this.gameObject.transform.rotation = Quaternion.Euler(0, _virtualLightRotation_y, 0);
+            }
         }
+
+
 
         private void VirtualLightSource3D_height_ValueChanged(object sender, EventArgs e)
         {
@@ -66,17 +82,22 @@ namespace Miwalab.ShadowGroup.ImageSource.ShadowMedia3D
 
         private void VirtualLightSource3D_rot_y_ValueChanged(object sender, EventArgs e)
         {
-            _kinectRotation_ry = -(e as ParameterSlider.ChangedValue).Value;
-            this.gameObject.transform.rotation = Quaternion.Euler(_kinectRotation_rx, _kinectRotation_ry, 0);
+            if (!this.virtualLightDivide)
+            {
+                _kinectRotation_ry = -(e as ParameterSlider.ChangedValue).Value;
+                this.gameObject.transform.rotation = Quaternion.Euler(_kinectRotation_rx, _kinectRotation_ry, 0);
+            }
         }
 
         private void VirtualLightSource3D_rot_x_ValueChanged(object sender, EventArgs e)
         {
-            _kinectRotation_rx = -(e as ParameterSlider.ChangedValue).Value;
-
-            this.gameObject.transform.rotation = Quaternion.Euler(_kinectRotation_rx, _kinectRotation_ry, 0);
+            if (!this.virtualLightDivide)
+            {
+                _kinectRotation_rx = -(e as ParameterSlider.ChangedValue).Value;
+                this.gameObject.transform.rotation = Quaternion.Euler(_kinectRotation_rx, _kinectRotation_ry, 0);
+            }
         }
-        
+
 
         void Update()
         {

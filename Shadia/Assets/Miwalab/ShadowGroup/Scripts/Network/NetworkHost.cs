@@ -45,7 +45,7 @@ namespace Miwalab.ShadowGroup.Network
         /// それ以降は同一の実態を使用
         /// </summary>
         /// <returns></returns>
-        public static NetworkHost GetInstance(string CIPCServerIP, int CIPCServerPort)
+        public static NetworkHost GetInstance(string CIPCServerIP, int CIPCServerPort = 12000)
         {
             if (m_actual == null)
             {
