@@ -324,7 +324,7 @@ public class ShadowMediaUIHost : MonoBehaviour
                 changeTo.Add(new White());
                 break;
             case ImageProcesserType.DoubleAfterImage:
-                changeTo.Add(new Zanzou());
+                changeTo.Add(new DoubleAfterImage());
                 break;
             case ImageProcesserType.Polygon:
                 changeTo.Add(new Polygon());

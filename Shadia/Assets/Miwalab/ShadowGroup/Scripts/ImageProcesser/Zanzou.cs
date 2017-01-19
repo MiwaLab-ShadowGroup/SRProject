@@ -8,7 +8,7 @@ using OpenCvSharp;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    public class Zanzou : AShadowImageProcesser
+    public class DoubleAfterImage : AShadowImageProcesser
     {
         private List<List<bool>> m_Field = new List<List<bool>>();
         private bool IsInit = false;
@@ -58,7 +58,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         #endregion
 
-        public Zanzou():base()
+        public DoubleAfterImage():base()
         {
             (ShadowMediaUIHost.GetUI("Zanzou_ins_R") as ParameterSlider).ValueChanged += Zanzou_ins_R_ValueChanged;
             (ShadowMediaUIHost.GetUI("Zanzou_ins_G") as ParameterSlider).ValueChanged += Zanzou_ins_G_ValueChanged;
