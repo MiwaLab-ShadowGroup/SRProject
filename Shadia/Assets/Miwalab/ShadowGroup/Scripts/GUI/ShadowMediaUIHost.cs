@@ -265,6 +265,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingChangeColor(m_PanelDictionary[ImageProcesserType.ChangeColor.ToString()]);
         this.CreateUIsImageporcessingPersonalColor(m_PanelDictionary[ImageProcesserType.PersonalColor.ToString()]);
         this.CreateUIsImageporcessingPtsImgProcesser(m_PanelDictionary[ImageProcesserType.PtsImgProcesser.ToString()]);
+        this.CreateUIsImageporcessingSecondDelay(m_PanelDictionary[ImageProcesserType.SecondDelay.ToString()]);
+
         this.CreateUIsImageporcessingBrightCheck(m_PanelDictionary[ImageProcesserType.BrightCheck.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
         this.CreateUIsImageporcessingFlowParticlesShadow(m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()]);
@@ -385,6 +387,9 @@ public class ShadowMediaUIHost : MonoBehaviour
                 break;
             case ImageProcesserType.ChangeColor:
                 changeTo.Add(new ChangeColor());
+                break;
+            case ImageProcesserType.SecondDelay:
+                changeTo.Add(new SecondDelay());
                 break;
             case ImageProcesserType.PtsImgProcesser:
                 changeTo.Add(new PtsImgProcesser());
@@ -1025,6 +1030,13 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "TimeDelay_DelayTime", 1000, 0, 0);
+    }
+
+    private void CreateUIsImageporcessingSecondDelay(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "SecondDelay_DelaySec", 180, 0, 3);
+        AddFloatUI(parent, "SecondDelay_LayerNum", 10, 0, 0);
     }
 
     private void CreateUIsRemoteCllibration2(GameObject parent)
