@@ -217,35 +217,35 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             {
                 Cv2.CvtColor(src, bufimage, OpenCvSharp.ColorConversion.BgrToGray);
 
+                #region 邪魔者はちるべし
+                //unsafe
+                //{
+                //    byte* pPixel = bufimage.DataPointer;
+                //    Random r = new Random();
 
-                unsafe
-                {
-                    byte* pPixel = bufimage.DataPointer;
-                    Random r = new Random();
-
-                    for (int y = 0; y < _h; y++)
-                    {
-                        for (int x = 0; x < _w; x++)
-                        {
-                            //黒くない点は生きてる
-                            if (*pPixel > 100)
-                            {
-                                m_Field[y][x] = true;
-                                if (r.Next(0, 100) < 60)
-                                {           //ofRandom(0,100) < 80だった
-                                    //m_Field[y][x] = true;
-                                }
-                            }
-                            else
-                            {
-                                m_Field[y][x] = false;
-                            }
-                            *pPixel = m_Field[y][x] ? (byte)255 : (byte)0;
-                            pPixel++;
-                        }
-                    }
-                }
-
+                //    for (int y = 0; y < _h; y++)
+                //    {
+                //        for (int x = 0; x < _w; x++)
+                //        {
+                //            //黒くない点は生きてる
+                //            if (*pPixel > 100)
+                //            {
+                //                m_Field[y][x] = true;
+                //                if (r.Next(0, 100) < 60)
+                //                {           //ofRandom(0,100) < 80だった
+                //                    //m_Field[y][x] = true;
+                //                }
+                //            }
+                //            else
+                //            {
+                //                m_Field[y][x] = false;
+                //            }
+                //            *pPixel = m_Field[y][x] ? (byte)255 : (byte)0;
+                //            pPixel++;
+                //        }
+                //    }
+                //}
+                #endregion
                 //    //////
 
                 Cv2.Dilate(bufimage, bufimage, m_element);
