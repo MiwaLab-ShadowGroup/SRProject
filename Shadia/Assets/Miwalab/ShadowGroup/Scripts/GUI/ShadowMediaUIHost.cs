@@ -1037,6 +1037,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "SecondDelay_DelaySec", 180, 0, 3);
         AddFloatUI(parent, "SecondDelay_LayerNum", 10, 0, 0);
+        AddBooleanUI(parent, "SecondDelay_LayerClr", false);
+        AddFloatUI(parent, "SecondDelay_DampRateMin", 1, 0, 0);
     }
 
     private void CreateUIsRemoteCllibration2(GameObject parent)

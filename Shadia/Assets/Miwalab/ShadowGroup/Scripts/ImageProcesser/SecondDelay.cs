@@ -22,9 +22,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         int targetFrame;
         int deleteFrameNum;
         float predictFPS = 60;
-
+        float dampRate = 1.0f;
+        float dampRateMin = 0f;
 
         int layerNum = 0;
+        bool layerColor = false;
+        Mat m_buffer;
 
         public SecondDelay()
             : base()
@@ -37,12 +40,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             (ShadowMediaUIHost.GetUI("SecondDelay_DelaySec") as ParameterSlider).ValueChanged += SecondDelay_DelaySec_ValueChanged;
             (ShadowMediaUIHost.GetUI("SecondDelay_LayerNum") as ParameterSlider).ValueChanged += SecondDelay_LayerNum_ValueChanged;
-            //(ShadowMediaUIHost.GetUI("SecondDelay_LayerNum") as ParameterCheckbox).ValueChanged += SecondDelay_LayerNum_ValueChanged;
+            (ShadowMediaUIHost.GetUI("SecondDelay_LayerClr") as ParameterCheckbox).ValueChanged += SecondDelay_LayerClr_ValueChanged;
+            (ShadowMediaUIHost.GetUI("SecondDelay_DampRateMin") as ParameterSlider).ValueChanged += SecondDelay_DampRateMin_ValueChanged;
 
 
             (ShadowMediaUIHost.GetUI("SecondDelay_DelaySec") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("SecondDelay_LayerNum") as ParameterSlider).ValueUpdate();
-            //(ShadowMediaUIHost.GetUI("SecondDelay_LayerNum") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("SecondDelay_LayerClr") as ParameterCheckbox).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("SecondDelay_DampRateMin") as ParameterSlider).ValueUpdate();
 
         }
 
@@ -56,10 +61,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.layerNum = (int)(e as ParameterSlider.ChangedValue).Value;
         }
 
-        //private void SecondDelay_LayerNum_ValueChanged(object sender, EventArgs e)
-        //{
-        //    this.layerNum = (bool)(e as ParameterCheckbox.ChangedValue).Value;
-        //}
+        private void SecondDelay_LayerClr_ValueChanged(object sender, EventArgs e)
+        {
+            this.layerColor = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+        }
+
+        private void SecondDelay_DampRateMin_ValueChanged(object sender, EventArgs e)
+        {
+            this.dampRateMin = (float)(e as ParameterSlider.ChangedValue).Value;
+        }
 
 
         public override void ImageProcess(ref Mat src, ref Mat dst)
@@ -86,7 +96,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     this.timeList.Add(- i / this.predictFPS);
                 }
 
-
+                m_buffer = new Mat(dst.Height, dst.Width, MatType.CV_8UC3, new Scalar(0, 0, 0));
                 this.flag = false;
             }
 
@@ -104,16 +114,40 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
 
 
-            //描画
-            this.matList[this.targetFrame].CopyTo(dst);
 
-            //何人も出すときの描画
-            for (int i = 0; i < this.layerNum; ++i)
+            if (!this.layerColor)
             {
-                dst += this.matList[(int)(i * this.targetFrame / this.layerNum)];
+                //描画
+                this.matList[this.targetFrame].CopyTo(dst);
+
+                //何人も出すときの描画
+                for (int i = 0; i < this.layerNum; ++i)
+                {
+                    dst += this.matList[(int)(i * this.targetFrame / this.layerNum)];
+                }
+
             }
+            //　色を薄くして分身している感を出す
+            else
+            {
+                //描画
+                this.matList[this.targetFrame].CopyTo(m_buffer);
 
+                this.dampRate = 1.0f / (this.layerNum + 1.0f);
 
+                if (this.dampRate < this.dampRateMin) this.dampRate = this.dampRateMin;
+
+                m_buffer *= this.dampRate;
+                
+                    //何人も出すときの描画
+                    for (int i = 0; i < this.layerNum; ++i)
+                    {
+                         m_buffer += this.matList[(int)(i * this.targetFrame / this.layerNum)] * this.dampRate;
+                        //Cv2.AddWeighted(dst, 1f, this.matList[(int)(i * this.targetFrame / this.layerNum)], 1 / (this.layerNum + 1), 0, dst);
+                    }
+
+                m_buffer.CopyTo(dst);
+            }
 
 
 
@@ -124,16 +158,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 this.deleteFrameNum++;
             }
 
-
             //カウントしたフレームを削除
             for (int i = 0; i < this.deleteFrameNum; ++i)
             {
                 this.matList.RemoveAt(this.matList.Count - 1);
                 this.timeList.RemoveAt(this.timeList.Count - 1);
             }
-
-
-
 
         }
         public override string ToString()
