@@ -153,6 +153,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         PersonalColor,
 
         /// <summary>
+        /// 秒数をパラメーターとした時間遅れ影（B5河野）
+        /// </summary>
+        SecondDelay,
+
+        /// <summary>
         /// 一定方向に流れるパーティクル
         /// </summary>
         FlowParticlesShadow,
