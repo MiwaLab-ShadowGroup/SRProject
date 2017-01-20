@@ -266,6 +266,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingPersonalColor(m_PanelDictionary[ImageProcesserType.PersonalColor.ToString()]);
         this.CreateUIsImageporcessingPtsImgProcesser(m_PanelDictionary[ImageProcesserType.PtsImgProcesser.ToString()]);
         this.CreateUIsImageporcessingSecondDelay(m_PanelDictionary[ImageProcesserType.SecondDelay.ToString()]);
+        this.CreateUIsImageporcessingBodyChase(m_PanelDictionary[ImageProcesserType.BodyChase.ToString()]);
 
         this.CreateUIsImageporcessingBrightCheck(m_PanelDictionary[ImageProcesserType.BrightCheck.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
@@ -390,6 +391,9 @@ public class ShadowMediaUIHost : MonoBehaviour
                 break;
             case ImageProcesserType.SecondDelay:
                 changeTo.Add(new SecondDelay());
+                break;
+            case ImageProcesserType.BodyChase:
+                changeTo.Add(new BodyChase());
                 break;
             case ImageProcesserType.PtsImgProcesser:
                 changeTo.Add(new PtsImgProcesser());
@@ -1039,6 +1043,18 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "SecondDelay_LayerNum", 10, 0, 0);
         AddBooleanUI(parent, "SecondDelay_LayerClr", false);
         AddFloatUI(parent, "SecondDelay_DampRateMin", 1, 0, 0);
+        AddBooleanUI(parent, "SecondDelay_LayerFade", false);
+    }
+
+    private void CreateUIsImageporcessingBodyChase(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "BodyChase_DelaySec", 180, 0, 3);
+        AddFloatUI(parent, "BodyChase_LayerNum", 10, 0, 2);
+        AddBooleanUI(parent, "BodyChase_LayerClr", false);
+        AddFloatUI(parent, "BodyChase_DampRateMin", 1, 0, 0);
+        AddFloatUI(parent, "BodyChase_FrameSpd", 10, -10, 2);
+        AddBooleanUI(parent, "BodyChase_LayerFade", false);
     }
 
     private void CreateUIsRemoteCllibration2(GameObject parent)

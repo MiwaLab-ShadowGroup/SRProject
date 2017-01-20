@@ -27,6 +27,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         int layerNum = 0;
         bool layerColor = false;
+        bool layerFade = false;
         Mat m_buffer;
 
         public SecondDelay()
@@ -42,12 +43,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("SecondDelay_LayerNum") as ParameterSlider).ValueChanged += SecondDelay_LayerNum_ValueChanged;
             (ShadowMediaUIHost.GetUI("SecondDelay_LayerClr") as ParameterCheckbox).ValueChanged += SecondDelay_LayerClr_ValueChanged;
             (ShadowMediaUIHost.GetUI("SecondDelay_DampRateMin") as ParameterSlider).ValueChanged += SecondDelay_DampRateMin_ValueChanged;
+            (ShadowMediaUIHost.GetUI("SecondDelay_LayerFade") as ParameterCheckbox).ValueChanged += SecondDelay_LayerFade_ValueChanged;
 
 
             (ShadowMediaUIHost.GetUI("SecondDelay_DelaySec") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("SecondDelay_LayerNum") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("SecondDelay_LayerClr") as ParameterCheckbox).ValueUpdate();
             (ShadowMediaUIHost.GetUI("SecondDelay_DampRateMin") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("SecondDelay_LayerFade") as ParameterCheckbox).ValueUpdate();
 
         }
 
@@ -71,14 +74,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.dampRateMin = (float)(e as ParameterSlider.ChangedValue).Value;
         }
 
+        private void SecondDelay_LayerFade_ValueChanged(object sender, EventArgs e)
+        {
+            this.layerFade = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+        }
+
 
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
-
             this.Update(ref src, ref dst);
-
         }
-
 
 
         private void Update(ref Mat src, ref Mat dst)
@@ -113,19 +118,26 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 this.targetFrame = i;
             }
 
-
-
             if (!this.layerColor)
             {
                 //描画
                 this.matList[this.targetFrame].CopyTo(dst);
 
+                if (this.layerNum >= 2 && this.layerFade == true) dst *= 0;
+
                 //何人も出すときの描画
                 for (int i = 0; i < this.layerNum; ++i)
                 {
-                    dst += this.matList[(int)(i * this.targetFrame / this.layerNum)];
+                    if (!this.layerFade)
+                    {
+                        dst += this.matList[(int)(i * this.targetFrame / this.layerNum)];
+                    }
+                    else
+                    {
+                        dst += this.matList[(int)(i * this.targetFrame / this.layerNum)] *  (1.0f - (float)i / (float)this.layerNum ) ;
+                        //Debug.Log("rate " + (1.0f - (float)i / (float)this.layerNum));
+                    }
                 }
-
             }
             //　色を薄くして分身している感を出す
             else
