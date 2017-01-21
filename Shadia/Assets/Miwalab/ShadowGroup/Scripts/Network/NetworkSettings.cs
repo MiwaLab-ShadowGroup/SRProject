@@ -33,7 +33,11 @@ namespace Miwalab.ShadowGroup.Network
             public readonly static int SendMeshClient2Port = 15006;
             public readonly static int ReceiveMeshClient1Port = 15007;
             public readonly static int ReceiveMeshClient2Port = 15008;
-            
+
+            public readonly static int ReceiveControlPort = 15009;
+
+
+
         }
         #endregion
     }

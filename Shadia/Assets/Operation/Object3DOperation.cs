@@ -5,17 +5,7 @@ using UnityEngine;
 public class Object3DOperation : Miwalab.ShadowGroup.Operation.AOperationCommand
 {
 
-    Vector3 Position;
-
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
+    public Vector3 Position = new Vector3(0,0,0);
+    public float RotationY = 0;
+    
 }
