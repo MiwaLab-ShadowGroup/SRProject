@@ -215,7 +215,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsBackgroundUnitychan(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Unitychan.ToString()]);
         this.CreateUIsGeneric();
         //代入の順番はGenericに合わせてください
-        this.List_backGround = new List<GameObject>() { this.ButterflySet,this.FishSet,this.TigerSet,this.UnitychanSet };
+        this.List_backGround = new List<GameObject>() { this.ButterflySet, this.FishSet, this.TigerSet, this.UnitychanSet };
 
         this.m_meshrenderer.ForEach(p => p.SetUpUIs());
         this.m_Sensor.setUpUI();
@@ -226,14 +226,14 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.m_Sensor.AddImageProcesser(new Normal());
     }
 
-    
+
 
     private void CreateUIsGeneric()
     {
         this.CreateUIsGenericModes(m_PanelDictionary[Miwalab.ShadowGroup.Core.ApplicationSettings.GenericSettingOption.Mode.ToString()]);
     }
 
-   
+
 
     private void SetupUIsImageprocess()
     {
@@ -275,7 +275,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     }
 
-    
+
 
     public void ChangeGeneralSettingOptionTo(int number)
     {
@@ -286,11 +286,11 @@ public class ShadowMediaUIHost : MonoBehaviour
                 this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, new List<AShadowImageProcesser>() { new Normal() }));
                 this.m_currentImageProcesserSettingPanel = this.m_PanelDictionary[ImageProcesserType.Normal.ToString()];
                 break;
-    }
+        }
         this.SwitchOffOtherPanelsExceptOf(this.m_currentGenericSettingPanel);
 
     }
-    
+
 
     public void ChangeImageProcessingOptionTo(int number)
     {
@@ -472,7 +472,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsImageporcessingPainterShadow(GameObject gameObject)
     {
         m_lastUpdatedHeight = 0;
-        
+
     }
 
     private void CreateUIsArchiveSave(GameObject parent)
@@ -654,7 +654,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "HandElbow_UseBec", false);
         AddBooleanUI(parent, "HandElbow_UseAtt", false);
         m_lastUpdatedHeight += 10;
-    
+
     }
     private void CreateUIsImageporcessingMoveShadow(GameObject parent)
     {
@@ -833,7 +833,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Bright_pt_B_y", 600, -100, 200);
         AddFloatUI(parent, "Bright_pt_D_x", 600, -100, 200);
         AddFloatUI(parent, "Bright_pt_D_y", 600, -100, 200);
-        AddFloatUI(parent, "Bright_rad_x" ,1,0,1);
+        AddFloatUI(parent, "Bright_rad_x", 1, 0, 1);
         AddFloatUI(parent, "Bright_rad_y", 1, 0, 1);
         AddFloatUI(parent, "Bright_rad_size", 100, 1, 50);
 
@@ -1023,7 +1023,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
 
         AddButtonUI(parent, "R3DMM_CIPCServerConnect");
-        AddBooleanUI(parent, "R3DMM_3DObjectControlReceive",false);
+        AddBooleanUI(parent, "R3DMM_3DObjectControlReceive", false);
         AddTextUI(parent, "R3DMM_CIPCServerIP");
         AddTextUI(parent, "R3DMM_CIPCServerPort");
 
@@ -1114,7 +1114,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
         m_lastUpdatedHeight += 10;
 
-        
+
 
         m_lastUpdatedHeight += 10;
         AddButtonUI(parent, "Clb_I_Save" + num);
@@ -1155,7 +1155,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "clb_e_in_rad" + num, 5, 0, 0.5f);
         m_lastUpdatedHeight += 10;
 
-        AddFloatUI(parent, "clb_e_startAngle" + num, 2 * Mathf.PI, 0, Mathf.PI / 4f );
+        AddFloatUI(parent, "clb_e_startAngle" + num, 2 * Mathf.PI, 0, Mathf.PI / 4f);
         AddFloatUI(parent, "clb_e_finishAngle" + num, 2 * Mathf.PI, 0, Mathf.PI / 4f * 3f);
 
 
@@ -1190,7 +1190,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += 5;
         AddEnumUI(parent, "core_blending_mode", Miwalab.ShadowGroup.ImageSource.ImageSorceBlender.BlendMode.Normal);
         AddEnumUI(parent, "core_network_blend", Miwalab.ShadowGroup.Callibration.Network.NetworkPlane.BlendMode.Normal);
-        
+
         m_lastUpdatedHeight += 5;
 
 
@@ -1267,11 +1267,11 @@ public class ShadowMediaUIHost : MonoBehaviour
         var titleText = _object.GetComponentInChildren<Text>(true);
         var dropdown = _object.GetComponentInChildren<Dropdown>(true);
 
-        var item =  _object.AddComponent<ParameterDropdown>();
+        var item = _object.AddComponent<ParameterDropdown>();
         item.m_titleText = titleText;
-        item.m_Dropdown = dropdown; 
+        item.m_Dropdown = dropdown;
 
-        dropdown.onValueChanged.AddListener( new UnityEngine.Events.UnityAction<int>( item.OnValueChanged));
+        dropdown.onValueChanged.AddListener(new UnityEngine.Events.UnityAction<int>(item.OnValueChanged));
 
         item.Title = ParameterName;
 
@@ -1321,7 +1321,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
     }
     private GameObject m_currentBackgroundTypeSettingPanel;
-     public void BackgroundTypeSettingPanelSet(bool value)
+    public void BackgroundTypeSettingPanelSet(bool value)
     {
         m_currentBackgroundTypeSettingPanel.SetActive(value);
 
@@ -1331,17 +1331,18 @@ public class ShadowMediaUIHost : MonoBehaviour
     #endregion
 
     #region background
- 
+
     public void ChangeBackgroundTypeSettingOptionTo(int number)
     {
         Miwalab.ShadowGroup.Background.BackgroundType type = (Miwalab.ShadowGroup.Background.BackgroundType)number;
 
         this.m_currentBackgroundTypeSettingPanel = this.m_PanelDictionary[type.ToString()];
         this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
-        if (number == 0) {
-            for (int i = 0; i < this.List_backGround.Count ; ++i)
+        if (number == 0)
+        {
+            for (int i = 0; i < this.List_backGround.Count; ++i)
             {
-                    this.List_backGround[i].SetActive(false);
+                this.List_backGround[i].SetActive(false);
             }
         }
         else if (number == 1)
@@ -1352,7 +1353,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         {
             for (int i = 0; i < this.List_backGround.Count; ++i)
             {
-                if (i  == number - 2)
+                if (i == number - 2)
                 {
                     this.List_backGround[i].SetActive(true);
                 }
@@ -1427,7 +1428,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "3D_CLB_X", 1, -1.1f, 0);
         AddFloatUI(parent, "3D_CLB_Y", 1, -1, 0);
         AddFloatUI(parent, "3D_CLB_Z", 1, -1, 0);
-        AddFloatUI(parent, "3D_CLB_R", 180,-180, 0);
+        AddFloatUI(parent, "3D_CLB_R", 180, -180, 0);
 
     }
 
