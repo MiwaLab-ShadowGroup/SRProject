@@ -1009,7 +1009,15 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "Network_Send", false);
         AddBooleanUI(parent, "Network_Receive", false);
-        
+
+        m_lastUpdatedHeight += 10;
+
+
+        AddButtonUI(parent, "R3DMM_CIPCServerConnect");
+        AddBooleanUI(parent, "R3DMM_3DObjectControlReceive",false);
+        AddTextUI(parent, "R3DMM_CIPCServerIP");
+        AddTextUI(parent, "R3DMM_CIPCServerPort");
+
     }
 
     /// <summary>
@@ -1373,7 +1381,10 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsBackgroundUnitychan(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-
+        AddFloatUI(parent, "3D_CLB_X", 1, -1.1f, 0);
+        AddFloatUI(parent, "3D_CLB_Y", 1, -1, 0);
+        AddFloatUI(parent, "3D_CLB_Z", 1, -1, 0);
+        AddFloatUI(parent, "3D_CLB_R", 180,-180, 0);
 
     }
 

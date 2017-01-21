@@ -83,7 +83,7 @@ public class ShadowMeshRenderer : MonoBehaviour
     bool _UseUpperBtm;
 
     float _CondenceRate;
-    
+
     public RemoteShadowImageManager _RSIM;
 
     // Use this for initialization
@@ -172,13 +172,13 @@ public class ShadowMeshRenderer : MonoBehaviour
                 item.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
                 item.GetComponent<MeshRenderer>().material.color = Color.red;
             }
-            else if (i == Col )//RightTop
+            else if (i == Col)//RightTop
             {
                 script._pointType = UIPointSphereSrcScript.PointType.RightTop;
                 item.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
                 item.GetComponent<MeshRenderer>().material.color = Color.red;
             }
-            else if (i == (Row ) * (Col + 1))//leftBottom
+            else if (i == (Row) * (Col + 1))//leftBottom
             {
                 script._pointType = UIPointSphereSrcScript.PointType.LeftBottom;
                 item.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
@@ -190,13 +190,13 @@ public class ShadowMeshRenderer : MonoBehaviour
                 item.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
                 item.GetComponent<MeshRenderer>().material.color = Color.red;
             }
-            else if (i != 0 && i < Col )//Top
+            else if (i != 0 && i < Col)//Top
             {
                 script._pointType = UIPointSphereSrcScript.PointType.Top;
                 item.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
                 item.GetComponent<MeshRenderer>().material.color = Color.cyan;
             }
-            else if ((Row) * (Col + 1) < i && i <(Row + 1) * (Col + 1) - 1)//Bottom
+            else if ((Row) * (Col + 1) < i && i < (Row + 1) * (Col + 1) - 1)//Bottom
             {
                 script._pointType = UIPointSphereSrcScript.PointType.Bottom;
                 item.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
@@ -657,33 +657,22 @@ public class ShadowMeshRenderer : MonoBehaviour
                 (ShadowMediaUIHost.GetUI("Clb_I_BR_Y" + CallibNumber) as ParameterSlider).m_slider.value = temp.y;
                 break;
             case UIPointSphereSrcScript.PointType.Top:
-                UVDiff[index] = temp - @default;//動かした点はそのまま
-                for (int j = 1; j < Row + 2; j++)
+                UVDiff[index] = temp - @default;
+                Vector2 diffBottom = UVDiff[index + Row * (Col + 1)];
+                var diffdiff = UVDiff[index] - diffBottom;
+                for (int j = 0; j < Row + 1; ++j)
                 {
-                    if(j != Row + 1)
-                    {
-                        //最後の点以外を直線になるよう動かす
-                        UVDiff[index + j * (Col + 1)] = ((temp - @default) / Row * ((Row) - j));
-                    }
-                    else
-                    {
-                       
-                    }
+                    UVDiff[index + j * (Col + 1)] = (diffdiff / Row * (Row - j)) + diffBottom;
                 }
                 UpdatePos();
                 break;
             case UIPointSphereSrcScript.PointType.Bottom:
                 UVDiff[index] = temp - @default;
-                for (int j = 1; j < Row + 2; j++)
+                Vector2 diffTop = UVDiff[index - Row * (Col + 1)];
+                var diffdiff2 = UVDiff[index] - diffTop;
+                for (int j = 0; j < Row + 1; ++j)
                 {
-                    if (j != Row + 1)
-                    {
-                        UVDiff[index - j * (Col + 1)] = ((temp - @default) / Row * ((Row) - j));
-                    }
-                    else
-                    {
-
-                    }
+                    UVDiff[index - j * (Col + 1)] = (diffdiff2/ Row * (Row - j)) + diffTop;
                 }
                 UpdatePos();
                 break;
@@ -694,7 +683,7 @@ public class ShadowMeshRenderer : MonoBehaviour
         }
     }
 
-   
+
 
     public void resetInptPositionInverse(int index)
     {
