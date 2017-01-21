@@ -1387,8 +1387,18 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsBackgroundFish(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-      
-
+        AddFloatUI(parent, "Fish_Size", 2, 0.1f, 1);
+        AddFloatUI(parent, "Fish_theta0", 3.14f, -3.14f, 0);
+        AddFloatUI(parent, "Fish_ScrRadius", 4, 1, 2.5f);
+        AddFloatUI(parent, "Fish_moveMinRadius", 2.6f, 0.5f, 0.5f);
+        AddFloatUI(parent, "Fish_moveMaxRadius", 5, 2.6f, 2.6f);
+        AddFloatUI(parent, "Fish_speed", 8.0f, 0, 0.8f);
+        AddFloatUI(parent, "Fish_corner", 100.0f, 0, 10.0f);
+        AddFloatUI(parent, "Fish_degMoveRange", 180, 1, 60);
+        AddBooleanUI(parent, "Fish_moveCircle", true);
+        AddBooleanUI(parent, "Fish_moveRandomOnCircle", true);
+        AddBooleanUI(parent, "Fish_moveReverse", false);
+        
     }
 
     private void CreateUIsBackgroundTiger(GameObject parent)
@@ -1397,7 +1407,9 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Tiger_Size", 2, 0.1f, 1);
         AddFloatUI(parent, "Tiger_theta0", 3.14f, -3.14f, 0);
         AddFloatUI(parent, "Tiger_radius", 4, 1, 2.5f);
-        AddFloatUI(parent, "Tiger_spdRate", 2, 0, 1);
+        AddFloatUI(parent, "Tiger_spdRate", 5, 0, 1);
+        AddBooleanUI(parent, "Tiger_Operate", false);
+        AddBooleanUI(parent, "Tiger_moveReverse", false);
 
     }
     private void CreateUIsBackgroundUnitychan(GameObject parent)
