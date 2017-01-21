@@ -13,6 +13,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
     {
         //遅らせる時間 秒
         private float DelaySec = 3;
+        private float preDelaySec = 0;
+
         private float time = 0;
 
         List<Mat> matList;
@@ -35,6 +37,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         bool layerColor = false;
         bool layerFade = false;
+
         Mat m_buffer;
 
         public BodyChase()
@@ -132,13 +135,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.matList.Insert(0, item);
             this.timeList.Insert(0, this.time);
 
-            //取り出すフレームの確認
+            //取り出すフレームの確認　ここが重いかと思ったがそうでもない
             for (int i = 0; this.timeList[i] >= (this.time - this.DelaySec); ++i)
             {
                 this.targetFrame = i;
             }
 
-            //チェイサーのフレームの決定
+            //チェイサーのフレームの更新および間隔の変更
             if (this.preLayerNum == this.layerNum)
             {
 
@@ -158,6 +161,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                 }
                 this.preLayerNum = this.layerNum;
+            }
+
+            //DelaySecが変わっていたらレイヤーの間隔を等間隔に再調整
+            if (this.preDelaySec != this.DelaySec )
+            {
+                for (int i = 0; i < this.layerNum; ++i)
+                {
+                    this.chaseList[i] = (i + 1) * this.targetFrame / this.layerNum;
+
+                }
+                this.preDelaySec = this.DelaySec;
             }
 
             
