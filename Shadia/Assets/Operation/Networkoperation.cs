@@ -11,8 +11,8 @@ public class NetworkOperation : Miwalab.ShadowGroup.Operation.AOperationCommand
 
     private void CopyFrom(NetworkOperation from)
     {
-        _object3DOpe.Clear();
-        _object3DOpe = new List<Object3DOperation>(from._object3DOpe);
+        this._object3DOpe.Clear();
+        this._object3DOpe = new List<Object3DOperation>(from._object3DOpe);
     }
 
     public byte[] GetBinary()
@@ -31,8 +31,7 @@ public class NetworkOperation : Miwalab.ShadowGroup.Operation.AOperationCommand
 
     public void SetFromBinary(byte[] data)
     {
-        MemoryStream ms = new MemoryStream();
-        ms.Write(data, 0, data.Length);
+        MemoryStream ms = new MemoryStream(data);
         System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(NetworkOperation));
 
         this.CopyFrom((NetworkOperation)serializer.Deserialize(ms));

@@ -21,9 +21,12 @@ public class NetworkOperationObject : MonoBehaviour {
     NetworkSettings.NetworkSetting setting;
     byte[] senddata;
 
+    bool isInitialized;
+
     // Use this for initialization
     void Start () {
-        
+        nOpe = new NetworkOperation();
+        nOpe.AddObject3DOpe(new Object3DOperation(0,0));
         
 
 	}
@@ -31,13 +34,17 @@ public class NetworkOperationObject : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (nHost != null)
+        if (isInitialized)
         {
-            
+            float V =  Input.GetAxis("Vertical");
+            float H = Input.GetAxis("Horizontal");
+            nOpe.clear();
+            nOpe.AddObject3DOpe(new Object3DOperation(H, V));
             senddata = nOpe.GetBinary();
 
             nHost.SendCIPC(setting.TAG,senddata);
-
+            Debug.Log(V);
+            Debug.Log(H);
         }
 
     }
@@ -47,10 +54,9 @@ public class NetworkOperationObject : MonoBehaviour {
     {
 
         ServerIP = _serverIP.text;
-        Serverport = int.Parse(_serverPort.text);
 
         setting.TAG = Environment.MachineName + "ShadiaNOP";
-        setting.PORT = Serverport;
+        setting.PORT = Miwalab.ShadowGroup.Network.NetworkSettings.SETTINGS.SendControlPort;
 
         nHost = NetworkHost.GetInstance(ServerIP);
 
@@ -58,6 +64,7 @@ public class NetworkOperationObject : MonoBehaviour {
 
         nHost.ConnectCIPC(setting, CIPC_CS_Unity.CLIENT.MODE.Sender);
 
+        isInitialized = true;
 
     }
 

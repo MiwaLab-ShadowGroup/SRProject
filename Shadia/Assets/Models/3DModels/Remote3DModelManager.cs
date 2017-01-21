@@ -55,17 +55,18 @@ public class Remote3DModelManager : MonoBehaviour
 
         _tHost.ThreadStart(RECEIVEID.TAG);
 
+        networkOpe = new NetworkOperation();
 
-        (ShadowMediaUIHost.GetUI("Network_CIPCServerConnect") as ParameterButton).Clicked += NetworkConnect;
-        (ShadowMediaUIHost.GetUI("Network_3DObjectControlReceive") as ParameterCheckbox).ValueChanged += SetIsReceive;
+        (ShadowMediaUIHost.GetUI("R3DMM_CIPCServerConnect") as ParameterButton).Clicked += NetworkConnect;
+        (ShadowMediaUIHost.GetUI("R3DMM_3DObjectControlReceive") as ParameterCheckbox).ValueChanged += SetIsReceive;
 
     }
 
     private void NetworkConnect(object sender, EventArgs e)
     {
         if (isInitialzedCIPCClient) return;
-        CIPCServerIP = (ShadowMediaUIHost.GetUI("Network_CIPCServerIP") as ParameterText).m_valueText.text;
-        CIPCServerPort = int.Parse((ShadowMediaUIHost.GetUI("Network_CIPCServerPort") as ParameterText).m_valueText.text);
+        CIPCServerIP = (ShadowMediaUIHost.GetUI("R3DMM_CIPCServerIP") as ParameterText).m_valueText.text;
+        CIPCServerPort = int.Parse((ShadowMediaUIHost.GetUI("R3DMM_CIPCServerPort") as ParameterText).m_valueText.text);
         _nHost = NetworkHost.GetInstance(CIPCServerIP, CIPCServerPort);
 
         _nHost.AddCIPCClient(RECEIVEID, -1);
@@ -80,6 +81,7 @@ public class Remote3DModelManager : MonoBehaviour
         lock (SyncObject_Receiver)
         {
 
+            
             return this.networkOpe.getObject3DOpe(0);
 
         }
@@ -111,9 +113,9 @@ public class Remote3DModelManager : MonoBehaviour
                 }
                 _AutoResetEventReceiver.WaitOne();
             }
-            catch
+            catch(Exception ex)
             {
-
+                Console.WriteLine(ex.Message);
             }
         }
     }
