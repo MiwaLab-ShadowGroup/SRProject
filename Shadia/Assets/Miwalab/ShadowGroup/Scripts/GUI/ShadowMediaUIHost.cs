@@ -266,6 +266,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingPersonalColor(m_PanelDictionary[ImageProcesserType.PersonalColor.ToString()]);
         this.CreateUIsImageporcessingPtsImgProcesser(m_PanelDictionary[ImageProcesserType.PtsImgProcesser.ToString()]);
         this.CreateUIsImageporcessingSecondDelay(m_PanelDictionary[ImageProcesserType.SecondDelay.ToString()]);
+        this.CreateUIsImageporcessingBodyChase(m_PanelDictionary[ImageProcesserType.BodyChase.ToString()]);
 
         this.CreateUIsImageporcessingBrightCheck(m_PanelDictionary[ImageProcesserType.BrightCheck.ToString()]);
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
@@ -390,6 +391,9 @@ public class ShadowMediaUIHost : MonoBehaviour
                 break;
             case ImageProcesserType.SecondDelay:
                 changeTo.Add(new SecondDelay());
+                break;
+            case ImageProcesserType.BodyChase:
+                changeTo.Add(new BodyChase());
                 break;
             case ImageProcesserType.PtsImgProcesser:
                 changeTo.Add(new PtsImgProcesser());
@@ -1039,6 +1043,18 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "SecondDelay_LayerNum", 10, 0, 0);
         AddBooleanUI(parent, "SecondDelay_LayerClr", false);
         AddFloatUI(parent, "SecondDelay_DampRateMin", 1, 0, 0);
+        AddBooleanUI(parent, "SecondDelay_LayerFade", false);
+    }
+
+    private void CreateUIsImageporcessingBodyChase(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "BodyChase_DelaySec", 180, 0, 3);
+        AddFloatUI(parent, "BodyChase_LayerNum", 10, 0, 2);
+        AddBooleanUI(parent, "BodyChase_LayerClr", false);
+        AddFloatUI(parent, "BodyChase_DampRateMin", 1, 0, 0);
+        AddFloatUI(parent, "BodyChase_FrameSpd", 10, -10, 2);
+        AddBooleanUI(parent, "BodyChase_LayerFade", false);
     }
 
     private void CreateUIsRemoteCllibration2(GameObject parent)
@@ -1371,7 +1387,18 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsBackgroundFish(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-      
+        AddFloatUI(parent, "Fish_Size", 2, 0.1f, 1);
+        AddFloatUI(parent, "Fish_theta0", 3.14f, -3.14f, 0);
+        AddFloatUI(parent, "Fish_ScrRadius", 4, 1, 2.5f);
+        AddFloatUI(parent, "Fish_moveMinRadius", 2.6f, 0.5f, 0.5f);
+        AddFloatUI(parent, "Fish_moveMaxRadius", 5, 2.6f, 2.6f);
+        AddFloatUI(parent, "Fish_speed", 8.0f, 0, 0.8f);
+        AddFloatUI(parent, "Fish_corner", 100.0f, 0, 10.0f);
+        AddFloatUI(parent, "Fish_degMoveRange", 180, 1, 60);
+        AddBooleanUI(parent, "Fish_moveCircle", true);
+        AddBooleanUI(parent, "Fish_moveRandomOnCircle", true);
+        AddBooleanUI(parent, "Fish_moveReverse", false);
+        AddBooleanUI(parent, "Fish_usePrjctLayer", false);
 
     }
 
@@ -1381,7 +1408,9 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "Tiger_Size", 2, 0.1f, 1);
         AddFloatUI(parent, "Tiger_theta0", 3.14f, -3.14f, 0);
         AddFloatUI(parent, "Tiger_radius", 4, 1, 2.5f);
-        AddFloatUI(parent, "Tiger_spdRate", 2, 0, 1);
+        AddFloatUI(parent, "Tiger_spdRate", 5, 0, 1);
+        AddBooleanUI(parent, "Tiger_Operate", false);
+        AddBooleanUI(parent, "Tiger_moveReverse", false);
 
     }
     private void CreateUIsBackgroundUnitychan(GameObject parent)

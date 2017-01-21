@@ -158,6 +158,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         SecondDelay,
 
         /// <summary>
+        /// 自分を追いかけてくる影（B5河野）
+        /// </summary>
+        BodyChase,
+
+        /// <summary>
         /// 一定方向に流れるパーティクル
         /// </summary>
         FlowParticlesShadow,
