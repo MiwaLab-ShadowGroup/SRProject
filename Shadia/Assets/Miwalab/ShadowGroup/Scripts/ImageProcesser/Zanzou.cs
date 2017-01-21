@@ -320,20 +320,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 Cv2.CvtColor(innerGrayBuffer2, tmpColorBuffer2, OpenCvSharp.ColorConversion.GrayToBgr);
                 Cv2.Multiply(innerColorBuffer2, tmpColorBuffer2, innerColorBuffer2, 1.0 / 255.0);
 
-                if (inner == true && outer == true)
+                if (inner && outer )
                 {
                     outerColorBuffer2 -= innerColorBuffer2;
 
                     outerColorBuffer2.GaussianBlur(new Size(3, 3), 3).CopyTo(dst);
                 }
 
-                else if (inner == true && outer == false)
+                else if (inner && !outer )
                 {
 
                     innerColorBuffer2.GaussianBlur(new Size(3, 3), 3).CopyTo(dst);
                 }
 
-                else if (inner == false && outer == true)
+                else if (!inner && outer )
                 {
 
                     outerColorBuffer2.GaussianBlur(new Size(3, 3), 3).CopyTo(dst);
