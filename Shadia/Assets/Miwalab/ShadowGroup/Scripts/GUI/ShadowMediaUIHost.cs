@@ -1398,7 +1398,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "Fish_moveCircle", true);
         AddBooleanUI(parent, "Fish_moveRandomOnCircle", true);
         AddBooleanUI(parent, "Fish_moveReverse", false);
-        
+        AddBooleanUI(parent, "Fish_usePrjctLayer", false);
+
     }
 
     private void CreateUIsBackgroundTiger(GameObject parent)

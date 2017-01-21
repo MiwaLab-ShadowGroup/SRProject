@@ -78,6 +78,8 @@ public class CircleMover : MonoBehaviour
         //操作するとき
         if (this.operation)
         {
+           
+
             this.hInput = Input.GetAxis("Horizontal");
             //this.hInput = Mathf.Sign(this.hInput);
 
@@ -89,6 +91,7 @@ public class CircleMover : MonoBehaviour
         //操作しないとき　ぐるぐる回る
         else
         {
+           
             if (!this.moveReverse)
             {
                 this.theta += this.speedRate / 40;

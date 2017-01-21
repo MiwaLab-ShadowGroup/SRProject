@@ -20,6 +20,7 @@ public class floorSwim : MonoBehaviour
     public bool moveRandomOnCircle = true;
     public bool moveCircle = true;
     public bool moveReverse = false;
+    public bool useProjectionlayer = false;
 
     private float sqrDistanceToTarget;
     private float changeTargetSqrDistance = 0.1f;
@@ -42,6 +43,7 @@ public class floorSwim : MonoBehaviour
         (ShadowMediaUIHost.GetUI("Fish_moveCircle") as ParameterCheckbox).ValueChanged += Fish_moveCircle_ValueChanged;
         (ShadowMediaUIHost.GetUI("Fish_moveRandomOnCircle") as ParameterCheckbox).ValueChanged += Fish_moveRandomOnCircle_ValueChanged;
         (ShadowMediaUIHost.GetUI("Fish_moveReverse") as ParameterCheckbox).ValueChanged += Fish_moveReverse_ValueChanged;
+        (ShadowMediaUIHost.GetUI("Fish_usePrjctLayer") as ParameterCheckbox).ValueChanged += Fish_prjctLayer_ValueChanged;
 
 
         this.randomRate = UnityEngine.Random.Range(0.9f, 1.1f);
@@ -101,13 +103,32 @@ public class floorSwim : MonoBehaviour
         this.moveReverse = (bool)(e as ParameterCheckbox.ChangedValue).Value;
     }
 
-   
+    private void Fish_prjctLayer_ValueChanged(object sender, EventArgs e)
+    {
+        this.useProjectionlayer = (bool)(e as ParameterCheckbox.ChangedValue).Value;
+    }
+
+
 
 
     private void Update()
     {
         //サイズ変更
         this.transform.localScale = new Vector3(this.objScale, this.objScale, this.objScale);
+
+        //layerの変更
+        if (this.useProjectionlayer)
+        {
+            this.transform.FindChild("SardineSkin").gameObject.layer = LayerMask.NameToLayer("Projection1");
+            //this.transform.root.gameObject.layer = LayerMask.NameToLayer("Projection1");
+            this.gameObject.layer = LayerMask.NameToLayer("Projection1");
+        }
+        else
+        {
+            this.transform.FindChild("SardineSkin").gameObject.layer = LayerMask.NameToLayer("3DModels");
+            //this.transform.root.gameObject.layer = LayerMask.NameToLayer("3DModels");
+            this.gameObject.layer = LayerMask.NameToLayer("3DModels");
+        }
 
         if (this.moveCircle)
         {
@@ -214,7 +235,7 @@ public class floorSwim : MonoBehaviour
         float radius = UnityEngine.Random.Range(this.inCircleRadius, this.outCircleRadius);
         float radian = UnityEngine.Random.Range(-this.degMoveRange * Mathf.PI / 180, this.degMoveRange * Mathf.PI / 180);
 
-        return new Vector3(radius * Mathf.Sin(radian), this.transform.position.y, radius * Mathf.Cos(radian));
+        return new Vector3(radius * Mathf.Sin(radian + this.thetaZero), this.transform.position.y, radius * Mathf.Cos(radian + this.thetaZero));
     }
 }
 
