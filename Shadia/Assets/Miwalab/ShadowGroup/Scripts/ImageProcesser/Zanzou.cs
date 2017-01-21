@@ -8,7 +8,7 @@ using OpenCvSharp;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
-    public class Zanzou : AShadowImageProcesser
+    public class DoubleAfterImage : AShadowImageProcesser
     {
         private List<List<bool>> m_Field = new List<List<bool>>();
         private bool IsInit = false;
@@ -22,13 +22,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private Mat innerGrayBuffer2;
         private Mat outerGrayBuffer2;
 
+        private Mat tmpColorBuffer2;
+
         private Mat m_element;
         private int __w;
         private int __h;
 
         Scalar insidecolor;
         Scalar outsidecolor;
-        
+
         double innertime;
         double outertime;
         double parameter;
@@ -58,7 +60,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         #endregion
 
-        public Zanzou():base()
+        public DoubleAfterImage() : base()
         {
             (ShadowMediaUIHost.GetUI("Zanzou_ins_R") as ParameterSlider).ValueChanged += Zanzou_ins_R_ValueChanged;
             (ShadowMediaUIHost.GetUI("Zanzou_ins_G") as ParameterSlider).ValueChanged += Zanzou_ins_G_ValueChanged;
@@ -113,7 +115,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("Zanzou_out_G") as ParameterSlider).m_slider.value = 0;
             (ShadowMediaUIHost.GetUI("Zanzou_out_B") as ParameterSlider).m_slider.value = 255;
         }
-      
+
 
         private void Zanzou_CC_Yellow_Clicked(object sender, EventArgs e)
         {
@@ -217,35 +219,35 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             {
                 Cv2.CvtColor(src, bufimage, OpenCvSharp.ColorConversion.BgrToGray);
 
+                #region 邪魔者はちるべし
+                //unsafe
+                //{
+                //    byte* pPixel = bufimage.DataPointer;
+                //    Random r = new Random();
 
-                unsafe
-                {
-                    byte* pPixel = bufimage.DataPointer;
-                    Random r = new Random();
-
-                    for (int y = 0; y < _h; y++)
-                    {
-                        for (int x = 0; x < _w; x++)
-                        {
-                            //黒くない点は生きてる
-                            if (*pPixel > 100)
-                            {
-                                m_Field[y][x] = true;
-                                if (r.Next(0, 100) < 60)
-                                {           //ofRandom(0,100) < 80だった
-                                    //m_Field[y][x] = true;
-                                }
-                            }
-                            else
-                            {
-                                m_Field[y][x] = false;
-                            }
-                            *pPixel = m_Field[y][x] ? (byte)255 : (byte)0;
-                            pPixel++;
-                        }
-                    }
-                }
-
+                //    for (int y = 0; y < _h; y++)
+                //    {
+                //        for (int x = 0; x < _w; x++)
+                //        {
+                //            //黒くない点は生きてる
+                //            if (*pPixel > 100)
+                //            {
+                //                m_Field[y][x] = true;
+                //                if (r.Next(0, 100) < 60)
+                //                {           //ofRandom(0,100) < 80だった
+                //                    //m_Field[y][x] = true;
+                //                }
+                //            }
+                //            else
+                //            {
+                //                m_Field[y][x] = false;
+                //            }
+                //            *pPixel = m_Field[y][x] ? (byte)255 : (byte)0;
+                //            pPixel++;
+                //        }
+                //    }
+                //}
+                #endregion
                 //    //////
 
                 Cv2.Dilate(bufimage, bufimage, m_element);
@@ -270,21 +272,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 tmp_bufImage_next = new Mat(new Size(_w, _h), MatType.CV_8UC1, new Scalar(0));
                 tmp_bufImage_next3 = new Mat(new Size(_w, _h), MatType.CV_8UC1, new Scalar(0));
 
-                bufimage.CopyTo(tmp_bufImage_next);
+                tmp_bufImage_next3 += bufimage;
 
-                Point[][] contours;
-                HierarchyIndex[] hierarchy;
+                //Point[][] contours;
+                //HierarchyIndex[] hierarchy;
 
-                /// Find contours
-                Cv2.FindContours(tmp_bufImage_next, out contours, out hierarchy, OpenCvSharp.ContourRetrieval.Tree, OpenCvSharp.ContourChain.ApproxNone);
+                ///// Find contours
+                //Cv2.FindContours(tmp_bufImage_next, out contours, out hierarchy, OpenCvSharp.ContourRetrieval.Tree, OpenCvSharp.ContourChain.ApproxNone);
 
-                /// Draw contours
-                for (int i = 0; i < contours.Length; i++)
-                {
-                    Scalar color = new Scalar(255);
-                    //Cv2.DrawContours(tmp_bufImage_next3, contours, i, color, 2, OpenCvSharp.LineType.Link8, hierarchy, 0);
-                    Cv2.FillPoly(tmp_bufImage_next3, contours, color);
-                }
+                ///// Draw contours
+                //Cv2.FillPoly(tmp_bufImage_next3, contours, Scalar.White);
 
 
                 //cvClearSeq(contours);	//これはいらないみたい
@@ -298,7 +295,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                 outerGrayBuffer2 += tmp_bufImage_next3;
 
-                innerGrayBuffer2 += tmp_bufImage_next3.Clone() - parameter;
+                innerGrayBuffer2 += tmp_bufImage_next3 - parameter;
 
 
                 for (int i = 0; i < 3; i++)
@@ -311,8 +308,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     Cv2.Erode(outerGrayBuffer2, outerGrayBuffer2, m_element);
                 }
 
+                if (tmpColorBuffer2 == null)
+                {
+                    tmpColorBuffer2 = new Mat(new Size(bufimage.Width, bufimage.Height), MatType.CV_8UC3, new Scalar(255, 255, 255));
+                }
 
-                Mat tmpColorBuffer2 = new Mat(new Size(bufimage.Width, bufimage.Height), MatType.CV_8UC3,new Scalar(255,255,255));
                 outerColorBuffer2.SetTo(outsidecolor, null);
                 Cv2.CvtColor(outerGrayBuffer2, tmpColorBuffer2, OpenCvSharp.ColorConversion.GrayToBgr);
                 Cv2.Multiply(outerColorBuffer2, tmpColorBuffer2, outerColorBuffer2, 1.0 / 255.0);
@@ -320,20 +320,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 Cv2.CvtColor(innerGrayBuffer2, tmpColorBuffer2, OpenCvSharp.ColorConversion.GrayToBgr);
                 Cv2.Multiply(innerColorBuffer2, tmpColorBuffer2, innerColorBuffer2, 1.0 / 255.0);
 
-                if(inner == true && outer == true)
+                if (inner && outer )
                 {
                     outerColorBuffer2 -= innerColorBuffer2;
 
                     outerColorBuffer2.GaussianBlur(new Size(3, 3), 3).CopyTo(dst);
                 }
 
-                else if (inner == true && outer == false)
+                else if (inner && !outer )
                 {
 
                     innerColorBuffer2.GaussianBlur(new Size(3, 3), 3).CopyTo(dst);
                 }
 
-                else if (inner == false && outer == true)
+                else if (!inner && outer )
                 {
 
                     outerColorBuffer2.GaussianBlur(new Size(3, 3), 3).CopyTo(dst);

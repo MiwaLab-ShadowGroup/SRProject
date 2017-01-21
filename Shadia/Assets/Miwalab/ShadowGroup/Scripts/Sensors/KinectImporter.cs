@@ -179,6 +179,10 @@ public class KinectImporter : ASensorImporter
                 this.ConvertDepthToMat();
                 this.m_mat += m_mat3DObjectsRendered;
                 break;
+            case Miwalab.ShadowGroup.Core.ShadowMediaMode.Particle3D:
+                this.CameraAttacher.Attach(ref m_mat3DObjectsRendered);
+                this.ConvertDepthToMat();
+                break;
         }
         
         foreach (var imageProcesser in this.m_ImagerProcesserList)
@@ -196,6 +200,11 @@ public class KinectImporter : ASensorImporter
         {
             var afterEffect = this.m_AfterEffectList[i];
             afterEffect.ImageProcess(ref this.m_mat, ref this.m_mat);
+        }
+
+        if (Miwalab.ShadowGroup.Core.ApplicationSettings.CurrentMode == Miwalab.ShadowGroup.Core.ShadowMediaMode.Particle3D)
+        {
+            this.m_mat += m_mat3DObjectsRendered;
         }
     }
 

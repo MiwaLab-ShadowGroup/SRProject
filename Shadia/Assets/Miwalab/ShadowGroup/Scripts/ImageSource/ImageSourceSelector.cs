@@ -31,6 +31,11 @@ public class ImageSourceSelector : MonoBehaviour {
                 ImageSource3D.SetActive(false);
                 ImageSourceCircle.SetActive(true);
                 break;
+            case Miwalab.ShadowGroup.Core.ShadowMediaMode.Particle3D:
+                ImageSource2D.SetActive(true);
+                ImageSource3D.SetActive(false);
+                ImageSourceCircle.SetActive(true);
+                break;
         }
 	}
 }

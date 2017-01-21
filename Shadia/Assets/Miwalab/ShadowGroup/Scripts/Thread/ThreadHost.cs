@@ -47,7 +47,10 @@ namespace Miwalab.ShadowGroup.Thread
                 Debug.LogWarning(tag + " thread is NOT contains or alreadey finished.");
                 return;
             }
-            this.m_theadList[tag].Start();
+            if (!this.m_theadList[tag].IsFinished())
+            {
+                this.m_theadList[tag].Start();
+            }
         }
 
         public void AbortAndDeleteThread(string tag)

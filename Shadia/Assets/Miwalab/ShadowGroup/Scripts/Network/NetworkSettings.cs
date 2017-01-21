@@ -38,6 +38,9 @@ namespace Miwalab.ShadowGroup.Network
             public readonly static int SendControlPort = 15010;
 
 
+            public readonly static int ReceiveParticlePort = 15011;
+            public readonly static int SendParticlePort = 15012;
+
 
         }
         #endregion

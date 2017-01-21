@@ -319,7 +319,7 @@ namespace Miwalab.ShadowGroup.Network
                     }
 
                     byte[] meshData = _receiveMeshClient2.Receive(ref available);
-                    if (data != null)
+                    if (meshData != null)
                     {
                         _networkPlane2.SetupMesh(meshData);
                     }
@@ -345,7 +345,7 @@ namespace Miwalab.ShadowGroup.Network
                         _networkPlane1.SetupTexture(data);
                     }
                     byte[] meshData = _receiveMeshClient1.Receive(ref available);
-                    if (data != null)
+                    if (meshData != null)
                     {
                         _networkPlane1.SetupMesh(meshData);
                     }
@@ -366,6 +366,9 @@ namespace Miwalab.ShadowGroup.Network
         public void SetIsReceive(object sender, EventArgs e)
         {
             _IsReceive = (e as ParameterCheckbox.ChangedValue).Value;
+
+            this._networkPlane1.gameObject.SetActive(_IsReceive);
+            this._networkPlane2.gameObject.SetActive(_IsReceive);
         }
 
         // Update is called once per frame

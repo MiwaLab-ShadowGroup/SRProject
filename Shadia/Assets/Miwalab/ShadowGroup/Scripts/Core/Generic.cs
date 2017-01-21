@@ -15,6 +15,7 @@ namespace Miwalab.ShadowGroup.Core
         ShadowMedia2D,
         ShadowMedia3D,
         CircleShadow,
+        Particle3D,
         Other
     }
 }

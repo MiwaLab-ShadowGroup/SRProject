@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - WindZone
+  - particle3D
+  - uihost
   layers:
   - Default
   - TransparentFX
