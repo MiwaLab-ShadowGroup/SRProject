@@ -173,6 +173,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         PainterShadow,
 
         /// <summary>
+        /// 3DParticle
+        /// </summary>
+        Particle3D,
+
+        /// <summary>
         /// 個数を数えるためのもの．消したら処刑
         /// </summary>
         Count,

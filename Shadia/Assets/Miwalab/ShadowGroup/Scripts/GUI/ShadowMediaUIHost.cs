@@ -107,6 +107,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     public GameObject FishSet;
     public GameObject TigerSet;
     public GameObject UnitychanSet;
+    public GameObject Particle3DSet;
     private List<GameObject> List_backGround;
 
 
@@ -165,7 +166,7 @@ public class ShadowMediaUIHost : MonoBehaviour
                 item.SetActive(false);
             }
         }
-        this.m_currentImageProcesserSettingPanel = m_PanelDictionary[ImageProcesserType.Normal.ToString()];
+        this.m_currentImageProcesserSettingPanel = m_PanelDictionary[ImageProcesserType.Selector.ToString()];
         this.m_currentImportSettingPanel = m_PanelDictionary[ImportSettingType.Kinect.ToString()];
         this.m_currentCallibrationSettingPanel = m_PanelDictionary[CallibrationSettingType.CallibrationImport1.ToString()];
         this.m_currentAfterEffectSettingPanel = m_PanelDictionary[AfterEffectSettingType.Fade.ToString()];
@@ -215,7 +216,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsBackgroundUnitychan(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Unitychan.ToString()]);
         this.CreateUIsGeneric();
         //代入の順番はGenericに合わせてください
-        this.List_backGround = new List<GameObject>() { this.ButterflySet, this.FishSet, this.TigerSet, this.UnitychanSet };
+        this.List_backGround = new List<GameObject>() { this.ButterflySet, this.FishSet, this.TigerSet, this.UnitychanSet, this.Particle3DSet };
 
         this.m_meshrenderer.ForEach(p => p.SetUpUIs());
         this.m_Sensor.setUpUI();
@@ -272,10 +273,11 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingEachMoveParticle(m_PanelDictionary[ImageProcesserType.EachMoveParticle.ToString()]);
         this.CreateUIsImageporcessingFlowParticlesShadow(m_PanelDictionary[ImageProcesserType.FlowParticlesShadow.ToString()]);
         this.CreateUIsImageporcessingPainterShadow(m_PanelDictionary[ImageProcesserType.PainterShadow.ToString()]);
+        this.CreateUIsImageporcessingParticle3D(m_PanelDictionary[ImageProcesserType.Particle3D.ToString()]);
 
     }
 
-
+    
 
     public void ChangeGeneralSettingOptionTo(int number)
     {
@@ -299,7 +301,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.SwitchOffOtherPanelsExceptOf(this.m_currentImageProcesserSettingPanel);
     }
 
-    public void ChangeImageProcessingTo(int number, bool useProcesser)
+    public void ChangeImageProcessingTo(int number, bool useProcesser, bool useDoubleAfter)
     {
         ImageProcesserType type = (ImageProcesserType)number;
 
@@ -308,6 +310,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         {
             changeTo.Add(new PtsImgProcesser());
         }
+        
 
         switch (type)
         {
@@ -410,9 +413,16 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.PainterShadow:
                 changeTo.Add(new Miwalab.ShadowGroup.ImageProcesser.PainterShadow());
                 break;
+            case ImageProcesserType.Particle3D:
+                changeTo.Add(new Particle3D());
+                break;
             case ImageProcesserType.CellAutomaton:
                 break;
 
+        }
+        if (useDoubleAfter)
+        {
+            changeTo.Add(new DoubleAfterImage());
         }
         this.m_Sensor.AddAfterEffect(new FadeTransition(this.m_Sensor.GetAffterEffectList(), m_Sensor, changeTo));
 
@@ -468,11 +478,20 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight = 0;
         AddEnumUI(parent, "IPS_ImgChange", ImageProcesserType.Normal);
         AddBooleanUI(parent, "IPS_UsePtsImageProcesser", false);
+        AddBooleanUI(parent, "IPS_double_after", false);
     }
     private void CreateUIsImageporcessingPainterShadow(GameObject gameObject)
     {
         m_lastUpdatedHeight = 0;
 
+    }
+    private void CreateUIsImageporcessingParticle3D(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddButtonUI(parent, "PRT3D_CIPCServerConnect");
+        AddBooleanUI(parent, "PRT3D_3DObjectControlReceive", false);
+        AddTextUI(parent, "PRT3D_CIPCServerIP");
+        AddTextUI(parent, "PRT3D_CIPCServerPort");
     }
 
     private void CreateUIsArchiveSave(GameObject parent)
@@ -988,7 +1007,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
         AddFloatUI(parent, "kinect_height", 5, 0, 0.85f);
         AddFloatUI(parent, "kinect_angle", 180, -180, 0);
-        AddFloatUI(parent, "kinect_radius", 10, 0, 5.4f);
+        AddFloatUI(parent, "kinect_radius", 10, -10, 0);
         AddBooleanUI(parent, "kinect_divide", false);
 
     }
@@ -1338,6 +1357,35 @@ public class ShadowMediaUIHost : MonoBehaviour
 
         this.m_currentBackgroundTypeSettingPanel = this.m_PanelDictionary[type.ToString()];
         this.SwitchOffOtherPanelsExceptOf(this.m_currentBackgroundTypeSettingPanel);
+        if (number == 0)
+        {
+            for (int i = 0; i < this.List_backGround.Count; ++i)
+            {
+                this.List_backGround[i].SetActive(false);
+            }
+        }
+        else if (number == 1)
+        {
+
+        }
+        else
+        {
+            for (int i = 0; i < this.List_backGround.Count; ++i)
+            {
+                if (i == number - 2)
+                {
+                    this.List_backGround[i].SetActive(true);
+                }
+                else
+                {
+                    this.List_backGround[i].SetActive(false);
+                }
+            }
+        }
+    }
+
+    public void SetActive3DObjects(int number)
+    {
         if (number == 0)
         {
             for (int i = 0; i < this.List_backGround.Count; ++i)

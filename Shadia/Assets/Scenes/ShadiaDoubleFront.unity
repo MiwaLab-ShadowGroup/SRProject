@@ -2725,7 +2725,7 @@ GameObject:
   - component: {fileID: 241750977}
   m_Layer: 0
   m_Name: UIHost
-  m_TagString: Untagged
+  m_TagString: uihost
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2767,6 +2767,7 @@ MonoBehaviour:
   FishSet: {fileID: 807888778}
   TigerSet: {fileID: 807888776}
   UnitychanSet: {fileID: 807888775}
+  Particle3DSet: {fileID: 572470092}
 --- !u!4 &241750978
 Transform:
   m_ObjectHideFlags: 0
@@ -4396,6 +4397,10 @@ Prefab:
     - target: {fileID: 123486, guid: bc2478497808cfc4e9ec04f8426e11c4, type: 2}
       propertyPath: m_Name
       value: RemoteProjectionPlane1
+      objectReference: {fileID: 0}
+    - target: {fileID: 123486, guid: bc2478497808cfc4e9ec04f8426e11c4, type: 2}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 11497732, guid: bc2478497808cfc4e9ec04f8426e11c4, type: 2}
@@ -6769,6 +6774,57 @@ Transform:
   - {fileID: 1729966688}
   m_Father: {fileID: 464821106}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &572470092
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 572470094}
+  - component: {fileID: 572470093}
+  m_Layer: 13
+  m_Name: particle3DShadow
+  m_TagString: particle3D
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &572470093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 572470092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d19b2f8f3c4d12439243bda1e2f720b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _particleOriginal: {fileID: 1370743575764908, guid: af28dfd689d565a4b9bf61adda50923a,
+    type: 2}
+  _num: 20
+  _particleObjects: []
+  _particleShadowScripts: []
+  _scale: {x: 0.05, y: 0.05, z: 0.05}
+  _HumanVelList_X: []
+  _HumanVelList_Y: []
+  PreHumanCount: 0
+  HumanCount: 0
+  _IsReceive: 0
+--- !u!4 &572470094
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 572470092}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1123522742}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &574420195
 GameObject:
@@ -9186,7 +9242,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &807888776
 GameObject:
   m_ObjectHideFlags: 0
@@ -11080,6 +11136,10 @@ Prefab:
       propertyPath: m_Name
       value: RemoteProjectionPlane2
       objectReference: {fileID: 0}
+    - target: {fileID: 123486, guid: bc2478497808cfc4e9ec04f8426e11c4, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 11497732, guid: bc2478497808cfc4e9ec04f8426e11c4, type: 2}
     - {fileID: 11422384, guid: bc2478497808cfc4e9ec04f8426e11c4, type: 2}
@@ -12701,6 +12761,7 @@ Transform:
   - {fileID: 807888781}
   - {fileID: 807888779}
   - {fileID: 136051130}
+  - {fileID: 572470094}
   m_Father: {fileID: 0}
   m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -24688,7 +24749,7 @@ Transform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2122067817}
-  m_LocalRotation: {x: -0.093746535, y: 0.6978551, z: 0.707469, w: 0.060806733}
+  m_LocalRotation: {x: -0.09374654, y: 0.6978552, z: 0.70746905, w: 0.0608067}
   m_LocalPosition: {x: -0.05543403, y: 0.0017306843, z: 0.098653734}
   m_LocalScale: {x: 1.0000004, y: 1.0000006, z: 1.0000005}
   m_Children:
@@ -24773,6 +24834,7 @@ MonoBehaviour:
   _kinectRotation_rx: 0
   _kinectRotation_ry: 0
   _virtualLightRotation_y: 0
+  _virtualLightPosZ: 0
   virtualLightDivide: 0
   _lightMode: 0
 --- !u!114 &2130660093
