@@ -118,12 +118,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             var size = src.Size();
 
-            for (int i = 0; i < HUMAN_NUMBER; ++i)
-            {
-                this.m_bufferCenterX[i] = 0;
-                this.m_bufferCenterY[i] = 0;
-                this.m_counter[i] = 0;
-            }
+            //for (int i = 0; i < HUMAN_NUMBER; ++i)
+            //{
+            //    this.m_bufferCenterX[i] = 0;
+            //    this.m_bufferCenterY[i] = 0;
+            //    this.m_counter[i] = 0;
+            //}
 
 
             m_dst = new Mat(size, MatType.CV_8UC3, new Scalar(0, 0, 0));

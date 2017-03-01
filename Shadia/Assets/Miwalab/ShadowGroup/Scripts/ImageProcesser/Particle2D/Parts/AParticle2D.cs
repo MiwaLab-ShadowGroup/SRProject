@@ -112,6 +112,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="potion">0-1</param>
         public void GraduallyChangeColorTo(Scalar target, double potion)
         {
             _Color.Val0 += (target.Val0 - _Color.Val0) * potion;
@@ -124,6 +129,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
 
         public abstract void DrawShape(ref Mat mat);
 
+        /// <summary>
+        /// debug
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <param name="str"></param>
+        /// <param name="scale"></param>
         public void PutText(ref Mat mat, string str, double scale)
         {
             mat.PutText(str, this.point, OpenCvSharp.FontFace.Vector0, scale, Scalar.White);

@@ -44,18 +44,20 @@ namespace Miwalab.ShadowGroup.ImageSource.ShadowMedia3D
 
         private void VirtualLightSource3D_radius_ValueChanged(object sender, EventArgs e)
         {
+            var pos = this.gameObject.transform.position;
             _virtualLightPosZ = (e as ParameterSlider.ChangedValue).Value;
             var quat = Quaternion.Euler(0, _virtualLightRotation_y, 0);
-            this.gameObject.transform.position = quat*( new Vector3(0, 0, _virtualLightPosZ)); 
+            this.gameObject.transform.position = quat*( new Vector3(0, pos.y, _virtualLightPosZ)); 
         }
 
         private void VirtualLightSource3D_angle_ValueChanged(object sender, EventArgs e)
         {
 
+            var pos = this.gameObject.transform.position;
             _virtualLightRotation_y = -(e as ParameterSlider.ChangedValue).Value;
             var quat = this.gameObject.transform.rotation = Quaternion.Euler(0, _virtualLightRotation_y, 0);
 
-            this.gameObject.transform.position = quat * (new Vector3(0, 0, _virtualLightPosZ));
+            this.gameObject.transform.position = quat * (new Vector3(0, pos.y, _virtualLightPosZ));
         }
 
 
