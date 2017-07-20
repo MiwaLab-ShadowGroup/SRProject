@@ -11,7 +11,7 @@ namespace Miwalab.ShadowGroup.Background
         Fading,
         FadeFinished,
     }
-
+    
     public enum FadeMode
     {
         NotFadeMode,
