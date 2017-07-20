@@ -44,16 +44,35 @@ namespace Miwalab.ShadowGroup.Background.ParticleSystem
 
         private void reset()
         {
-            if(_RHAngle.y < 0)
+            if(_RHAngle.y < -2.0f)
             {
-                _RHAngle.y += 2.5f;
+                _RHAngle.y += 4.0f;
             }
-            if (_RHAngle.y >2.5f)
+            if (_RHAngle.y >2.0f)
             {
-                _RHAngle.y -= 2.5f;
+                _RHAngle.y -= 4.0f;
             }
 
-            if(this._RHAngleVel.magnitude > 0.01f)
+            if (_RHAngle.x < -6.0f)
+            {
+                _RHAngle.x += 10.0f;
+            }
+            if (_RHAngle.x > 4.0f)
+            {
+                _RHAngle.x -= 10.0f;
+            }
+
+            //if (_RHAngle.z < 1.0f)
+            //{
+            //    _RHAngle.z += 8.0f;
+            //}
+            //if (_RHAngle.z > 9.0f)
+            //{
+            //    _RHAngle.z -= 8.0f;
+            //}
+
+
+            if (this._RHAngleVel.magnitude > 0.01f)
             {
                 this._RHAngleVel.Normalize();
                 this._RHAngleVel *= 0.01f;

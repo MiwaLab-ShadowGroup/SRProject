@@ -20,7 +20,7 @@ public class particle3DShadow : MonoBehaviour
     public List<particleMover> _particleShadowScripts;
 
     public Vector3 _scale;
-
+    public Vector3 _acceralate;
 
     public float[] _HumanVelList_X;
     public float[] _HumanVelList_Y;
@@ -63,6 +63,9 @@ public class particle3DShadow : MonoBehaviour
         (ShadowMediaUIHost.GetUI("PRT3D_CIPCServerConnect") as ParameterButton).Clicked += NetworkConnect;
         (ShadowMediaUIHost.GetUI("PRT3D_3DObjectControlReceive") as ParameterCheckbox).ValueChanged += SetIsReceive;
         (ShadowMediaUIHost.GetUI("PRT3D_CIPCServerPort") as ParameterText).m_valueText.text = "12000";
+
+        _acceralate.x = 0.05f;
+
     }
 
     private void SetIsReceive(object sender, EventArgs e)
@@ -146,7 +149,7 @@ public class particle3DShadow : MonoBehaviour
                 this._particleShadowScripts.Add(_object.GetComponent<particleMover>());
             }
         }
-
+        
         if (PreHumanCount != HumanCount)
         {
             PreHumanCount = HumanCount;
@@ -157,7 +160,11 @@ public class particle3DShadow : MonoBehaviour
         {
             var target = this._particleShadowScripts[i];
 
-            target.AddForce(_HumanVelList_X[target.ID], _HumanVelList_Y[target.ID]);
+            target.AddForce(_acceralate);
+
+            
+            //_particleShadowScripts[i]._RHAngleacc = _acceralate;
+            //target.AddForce(_HumanVelList_X[target.ID], _HumanVelList_Y[target.ID]);
         }
 
 

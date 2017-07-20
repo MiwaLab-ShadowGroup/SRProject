@@ -44,6 +44,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
                 case ResetType.Simbolic3:
                     this.ResetAsSimbolic3();
                     break;
+                case ResetType.Hand:
+                    this.ResetAsHand();
+                    break;
                 default:
                     break;
             }
@@ -97,7 +100,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
                     break;
             }
         }
-
+        private void ResetAsHand()
+        {
+            int number = UnityEngine.Random.Range(0, 2);
+            switch (number)
+            {
+                case 0:
+                    jointType = JointType.HandLeft;
+                    break;
+                case 1:
+                    jointType = JointType.HandRight;
+                    break;
+                
+            }
+        }
         private void ResetAsSpineBase()
         {
             jointType = JointType.SpineBase;
@@ -127,6 +143,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser.Particle2D
             /// 腰
             /// </summary>
             Only,
+
+            //手のみ
+            Hand,
         }
     }
 }

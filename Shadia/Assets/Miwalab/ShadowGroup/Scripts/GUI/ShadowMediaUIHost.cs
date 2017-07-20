@@ -603,6 +603,10 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "PV_DebugMode", false);
 
         AddButtonUI(parent, "PV_Reset");
+        AddBooleanUI(parent, "PV_Hand", false);
+        AddBooleanUI(parent, "PV_G_Center", false);
+
+
     }
 
     private void CreateUIsAffterEffectFade(GameObject parent)
@@ -1228,7 +1232,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         slider.Max = max;
         slider.Min = min;
         slider.DefaultValue = @default;
-        slider.gameObject.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        slider.gameObject.transform.SetParent(parent.transform.Find("Viewport").Find("Content"), false);
         var recttransform = slider.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1242,7 +1246,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         var checkBox = Instantiate<ParameterCheckbox>(m_checkbox);
         checkBox.Title = ParameterName;
         checkBox.DefaultValue = @default;
-        checkBox.gameObject.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        checkBox.gameObject.transform.SetParent(parent.transform.Find("Viewport").Find("Content"), false);
         var recttransform = checkBox.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1255,7 +1259,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         var button = Instantiate<ParameterButton>(m_button);
         button.Title = ParameterName;
-        button.gameObject.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        button.gameObject.transform.SetParent(parent.transform.Find("Viewport").Find("Content"), false);
         var recttransform = button.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1269,7 +1273,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         var Text = Instantiate<ParameterText>(m_text);
         Text.Title = ParameterName;
-        Text.gameObject.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        Text.gameObject.transform.SetParent(parent.transform.Find("Viewport").Find("Content"), false);
         var recttransform = Text.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1295,7 +1299,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         item.Title = ParameterName;
 
         item.initialize(defaultValue);
-        _object.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        _object.transform.SetParent(parent.transform.Find("Viewport").Find("Content"), false);
         var recttransform = _object.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
