@@ -586,7 +586,7 @@ public class ShadowMediaUIHost : MonoBehaviour
 
 
     }
-
+    
 
     private void CreateUIsImageporcessingParticleVector(GameObject parent)
     {
@@ -606,6 +606,8 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "PV_Hand", false);
         AddBooleanUI(parent, "PV_G_Center", false);
 
+        AddFloatUI(parent, "Addvel_x", 3, -3, 0);
+        AddFloatUI(parent, "Addvel_y", 3, -3, 0);
 
     }
 

@@ -23,6 +23,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private bool UseAvarage = false;
         private bool UseFade = false;
 
+        private Vector2 Manualvel = new Vector2(0, 0);
+
         public ParticleVector()
             : base()
         {
@@ -46,6 +48,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (GUI.BackgroundMediaUIHost.GetUI("PV_Hand") as ParameterCheckbox).ValueChanged += ParticleVector_Hand_Changed;
             (GUI.BackgroundMediaUIHost.GetUI("PV_G_Center") as ParameterCheckbox).ValueChanged += ParticleVector_G_Center_Changed;
 
+            (GUI.BackgroundMediaUIHost.GetUI("Addvel_x") as ParameterSlider).ValueChanged += Addvel_x_ValueChanged;
+            (GUI.BackgroundMediaUIHost.GetUI("Addvel_y") as ParameterSlider).ValueChanged += Addvel_y_ValueChanged;
+
 
 
             for (int i = 0; i < ParticleNum; ++i)
@@ -59,6 +64,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             this.ChangeHumanCount += ParticleVector_ChangeHumanCount;
 
+        }
+
+        private void Addvel_y_ValueChanged(object sender, EventArgs e)
+        {
+            Manualvel.y = (e as ParameterSlider.ChangedValue).Value;
+            
+        }
+
+        private void Addvel_x_ValueChanged(object sender, EventArgs e)
+        {
+            Manualvel.x = (e as ParameterSlider.ChangedValue).Value;
         }
 
         private void ParticleVector_G_Center_Changed(object sender, EventArgs e)
@@ -186,6 +202,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                         }
 
                         this.m_particleList[i].AddForce(vell);
+                        this.m_particleList[i].AddForce(Manualvel);
                     }
                     else
                     {
@@ -201,10 +218,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                             vell.Set(0, 0, 0);
                         }
                         this.m_particleList[i].AddForce(Avarage);
+                        this.m_particleList[i].AddForce(Manualvel);
+
                     }
 
 
                     this.m_particleList[i].AddForce(this.m_particleList[i].Vellocity * -0.01f);
+
                     this.m_particleList[i].Update();
                     //this.m_particleList[i].CutOffVellocity(MaxVellocity);
                     this.m_particleList[i].DeadCheck(size.Width, size.Height);
