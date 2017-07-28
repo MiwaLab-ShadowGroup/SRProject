@@ -108,6 +108,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     public GameObject TigerSet;
     public GameObject UnitychanSet;
     public GameObject Particle3DSet;
+    public GameObject JellyfishSet;
     private List<GameObject> List_backGround;
 
 
@@ -214,9 +215,10 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsBackgroundFish(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Fish.ToString()]);
         this.CreateUIsBackgroundTiger(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Tiger.ToString()]);
         this.CreateUIsBackgroundUnitychan(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Unitychan.ToString()]);
+        this.CreateUIsBackgroundJellyfish(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Jellyfish.ToString()]);
         this.CreateUIsGeneric();
         //代入の順番はGenericに合わせてください
-        this.List_backGround = new List<GameObject>() { this.ButterflySet, this.FishSet, this.TigerSet, this.UnitychanSet, this.Particle3DSet };
+        this.List_backGround = new List<GameObject>() { this.ButterflySet, this.FishSet, this.TigerSet, this.UnitychanSet, this.Particle3DSet, this.JellyfishSet };
 
         this.m_meshrenderer.ForEach(p => p.SetUpUIs());
         this.m_Sensor.setUpUI();
@@ -1228,7 +1230,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         slider.Max = max;
         slider.Min = min;
         slider.DefaultValue = @default;
-        slider.gameObject.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        slider.gameObject.transform.SetParent(parent.transform.Find("Viewport").Find("Content"), false);
         var recttransform = slider.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1242,7 +1244,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         var checkBox = Instantiate<ParameterCheckbox>(m_checkbox);
         checkBox.Title = ParameterName;
         checkBox.DefaultValue = @default;
-        checkBox.gameObject.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        checkBox.gameObject.transform.SetParent(parent.transform.Find("Viewport").Find("Content"), false);
         var recttransform = checkBox.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1255,7 +1257,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         var button = Instantiate<ParameterButton>(m_button);
         button.Title = ParameterName;
-        button.gameObject.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        button.gameObject.transform.SetParent(parent.transform.Find("Viewport").Find("Content"), false);
         var recttransform = button.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1269,7 +1271,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         var Text = Instantiate<ParameterText>(m_text);
         Text.Title = ParameterName;
-        Text.gameObject.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        Text.gameObject.transform.SetParent(parent.transform.Find("Viewport").Find("Content"), false);
         var recttransform = Text.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1295,7 +1297,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         item.Title = ParameterName;
 
         item.initialize(defaultValue);
-        _object.transform.SetParent(parent.transform.FindChild("Viewport").FindChild("Content"), false);
+        _object.transform.SetParent(parent.transform.Find("Viewport").Find("Content"), false);
         var recttransform = _object.gameObject.transform as RectTransform;
         recttransform.anchoredPosition = new Vector2(0, -m_lastUpdatedHeight);
 
@@ -1477,6 +1479,32 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "3D_CLB_Y", 1, -1, 0);
         AddFloatUI(parent, "3D_CLB_Z", 1, -1, 0);
         AddFloatUI(parent, "3D_CLB_R", 180, -180, 0);
+
+    }
+
+    private void CreateUIsBackgroundJellyfish(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Jellyfish_Size", 0.5f, 0.01f, 0.1f);
+        AddFloatUI(parent, "Jellyfish_Speed", 1, 0.01f, 0.5f);
+        AddFloatUI(parent, "Jellyfish_TotalNum", 1000, 100, 500);
+        AddFloatUI(parent, "Jellyfish_EmitNum", 10, 1, 3);
+        AddFloatUI(parent, "Jellyfish_Lifetime", 30, 0.1f, 10);
+        m_lastUpdatedHeight += 10;
+        AddFloatUI(parent, "Noise_Strength", 3, 0.1f, 0.3f);
+        AddFloatUI(parent, "Noise_Frequency", 1, 0, 0.5f);
+        m_lastUpdatedHeight += 10;
+        AddButtonUI(parent, "White");
+        AddButtonUI(parent, "Red");
+        AddButtonUI(parent, "Blue");
+        AddButtonUI(parent, "Green");
+        AddButtonUI(parent, "Yellow");
+        AddButtonUI(parent, "Cyan");
+        AddButtonUI(parent, "Pink");
+        AddFloatUI(parent, "Jellyfish_R", 255.0f, 0.0f, 255.0f);
+        AddFloatUI(parent, "Jellyfish_G", 255.0f, 0.0f, 255.0f);
+        AddFloatUI(parent, "Jellyfish_B", 255.0f, 0.0f, 255.0f);
+        //AddBooleanUI(parent, "test2", false);
 
     }
 

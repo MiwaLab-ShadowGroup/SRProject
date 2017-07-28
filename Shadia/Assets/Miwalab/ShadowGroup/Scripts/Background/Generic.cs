@@ -14,6 +14,7 @@ namespace Miwalab.ShadowGroup.Background
         Tiger,
         Unitychan,
         Particle3DShadow,
+        Jellyfish,
         Count,
     }
     class Generic
