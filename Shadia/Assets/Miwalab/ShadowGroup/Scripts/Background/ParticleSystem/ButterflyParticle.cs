@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 public class ButterflyParticle : AParticle
 {
+    private float MoveRate;
+
+
     public override ParticleType getParticleType()
     {
         return ParticleType.Butterfly;
@@ -77,7 +80,14 @@ public class ButterflyParticle : AParticle
     {
         this.MeshSetup();
         this.MoveSetup();
-        
+
+        (ShadowMediaUIHost.GetUI("MoveRate") as ParameterSlider).ValueChanged += MoveRate_ValueChanged;
+
+    }
+
+    private void MoveRate_ValueChanged(object sender, EventArgs e)
+    {
+         MoveRate = (e as ParameterSlider.ChangedValue).Value;
     }
 
     // Update is called once per frame
@@ -103,7 +113,7 @@ public class ButterflyParticle : AParticle
         }
 
         this.meshRenderer.material.SetColor("_Color", color);
-        var vec = new Vector3(UnityEngine.Random.value * 60 - 30, UnityEngine.Random.value * 60 - 30, UnityEngine.Random.value * 60 - 30);
+        var vec = new Vector3(UnityEngine.Random.value * MoveRate - MoveRate/2, UnityEngine.Random.value * MoveRate - MoveRate/2, UnityEngine.Random.value * MoveRate - MoveRate/2);
         this.rigidBody.AddForce(vec);
         this.rigidBody.AddTorque(0, UnityEngine.Random.value * 10 - 5, 0);
     }

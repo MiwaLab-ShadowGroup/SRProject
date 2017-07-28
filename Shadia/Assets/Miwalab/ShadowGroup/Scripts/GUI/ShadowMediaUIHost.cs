@@ -1445,6 +1445,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight += 10;
         AddButtonUI(parent, "Particle_FadeWhite");
         AddButtonUI(parent, "Particle_FadeBlack");
+        AddFloatUI(parent, "MoveRate", 100, 0, 30);
     }
 
     private void CreateUIsBackgroundFish(GameObject parent)
