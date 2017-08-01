@@ -12715,7 +12715,7 @@ GameObject:
   - component: {fileID: 1121212179}
   - component: {fileID: 1121212178}
   - component: {fileID: 1121212177}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: JellyfishParticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12830,7 +12830,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 1326317909
+  randomSeed: 830247716
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -16513,7 +16513,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1172089210}
   - component: {fileID: 1172089209}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Jellyfish
   m_TagString: Untagged
   m_Icon: {fileID: 0}
