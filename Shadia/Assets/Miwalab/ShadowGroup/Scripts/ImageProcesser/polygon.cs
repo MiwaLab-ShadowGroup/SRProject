@@ -160,6 +160,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
        
 
         Mat m_buffer;
+
         bool m_UseFade;
         private void Update(ref Mat src, ref Mat dst)
         {
@@ -219,10 +220,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
             var _contour = List_Contours.ToArray();
 
-            Cv2.DrawContours(m_buffer, _contour, -1, color, -1, OpenCvSharp.LineType.Link8);
+            Cv2.DrawContours(dst, _contour, -1, color, -1, OpenCvSharp.LineType.Link8);
 
+            //dst += m_buffer; //加算よくない
 
-            dst += m_buffer;
             this.List_Contours_Buffer = this.List_Contours;
             //Cv2.CvtColor(dstMat, dst, OpenCvSharp.ColorConversion.BgraToBgr);
 

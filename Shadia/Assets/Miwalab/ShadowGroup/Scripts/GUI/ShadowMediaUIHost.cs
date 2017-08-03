@@ -1058,11 +1058,26 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddBooleanUI(parent, "Normal_Invert", false);
+        m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "UseColorChange", false);
+        AddFloatUI(parent, "Normal_R", 255, 0, 255);
+        AddFloatUI(parent, "Normal_G", 255, 0, 255);
+        AddFloatUI(parent, "Normal_B", 255, 0, 255);
+        AddFloatUI(parent, "Normal_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "Normal_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "Normal_bgd_B", 255, 0, 0);
     }
     private void CreateUIsImageporcessingTimeDelay(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "TimeDelay_DelayTime", 1000, 0, 0);
+        AddBooleanUI(parent, "TimeDelay_Invert", false);
+        AddFloatUI(parent, "TimeDelay_R", 255, 0, 255);
+        AddFloatUI(parent, "TimeDelay_G", 255, 0, 255);
+        AddFloatUI(parent, "TimeDelay_B", 255, 0, 255);
+        AddFloatUI(parent, "TimeDelay_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "TimeDelay_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "TimeDelay_bgd_B", 255, 0, 0);
     }
 
     private void CreateUIsImageporcessingSecondDelay(GameObject parent)
