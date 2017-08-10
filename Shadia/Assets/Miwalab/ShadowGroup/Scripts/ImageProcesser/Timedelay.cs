@@ -10,8 +10,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
     public class Timedelay : AShadowImageProcesser
     {
         private int DelayCounter;
-
+        private bool invert;
         int count = 0;
+        Scalar color;
+        Scalar colorBack;
+        int x, y, b_src, g_src, r_src, index_src, index_dst;
 
         Queue<Mat> queue;
 
@@ -27,7 +30,51 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("TimeDelay_DelayTime") as ParameterSlider).ValueChanged += DelayTime_ValueChanged;
 
             (ShadowMediaUIHost.GetUI("TimeDelay_DelayTime") as ParameterSlider).ValueUpdate();
+            (ShadowMediaUIHost.GetUI("TimeDelay_Invert") as ParameterCheckbox).ValueChanged += TimeDelay_Invert;
+            (ShadowMediaUIHost.GetUI("TimeDelay_R") as ParameterSlider).ValueChanged += Timedelay_R;
+            (ShadowMediaUIHost.GetUI("TimeDelay_G") as ParameterSlider).ValueChanged += TimeDelay_G;
+            (ShadowMediaUIHost.GetUI("TimeDelay_B") as ParameterSlider).ValueChanged += TimeDelay_B;
+            (ShadowMediaUIHost.GetUI("TimeDelay_bgd_R") as ParameterSlider).ValueChanged += TimeDelay_bgd_R;
+            (ShadowMediaUIHost.GetUI("TimeDelay_bgd_G") as ParameterSlider).ValueChanged += TimeDelay_bgd_G;
+            (ShadowMediaUIHost.GetUI("TimeDelay_bgd_B") as ParameterSlider).ValueChanged += TimeDelay_bgd_B;
+        }
 
+        private void TimeDelay_bgd_B(object sender, EventArgs e)
+        {
+            this.colorBack.Val0 = (float)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void TimeDelay_bgd_G(object sender, EventArgs e)
+        {
+            this.colorBack.Val1 = (float)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void TimeDelay_bgd_R(object sender, EventArgs e)
+        {
+            this.colorBack.Val2 = (float)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void TimeDelay_B(object sender, EventArgs e)
+        {
+            this.color.Val0 = (float)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void TimeDelay_G(object sender, EventArgs e)
+        {
+            this.color.Val1 = (float)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void Timedelay_R(object sender, EventArgs e)
+        {
+            this.color.Val2 = (float)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void TimeDelay_Invert(object sender, EventArgs e)
+        {
+            this.invert = (e as ParameterCheckbox.ChangedValue).Value;
         }
 
         private void DelayTime_ValueChanged(object sender, EventArgs e)
@@ -64,6 +111,50 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 this.queue.Dequeue();
             }
 
+            //色変えtest
+            unsafe
+            {
+                byte* srcPtr = src.DataPointer;
+                byte* dstPtr = dst.DataPointer;
+
+                this.index_src = 0;
+
+                for (this.y = 0; this.y < dst.Height; this.y++)
+                {
+                    for (this.x = 0; this.x < dst.Width; this.x++)
+                    {
+                        this.b_src = *(srcPtr + this.index_src * 3 + 0);
+                        this.g_src = *(srcPtr + this.index_src * 3 + 1);
+                        this.r_src = *(srcPtr + this.index_src * 3 + 2);
+
+                        this.index_dst = this.y * dst.Width + this.x;
+
+                        if (b_src + g_src + r_src != 0) //Kinect画像が背景（黒）じゃないとき
+                        {
+                            *(dstPtr + index_dst * 3 + 0) = (byte)this.color.Val0;
+                            *(dstPtr + index_dst * 3 + 1) = (byte)this.color.Val1;
+                            *(dstPtr + index_dst * 3 + 2) = (byte)this.color.Val2;
+                        }
+                        else
+                        {
+                            *(dstPtr + index_dst * 3 + 0) = (byte)this.colorBack.Val0;
+                            *(dstPtr + index_dst * 3 + 1) = (byte)this.colorBack.Val1;
+                            *(dstPtr + index_dst * 3 + 2) = (byte)this.colorBack.Val2;
+                        }
+                        this.index_src++;
+                    }
+                }
+            }
+
+            //反転
+            if (invert)
+            {
+                dst = ~src;
+            }
+            else
+            {
+                dst = src;
+            }
         }
         public override string ToString()
         {

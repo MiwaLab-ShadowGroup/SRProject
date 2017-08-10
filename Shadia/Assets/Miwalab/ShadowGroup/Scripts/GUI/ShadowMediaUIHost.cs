@@ -108,6 +108,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     public GameObject TigerSet;
     public GameObject UnitychanSet;
     public GameObject Particle3DSet;
+    public GameObject JellyfishSet;
     private List<GameObject> List_backGround;
 
 
@@ -214,9 +215,10 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsBackgroundFish(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Fish.ToString()]);
         this.CreateUIsBackgroundTiger(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Tiger.ToString()]);
         this.CreateUIsBackgroundUnitychan(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Unitychan.ToString()]);
+        this.CreateUIsBackgroundJellyfish(m_PanelDictionary[Miwalab.ShadowGroup.Background.BackgroundType.Jellyfish.ToString()]);
         this.CreateUIsGeneric();
         //代入の順番はGenericに合わせてください
-        this.List_backGround = new List<GameObject>() { this.ButterflySet, this.FishSet, this.TigerSet, this.UnitychanSet, this.Particle3DSet };
+        this.List_backGround = new List<GameObject>() { this.ButterflySet, this.FishSet, this.TigerSet, this.UnitychanSet, this.Particle3DSet, this.JellyfishSet };
 
         this.m_meshrenderer.ForEach(p => p.SetUpUIs());
         this.m_Sensor.setUpUI();
@@ -1062,11 +1064,26 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddBooleanUI(parent, "Normal_Invert", false);
+        m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "UseColorChange", false);
+        AddFloatUI(parent, "Normal_R", 255, 0, 255);
+        AddFloatUI(parent, "Normal_G", 255, 0, 255);
+        AddFloatUI(parent, "Normal_B", 255, 0, 255);
+        AddFloatUI(parent, "Normal_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "Normal_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "Normal_bgd_B", 255, 0, 0);
     }
     private void CreateUIsImageporcessingTimeDelay(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "TimeDelay_DelayTime", 1000, 0, 0);
+        AddBooleanUI(parent, "TimeDelay_Invert", false);
+        AddFloatUI(parent, "TimeDelay_R", 255, 0, 255);
+        AddFloatUI(parent, "TimeDelay_G", 255, 0, 255);
+        AddFloatUI(parent, "TimeDelay_B", 255, 0, 255);
+        AddFloatUI(parent, "TimeDelay_bgd_R", 255, 0, 0);
+        AddFloatUI(parent, "TimeDelay_bgd_G", 255, 0, 0);
+        AddFloatUI(parent, "TimeDelay_bgd_B", 255, 0, 0);
     }
 
     private void CreateUIsImageporcessingSecondDelay(GameObject parent)
@@ -1484,6 +1501,32 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "3D_CLB_Y", 1, -1, 0);
         AddFloatUI(parent, "3D_CLB_Z", 1, -1, 0);
         AddFloatUI(parent, "3D_CLB_R", 180, -180, 0);
+
+    }
+
+    private void CreateUIsBackgroundJellyfish(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "Jellyfish_Size", 0.5f, 0.01f, 0.1f);
+        AddFloatUI(parent, "Jellyfish_Speed", 1, 0.01f, 0.5f);
+        AddFloatUI(parent, "Jellyfish_TotalNum", 1000, 100, 500);
+        AddFloatUI(parent, "Jellyfish_EmitNum", 10, 1, 3);
+        AddFloatUI(parent, "Jellyfish_Lifetime", 30, 0.1f, 10);
+        m_lastUpdatedHeight += 10;
+        AddFloatUI(parent, "Noise_Strength", 3, 0.1f, 0.3f);
+        AddFloatUI(parent, "Noise_Frequency", 1, 0, 0.5f);
+        m_lastUpdatedHeight += 10;
+        AddButtonUI(parent, "White");
+        AddButtonUI(parent, "Red");
+        AddButtonUI(parent, "Blue");
+        AddButtonUI(parent, "Green");
+        AddButtonUI(parent, "Yellow");
+        AddButtonUI(parent, "Cyan");
+        AddButtonUI(parent, "Pink");
+        AddFloatUI(parent, "Jellyfish_R", 255.0f, 0.0f, 255.0f);
+        AddFloatUI(parent, "Jellyfish_G", 255.0f, 0.0f, 255.0f);
+        AddFloatUI(parent, "Jellyfish_B", 255.0f, 0.0f, 255.0f);
+        //AddBooleanUI(parent, "test2", false);
 
     }
 
