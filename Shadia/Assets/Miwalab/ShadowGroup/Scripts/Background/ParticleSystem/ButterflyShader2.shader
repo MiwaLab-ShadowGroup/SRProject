@@ -44,7 +44,7 @@ Shader "MiwaLabShader/ButterflyShader2"
 				v2f vert(appdata v)
 				{
 					v2f o;
-					float time = sin(_MyTime * 200 + _Num - v.vertex.y)-3.14/2 ;
+					float time = sin(_MyTime * 130 + _Num - v.vertex.y)-3.14/2 ;
 					float4 _vert
 						= float4(
 							sin(time)*v.vertex.x,

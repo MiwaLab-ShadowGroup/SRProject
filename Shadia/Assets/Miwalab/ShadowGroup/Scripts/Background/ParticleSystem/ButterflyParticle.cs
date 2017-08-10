@@ -81,6 +81,7 @@ public class ButterflyParticle : AParticle
         this.MeshSetup();
         this.MoveSetup();
 
+        MoveRate = 30;
         (ShadowMediaUIHost.GetUI("MoveRate") as ParameterSlider).ValueChanged += MoveRate_ValueChanged;
 
     }
