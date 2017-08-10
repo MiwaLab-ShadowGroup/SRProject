@@ -50,7 +50,7 @@ public class UIPointSphereSrcScript : MonoBehaviour
             var mousePos2D = new Vector2(mousePos.x, mousePos.y);
             var myPos = this.gameObject.transform.position;
             var myPos2D = new Vector2(myPos.x, myPos.y);
-            if ((myPos2D - mousePos2D).magnitude < 0.3f)
+            if ((myPos2D - mousePos2D).magnitude < 0.2f)
             {
                 _isDragged = true;
                 _initialMyPosition = myPos;

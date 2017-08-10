@@ -23,6 +23,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private bool UseAvarage = false;
         private bool UseFade = false;
 
+        private Vector2 Manualvel = new Vector2(0, 0);
+
         public ParticleVector()
             : base()
         {
@@ -43,6 +45,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (GUI.BackgroundMediaUIHost.GetUI("PV_Num_Init") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("PV_Reset") as ParameterButton).Clicked += ParticleVector_Clicked;
 
+            (GUI.BackgroundMediaUIHost.GetUI("PV_Hand") as ParameterCheckbox).ValueChanged += ParticleVector_Hand_Changed;
+            (GUI.BackgroundMediaUIHost.GetUI("PV_G_Center") as ParameterCheckbox).ValueChanged += ParticleVector_G_Center_Changed;
+
+            (GUI.BackgroundMediaUIHost.GetUI("Addvel_x") as ParameterSlider).ValueChanged += Addvel_x_ValueChanged;
+            (GUI.BackgroundMediaUIHost.GetUI("Addvel_y") as ParameterSlider).ValueChanged += Addvel_y_ValueChanged;
+
+
+
             for (int i = 0; i < ParticleNum; ++i)
             {
                 var particle = new TaggedCircleParticle();
@@ -54,6 +64,27 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             this.ChangeHumanCount += ParticleVector_ChangeHumanCount;
 
+        }
+
+        private void Addvel_y_ValueChanged(object sender, EventArgs e)
+        {
+            Manualvel.y = (e as ParameterSlider.ChangedValue).Value;
+            
+        }
+
+        private void Addvel_x_ValueChanged(object sender, EventArgs e)
+        {
+            Manualvel.x = (e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void ParticleVector_G_Center_Changed(object sender, EventArgs e)
+        {
+            this.MoveGCenter();
+        }
+
+        private void ParticleVector_Hand_Changed(object sender, EventArgs e)
+        {
+            this.MoveHands();
         }
 
         private void PV_UseFade_Changed(object sender, EventArgs e)
@@ -171,6 +202,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                         }
 
                         this.m_particleList[i].AddForce(vell);
+                        this.m_particleList[i].AddForce(Manualvel);
                     }
                     else
                     {
@@ -186,10 +218,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                             vell.Set(0, 0, 0);
                         }
                         this.m_particleList[i].AddForce(Avarage);
+                        this.m_particleList[i].AddForce(Manualvel);
+
                     }
 
 
                     this.m_particleList[i].AddForce(this.m_particleList[i].Vellocity * -0.01f);
+
                     this.m_particleList[i].Update();
                     //this.m_particleList[i].CutOffVellocity(MaxVellocity);
                     this.m_particleList[i].DeadCheck(size.Width, size.Height);
@@ -231,6 +266,23 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 this.m_particleList[i].AutoReset(TaggedCircleParticle.ResetType.Simbolic6, this.bodyIdList);
             }
         }
+
+        private void MoveHands()
+        {
+            for (int i = 0; i < this.m_particleList.Count; ++i)
+            {
+                this.m_particleList[i].AutoReset(TaggedCircleParticle.ResetType.Hand, this.bodyIdList);
+            }
+        }
+
+        private void MoveGCenter()
+        {
+            for (int i = 0; i < this.m_particleList.Count; ++i)
+            {
+                this.m_particleList[i].AutoReset(TaggedCircleParticle.ResetType.Only, this.bodyIdList);
+            }
+        }
+
 
         public override string ToString()
         {

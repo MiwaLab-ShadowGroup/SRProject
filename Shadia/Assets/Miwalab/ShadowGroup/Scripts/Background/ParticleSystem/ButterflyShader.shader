@@ -1,4 +1,6 @@
-﻿Shader "MiwaLabShader/ButterflyShader"
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "MiwaLabShader/ButterflyShader"
 {
 	Properties
 	{
@@ -47,7 +49,7 @@
 						v.vertex.z + sin(_Time.w * 5 + v.vertex.y+_Num) * v.vertex.x * v.vertex.x - 0.1*sin(_Time.w * 5 + v.vertex.y * 3) * (1 - abs(v.vertex.x)) * (1 - abs(v.vertex.x)),
 						v.vertex.w);
 
-				o.vertex = mul(UNITY_MATRIX_MVP, _vert);
+				o.vertex = UnityObjectToClipPos(_vert);
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				return o;
 			}

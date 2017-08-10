@@ -119,13 +119,13 @@ public class floorSwim : MonoBehaviour
         //layerの変更
         if (this.useProjectionlayer)
         {
-            this.transform.FindChild("SardineSkin").gameObject.layer = LayerMask.NameToLayer("Projection1");
+            this.transform.Find("SardineSkin").gameObject.layer = LayerMask.NameToLayer("Projection1");
             //this.transform.root.gameObject.layer = LayerMask.NameToLayer("Projection1");
             this.gameObject.layer = LayerMask.NameToLayer("Projection1");
         }
         else
         {
-            this.transform.FindChild("SardineSkin").gameObject.layer = LayerMask.NameToLayer("3DModels");
+            this.transform.Find("SardineSkin").gameObject.layer = LayerMask.NameToLayer("3DModels");
             //this.transform.root.gameObject.layer = LayerMask.NameToLayer("3DModels");
             this.gameObject.layer = LayerMask.NameToLayer("3DModels");
         }
