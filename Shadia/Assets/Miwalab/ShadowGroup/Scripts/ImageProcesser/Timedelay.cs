@@ -11,6 +11,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
     {
         private int DelayCounter;
         private bool invert;
+        private bool flip;
         int count = 0;
         Scalar color;
         Scalar colorBack;
@@ -31,12 +32,18 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             (ShadowMediaUIHost.GetUI("TimeDelay_DelayTime") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("TimeDelay_Invert") as ParameterCheckbox).ValueChanged += TimeDelay_Invert;
+            (ShadowMediaUIHost.GetUI("TimeDelay_Flip") as ParameterCheckbox).ValueChanged += TimeDelay_Flip;
             (ShadowMediaUIHost.GetUI("TimeDelay_R") as ParameterSlider).ValueChanged += Timedelay_R;
             (ShadowMediaUIHost.GetUI("TimeDelay_G") as ParameterSlider).ValueChanged += TimeDelay_G;
             (ShadowMediaUIHost.GetUI("TimeDelay_B") as ParameterSlider).ValueChanged += TimeDelay_B;
             (ShadowMediaUIHost.GetUI("TimeDelay_bgd_R") as ParameterSlider).ValueChanged += TimeDelay_bgd_R;
             (ShadowMediaUIHost.GetUI("TimeDelay_bgd_G") as ParameterSlider).ValueChanged += TimeDelay_bgd_G;
             (ShadowMediaUIHost.GetUI("TimeDelay_bgd_B") as ParameterSlider).ValueChanged += TimeDelay_bgd_B;
+        }
+
+        private void TimeDelay_Flip(object sender, EventArgs e)
+        {
+            this.flip = (e as ParameterCheckbox.ChangedValue).Value;
         }
 
         private void TimeDelay_bgd_B(object sender, EventArgs e)
@@ -146,7 +153,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 }
             }
 
-            //反転
+            //左右反転
+            if (flip)
+            {
+                Cv2.Flip(src, dst, OpenCvSharp.FlipMode.Y);
+            }
+            else
+            {
+                dst = src;
+            }
+
+            //色反転
             if (invert)
             {
                 dst = ~src;

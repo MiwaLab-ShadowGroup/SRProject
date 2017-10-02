@@ -1072,6 +1072,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "TimeDelay_DelayTime", 1000, 0, 0);
         AddBooleanUI(parent, "TimeDelay_Invert", false);
+        AddBooleanUI(parent, "TimeDelay_Flip", false);
         AddFloatUI(parent, "TimeDelay_R", 255, 0, 255);
         AddFloatUI(parent, "TimeDelay_G", 255, 0, 255);
         AddFloatUI(parent, "TimeDelay_B", 255, 0, 255);
