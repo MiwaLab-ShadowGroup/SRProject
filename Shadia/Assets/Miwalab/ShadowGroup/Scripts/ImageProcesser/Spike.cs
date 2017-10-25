@@ -181,7 +181,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             OpenCvSharp.CPlusPlus.Point center ;
             for (int i = 0; i < contour.Length; i++)
             {
-                if (Cv2.ContourArea(contour[i]) > 100)
+                if (Cv2.ContourArea(contour[i]) > 100)//面積ContourArea100以上（100以下はノイズとして無視）
                 {
                     for (int j = 0; j < contour[i].Length - this.interval; j = j + this.interval)
                     {

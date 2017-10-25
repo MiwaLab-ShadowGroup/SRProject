@@ -178,9 +178,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         Particle3D,
 
         /// <summary>
+        /// 田中練習
+        /// </summary>
+        TanakaTest,
+
+        /// <summary>
         /// 個数を数えるためのもの．消したら処刑
         /// </summary>
         Count,
+
     }
 
 }

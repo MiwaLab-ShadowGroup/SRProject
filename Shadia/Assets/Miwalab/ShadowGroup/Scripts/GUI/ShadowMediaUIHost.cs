@@ -277,9 +277,11 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingPainterShadow(m_PanelDictionary[ImageProcesserType.PainterShadow.ToString()]);
         this.CreateUIsImageporcessingParticle3D(m_PanelDictionary[ImageProcesserType.Particle3D.ToString()]);
 
+        this.CreateUIsImageporcessingTanakaTest(m_PanelDictionary[ImageProcesserType.TanakaTest.ToString()]);
+
     }
 
-    
+
 
     public void ChangeGeneralSettingOptionTo(int number)
     {
@@ -418,6 +420,10 @@ public class ShadowMediaUIHost : MonoBehaviour
             case ImageProcesserType.Particle3D:
                 changeTo.Add(new Particle3D());
                 break;
+            case ImageProcesserType.TanakaTest:
+                changeTo.Add(new TanakaTest());
+                break;
+
             case ImageProcesserType.CellAutomaton:
                 break;
 
@@ -1079,6 +1085,20 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "TimeDelay_bgd_R", 255, 0, 0);
         AddFloatUI(parent, "TimeDelay_bgd_G", 255, 0, 0);
         AddFloatUI(parent, "TimeDelay_bgd_B", 255, 0, 0);
+    }
+    private void CreateUIsImageporcessingTanakaTest(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "TanakaTest_DelayTime", 1000, 0, 0);
+        AddBooleanUI(parent, "DelayTime_Random", false);
+        m_lastUpdatedHeight += 10;
+        AddFloatUI(parent, "RandMax_NextDC", 1000, 0, 500);
+        AddFloatUI(parent, "RandMin_NextRandTime", 1000, 0, 50);
+        AddFloatUI(parent, "RandMax_NextRandTime", 1000, 0, 300);
+        AddFloatUI(parent, "pitchnum", 50, 1, 10);
+
+
+
     }
 
     private void CreateUIsImageporcessingSecondDelay(GameObject parent)
