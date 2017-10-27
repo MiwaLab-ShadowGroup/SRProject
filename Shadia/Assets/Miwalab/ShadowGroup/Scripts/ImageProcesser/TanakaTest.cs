@@ -14,7 +14,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private int ListMax = 1000;
         private int DelayCounter;
         private int NextDelayCounter;
-        private int OldDelayCounter;
+        private int OldDelayCounter;  //処理用
+        private int pOldDelayCounter; //ピッチ計算用
         private int pitch;
         private int pitchnum = 10;
         private int NextRandTime = 200;
@@ -25,14 +26,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private bool DT_random;
 
-        Queue<Mat> queue;
         List<Mat> list;
+        
 
         public TanakaTest()
             :base()
         {
             DelayCounter = 100;
-            this.queue = new Queue<Mat>();
             this.list = new List<Mat>();
 
             (ShadowMediaUIHost.GetUI("TanakaTest_DelayTime") as ParameterSlider).ValueChanged += TanakaTest_DelayTime;
@@ -82,11 +82,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         //継承抽象メンバーImageProcess(ref Mat src, ref Mat dst)
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
+           // dst = new Mat();
             this.Update(ref src, ref dst);
         }
 
         private void Update(ref Mat src, ref Mat dst)
         {
+           
+
             Mat item = new Mat();
             src.CopyTo(item); //srcをitemにコピー
 
@@ -98,18 +101,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 this.list.RemoveAt(ListMax - 1);
             }
 
-            ////自動送りテスト
-            //if (DT_random)
-            //{
-            //    if (0 < DelayCounter && DelayCounter < ListMax)
-            //    {
-            //        DelayCounter = DelayCounter - 10;
-            //    }
-            //    if (DelayCounter >= ListMax)
-            //    {
-            //        DelayCounter = ListMax;
-            //    }
-            //}
+
 
             //ランダムテスト
             if (DT_random)
@@ -131,28 +123,38 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
                 if (RandCounter / NextRandTime > 0) //一定時間たったら新しい遅れ時間を用意
                 {
-                    OldDelayCounter = DelayCounter;
+                    pOldDelayCounter = DelayCounter;
                     System.Random randNDC = new System.Random(); //NextRandCounter用乱数
                     NextDelayCounter = randNDC.Next(0, RandMaxNDC);
                     System.Random randNRT = new System.Random(); //NextRandTime用乱数
                     NextRandTime = randNRT.Next(RandMinNRT, RandMaxNRT);
                     RandCounter = 0;
-                    pitch = Math.Abs(NextDelayCounter - OldDelayCounter) / pitchnum; //刻み．間に10枚くらい挟む
+                    pitch = Math.Abs(NextDelayCounter - pOldDelayCounter) / pitchnum; //刻み．間に10枚くらい挟む
                 }
             }
 
-
-            if (DelayCounter > 0) //遅れがあるとき
+            if (DelayCounter > 0)
             {
-                dst = list[DelayCounter - 1];
+                //dst = list[DelayCounter - 1]; //これだけだとちらつく
+                 
+                if (OldDelayCounter > DelayCounter) //場合分けの中身同じだけどこうするとちらつかない
+                {
+                    dst = list[DelayCounter - 1];
+                }
+                if (OldDelayCounter < DelayCounter)
+                {
+                    dst = list[DelayCounter - 1];
+                }
+                OldDelayCounter = DelayCounter;
             }
-            //else if (DelayCounter == 0) //遅れなしのとき，dst=src(item)
+
+            //if (DelayCounter > 0) //遅れがあるとき
             //{
-            //    dst = item;
+            //    dst = list[DelayCounter - 1];
             //}
 
-            UnityEngine.Debug.Log(DelayCounter);
-            UnityEngine.Debug.Log(NextDelayCounter);
+            UnityEngine.Debug.Log(OldDelayCounter);
+            //UnityEngine.Debug.Log(NextDelayCounter);
 
 
         }
