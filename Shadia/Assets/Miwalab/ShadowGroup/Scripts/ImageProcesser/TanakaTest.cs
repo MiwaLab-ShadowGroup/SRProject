@@ -14,7 +14,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private int ListMax = 1000;
         private int DelayCounter;
         private int NextDelayCounter;
-        private int OldDelayCounter;  //処理用
+        //private int OldDelayCounter;  //処理用
         private int pOldDelayCounter; //ピッチ計算用
         private int pitch;
         private int pitchnum = 10;
@@ -82,7 +82,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         //継承抽象メンバーImageProcess(ref Mat src, ref Mat dst)
         public override void ImageProcess(ref Mat src, ref Mat dst)
         {
-           // dst = new Mat();
             this.Update(ref src, ref dst);
         }
 
@@ -135,28 +134,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             if (DelayCounter > 0)
             {
-                //dst = list[DelayCounter - 1]; //これだけだとちらつく
-                 
-                if (OldDelayCounter > DelayCounter) //場合分けの中身同じだけどこうするとちらつかない
-                {
-                    dst = list[DelayCounter - 1];
-                }
-                if (OldDelayCounter < DelayCounter)
-                {
-                    dst = list[DelayCounter - 1];
-                }
-                OldDelayCounter = DelayCounter;
+                Mat newitem = new Mat();
+                newitem = list[DelayCounter - 1]; //ちらつかなくなった！
+                newitem.CopyTo(dst);
             }
+            
+            //UnityEngine.Debug.Log(DelayCounter);
 
-            //if (DelayCounter > 0) //遅れがあるとき
-            //{
-            //    dst = list[DelayCounter - 1];
-            //}
-
-            UnityEngine.Debug.Log(OldDelayCounter);
-            //UnityEngine.Debug.Log(NextDelayCounter);
-
-
+            
         }
 
         public override string ToString()
