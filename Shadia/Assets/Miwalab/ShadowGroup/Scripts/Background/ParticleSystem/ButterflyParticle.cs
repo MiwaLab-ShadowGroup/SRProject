@@ -81,7 +81,7 @@ public class ButterflyParticle : AParticle
         this.MeshSetup();
         this.MoveSetup();
 
-        MoveRate = 30;
+        //MoveRate = 30;
         (ShadowMediaUIHost.GetUI("MoveRate") as ParameterSlider).ValueChanged += MoveRate_ValueChanged;
 
     }
@@ -114,7 +114,7 @@ public class ButterflyParticle : AParticle
         }
 
         this.meshRenderer.material.SetColor("_Color", color);
-        var vec = new Vector3(UnityEngine.Random.value * MoveRate - MoveRate/2, UnityEngine.Random.value * MoveRate - MoveRate/2, UnityEngine.Random.value * MoveRate - MoveRate/2);
+        var vec = new Vector3(UnityEngine.Random.value * 30 - 15, UnityEngine.Random.value * 30 - 15, UnityEngine.Random.value * 30 - 15);
         this.rigidBody.AddForce(vec);
         this.rigidBody.AddTorque(0, UnityEngine.Random.value * 10 - 5, 0);
     }

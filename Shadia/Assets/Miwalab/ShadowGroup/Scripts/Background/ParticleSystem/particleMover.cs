@@ -40,17 +40,18 @@ namespace Miwalab.ShadowGroup.Background.ParticleSystem
             _position.z = _RHAngle.x * Mathf.Sin(_RHAngle.z);
             _position.y = _RHAngle.y;
             this.transform.localPosition = _position;
+
         }
 
         private void reset()
         {
-            if(_RHAngle.y < -2.0f)
+            if(_RHAngle.y < -1.5f)
             {
-                _RHAngle.y += 4.0f;
+                _RHAngle.y += 3.0f;
             }
-            if (_RHAngle.y >2.0f)
+            if (_RHAngle.y >1.5f)
             {
-                _RHAngle.y -= 4.0f;
+                _RHAngle.y -= 3.0f;
             }
 
             if (_RHAngle.x < -6.0f)

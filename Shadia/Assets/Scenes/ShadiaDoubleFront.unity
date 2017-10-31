@@ -6832,10 +6832,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _particleOriginal: {fileID: 1370743575764908, guid: af28dfd689d565a4b9bf61adda50923a,
     type: 2}
+  KinectImporter: {fileID: 903384246}
   _num: 20
   _particleObjects: []
   _particleShadowScripts: []
   _scale: {x: 0.05, y: 0.05, z: 0.05}
+  _acceralate: {x: 0, y: 0, z: 0}
   _HumanVelList_X: []
   _HumanVelList_Y: []
   PreHumanCount: 0

@@ -23,6 +23,7 @@ public class KinectImporter : ASensorImporter
 
     public DepthSourceManager _depthManager;
     public BodySourceManager _bodyManager;
+    public BodyFrameReader _bodyframeReader;
     private KinectSensor m_sensor;
     private ushort[] m_depthData;
     public ushort[] m_SaveDepth;
@@ -75,10 +76,12 @@ public class KinectImporter : ASensorImporter
 
     #endregion
 
+    public Body[] bodydata;
+
     // Use this for initialization
     void Start()
     {
-        if (this.RSIM == null) return;
+        //if (this.RSIM == null) return;
         this.InitializeNetwork();
         this.InitializeField();
         m_sensor = KinectSensor.GetDefault();
@@ -94,13 +97,36 @@ public class KinectImporter : ASensorImporter
                 m_frameDescription = m_sensor.DepthFrameSource.FrameDescription;
                 m_depthFrameSource = m_sensor.DepthFrameSource;
                 this.m_mat = new Mat(new Size(m_frameDescription.Width, m_frameDescription.Height), this.m_matType);
-                this.m_mat3DObjectsRendered = m_mat.Clone(); 
+                this.m_mat3DObjectsRendered = m_mat.Clone();
+
+
+                _bodyframeReader = m_sensor.BodyFrameSource.OpenReader();
+                _bodyframeReader.FrameArrived += _bodyframeReader_FrameArrived;
             }
             m_cameraSpacePoints = new CameraSpacePoint[m_frameDescription.Width * m_frameDescription.Height];
         }
         m_readdata = ReadData.GetComponent<ReadData>();
         //this.Colorimagemat = new Mat(1080, 1920, MatType.CV_8UC3, colors);
 
+        //_bodyManager = new BodySourceManager();
+    }
+
+    private void _bodyframeReader_FrameArrived(object sender, BodyFrameArrivedEventArgs e)
+    {
+        using (var bodyFrame = e.FrameReference.AcquireFrame())
+        {
+            if (bodyFrame == null)
+            {
+                //Debug.Log("null");
+                return;
+            }
+
+            this.bodydata = new Body[this.m_sensor.BodyFrameSource.BodyCount]; //bodycountに骨格情報の数
+
+            // ボディデータを取得する
+            bodyFrame.GetAndRefreshBodyData(bodydata);
+
+        }
     }
 
     private void InitializeField()
@@ -155,6 +181,7 @@ public class KinectImporter : ASensorImporter
         m_depthData = _depthManager.GetData();
         m_SaveDepth = m_depthData;
         //this.colordata = _colormanager.GetColorData();
+
 
         if (IsArchive)
         {

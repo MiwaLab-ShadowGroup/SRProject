@@ -7,12 +7,14 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using UnityEngine;
+using Windows.Kinect;
+
 
 public class particle3DShadow : MonoBehaviour
 {
 
-
     public GameObject _particleOriginal;
+    public GameObject KinectImporter;
 
     public int _num;
 
@@ -21,6 +23,10 @@ public class particle3DShadow : MonoBehaviour
 
     public Vector3 _scale;
     public Vector3 _acceralate;
+
+    public Vector3 vell0;
+    public Vector3 vell1;
+    public Vector3 vell2;
 
     public float[] _HumanVelList_X;
     public float[] _HumanVelList_Y;
@@ -46,6 +52,21 @@ public class particle3DShadow : MonoBehaviour
     private string CIPCServerIP;
     private int CIPCServerPort;
 
+    private KinectSensor sensor;
+    KinectImporter _kinectimporter;
+    Body[] bodydata;
+    List<Body> trackedBodyData;
+
+
+Windows.Kinect.Joint joint;
+    Vector3 preframe_spinebase;
+    Vector3 preframe_lefthand;
+    Vector3 preframe_righthand;
+
+    int separate;
+
+    private JointType _jointtype;
+
 
     // Use this for initialization
     void Start()
@@ -59,13 +80,18 @@ public class particle3DShadow : MonoBehaviour
         _threadManager = ThreadHost.GetInstance();
         _threadManager.CreateNewThread(new ContinuouslyThread(this.receiveMethod), RECEIVEID.TAG);
         _threadManager.ThreadStart(RECEIVEID.TAG);
-        _num = 1500;
+        _num = 800;
         (ShadowMediaUIHost.GetUI("PRT3D_CIPCServerConnect") as ParameterButton).Clicked += NetworkConnect;
         (ShadowMediaUIHost.GetUI("PRT3D_3DObjectControlReceive") as ParameterCheckbox).ValueChanged += SetIsReceive;
         (ShadowMediaUIHost.GetUI("PRT3D_CIPCServerPort") as ParameterText).m_valueText.text = "12000";
 
-        _acceralate.x = 0.05f;
+        //_acceralate.x = 0.05f;
 
+        _kinectimporter = KinectImporter.GetComponent<KinectImporter>();
+
+        preframe_spinebase = new Vector3(0, 0, 0);
+        preframe_lefthand = new Vector3(0, 0, 0);
+        preframe_righthand = new Vector3(0, 0, 0);
     }
 
     private void SetIsReceive(object sender, EventArgs e)
@@ -156,18 +182,91 @@ public class particle3DShadow : MonoBehaviour
             this.ChangeIDs();
         }
 
-        for (int i = 0; i < this._particleShadowScripts.Count; ++i)
+
+        if(_kinectimporter.bodydata != null)
         {
-            var target = this._particleShadowScripts[i];
+            bodydata = new Body[20];
+            trackedBodyData = new List<Body>(); 
 
-            target.AddForce(_acceralate);
+            bodydata = _kinectimporter.bodydata;
 
-            
-            //_particleShadowScripts[i]._RHAngleacc = _acceralate;
-            //target.AddForce(_HumanVelList_X[target.ID], _HumanVelList_Y[target.ID]);
+            //List<int> taglist = new List<int>();
+
+            //データがあるところだけ抜き出す
+            for (int j = 0; j < bodydata.Length; j++)
+            {
+                if (bodydata[j].Joints[JointType.SpineBase].Position.Z != 0)
+                {
+                    //taglist.Add(j);
+                    trackedBodyData.Add(bodydata[j]);
+                }
+            }
+            int Humannum = trackedBodyData.Count;
+
+            //Debug.Log(Humannum);
+
+            if (Humannum == 0) return;
+
+            //それぞれの粒子の動きを決める
+            for (int i = 0; i < this._particleShadowScripts.Count; ++i)
+            {
+                var target = this._particleShadowScripts[i];
+
+                int humantag = i % Humannum;
+
+                //separate = i % 3;
+                separate = 0;
+
+                switch (separate)
+                {
+                    case 0:
+
+                        vell0.x = trackedBodyData[humantag].Joints[JointType.SpineBase].Position.Z * 0.05f; //- preframe_spinebase.x;
+                        vell0.y = trackedBodyData[humantag].Joints[JointType.SpineBase].Position.Y * 0.05f; //- preframe_spinebase.y;
+                        vell0.z = trackedBodyData[humantag].Joints[JointType.SpineBase].Position.X * 0.05f; //- preframe_spinebase.z;
+                                                             
+                        target.AddForce(vell0);
+
+                        //Debug.Log(vell0.x);
+                        break;
+                    case 1:
+
+                        vell1.x = trackedBodyData[humantag].Joints[JointType.HandLeft].Position.Z * 0.05f;//- preframe_lefthand.x;
+                        vell1.y = trackedBodyData[humantag].Joints[JointType.HandLeft].Position.Y * 0.05f;// preframe_lefthand.y;
+                        vell1.z = trackedBodyData[humantag].Joints[JointType.HandLeft].Position.X * 0.05f;//- preframe_lefthand.z;
+
+                        target.AddForce(vell1);
+
+                        break;
+                    case 2:
+
+                        vell2.x = trackedBodyData[humantag].Joints[JointType.HandRight].Position.Z * 0.05f;// - preframe_righthand.x;
+                        vell2.y = trackedBodyData[humantag].Joints[JointType.HandRight].Position.Y * 0.05f;// - preframe_righthand.y;
+                        vell2.z = trackedBodyData[humantag].Joints[JointType.HandRight].Position.X * 0.05f;// - preframe_righthand.z;
+
+                        target.AddForce(vell2);
+
+                        break;
+
+                }
+                
+                target.AddForce(_acceralate);
+
+                //_particleShadowScripts[i]._RHAngleacc = _acceralate;
+                //target.AddForce(_HumanVelList_X[target.ID], _HumanVelList_Y[target.ID]);
+            }
+
+            preframe_spinebase = vell0;
+            preframe_lefthand = vell1;
+            preframe_righthand = vell2;
+
+            //Debug.Log(bodydata[0].Joints[JointType.SpineBase].Position.X);
         }
-
-
+        else
+        {
+            Debug.Log("null");
+        }
+        
     }
     private void ChangeIDs()
     {
