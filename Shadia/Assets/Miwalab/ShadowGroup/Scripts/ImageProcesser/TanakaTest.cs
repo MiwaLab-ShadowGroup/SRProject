@@ -19,29 +19,40 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private int pitch;
         private int pitchnum = 10;
         private int NextRandTime = 200;
-        private int RandCounter;
+        private int RandCounter = 0;
         private int RandMaxNDC = 500;
         private int RandMaxNRT = 300;
         private int RandMinNRT = 50;
 
         private bool DT_random;
+        private bool jikken;
+
+        private int framecount;
+        private float nexttime;
 
         List<Mat> list;
-        
 
         public TanakaTest()
             :base()
         {
-            DelayCounter = 100;
+            nexttime = Time.time + 1;
             this.list = new List<Mat>();
 
             (ShadowMediaUIHost.GetUI("TanakaTest_DelayTime") as ParameterSlider).ValueChanged += TanakaTest_DelayTime;
             (ShadowMediaUIHost.GetUI("TanakaTest_DelayTime") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("DelayTime_Random") as ParameterCheckbox).ValueChanged += DelayTime_Random;
+            (ShadowMediaUIHost.GetUI("Jikken") as ParameterCheckbox).ValueChanged += TanakaTest_Jikken;
+
             (ShadowMediaUIHost.GetUI("RandMax_NextDC") as ParameterSlider).ValueChanged += TanakaTest_RandMaxNDC;
             (ShadowMediaUIHost.GetUI("RandMin_NextRandTime") as ParameterSlider).ValueChanged += TanakaTest_RandMinNRT;
             (ShadowMediaUIHost.GetUI("RandMax_NextRandTime") as ParameterSlider).ValueChanged += TanakaTest_RandMaxNRT;
             (ShadowMediaUIHost.GetUI("pitchnum") as ParameterSlider).ValueChanged += TanakaTest_pitchnum;
+
+        }
+
+        private void TanakaTest_Jikken(object sender, EventArgs e)
+        {
+            this.jikken = (e as ParameterCheckbox.ChangedValue).Value;
 
         }
 
@@ -87,12 +98,19 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void Update(ref Mat src, ref Mat dst)
         {
-           
+            framecount++;
+            if (Time.time >= nexttime)
+            {
+                Debug.Log("FPS:" + framecount);
+                framecount = 0;
+                nexttime += 1;
+            }
+
 
             Mat item = new Mat();
             src.CopyTo(item); //srcをitemにコピー
 
-            //リストでやるやつ
+            //リスト
             this.list.Insert(0, item); //リストの先頭にitemを追加
 
             if (list.Count > ListMax) //リストがListMaxを超えたら古いもの(末尾)から削除
@@ -100,9 +118,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 this.list.RemoveAt(ListMax - 1);
             }
 
+            //実験専用
+            if (jikken)
+            {
+                RandCounter++;
+                if (RandCounter >= 100)
+                {
+                    DelayCounter=DelayCounter+10;
+                    RandCounter = 0;
+                }
+            }
 
-
-            //ランダムテスト
             if (DT_random)
             {
                 if (NextDelayCounter - 10 <= DelayCounter && DelayCounter <= NextDelayCounter + 10)
@@ -139,9 +165,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 newitem.CopyTo(dst);
             }
             
-            //UnityEngine.Debug.Log(DelayCounter);
-
-            
+            UnityEngine.Debug.Log(DelayCounter);
         }
 
         public override string ToString()

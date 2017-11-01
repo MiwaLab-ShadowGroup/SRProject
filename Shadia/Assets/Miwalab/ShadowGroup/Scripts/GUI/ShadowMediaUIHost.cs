@@ -1090,6 +1090,7 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "TanakaTest_DelayTime", 1000, 0, 0);
+        AddBooleanUI(parent, "Jikken", false);
         AddBooleanUI(parent, "DelayTime_Random", false);
         m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "RandMax_NextDC", 1000, 0, 500);
