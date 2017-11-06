@@ -6,6 +6,7 @@ using System.Threading;
 using OpenCvSharp.CPlusPlus;
 using OpenCvSharp;
 using UnityEngine;
+using System.IO;
 
 namespace Miwalab.ShadowGroup.ImageProcesser
 {
@@ -33,13 +34,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private int framecount;
         private float nexttime;
 
-        List<Mat> list;
+        private float DelayTime;
 
+        private string FileName;
+
+        List<Mat> list;
+        
         public TanakaTest()
             :base()
         {
             nexttime = Time.time + 1;
             this.list = new List<Mat>();
+
+            FileName = DateTime.Now.ToString("yy_MM_dd_HH_mm_ss");
+            DataSave("Time,fps,DelayCounter,DelayTime");
 
             (ShadowMediaUIHost.GetUI("TanakaTest_DelayTime") as ParameterSlider).ValueChanged += TanakaTest_DelayTime;
             (ShadowMediaUIHost.GetUI("TanakaTest_DelayTime") as ParameterSlider).ValueUpdate();
@@ -53,6 +61,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         }
 
+        //UI関連
+        #region
         private void TanakaTest_Jikken(object sender, EventArgs e)
         {
             this.jikken = (e as ParameterCheckbox.ChangedValue).Value;
@@ -92,6 +102,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             DelayCounter = (int)(e as ParameterSlider.ChangedValue).Value;
         }
+        #endregion
 
         //継承抽象メンバーImageProcess(ref Mat src, ref Mat dst)
         public override void ImageProcess(ref Mat src, ref Mat dst)
@@ -101,16 +112,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void Update(ref Mat src, ref Mat dst)
         {
-            framecount++;
-            if (Time.time >= nexttime)
-            {
-                Debug.Log("FPS1:" + framecount);
-                framecount = 0;
-                nexttime += 1;
-                fps2 = Mathf.Round(1f / Time.deltaTime);
-                Debug.Log("FPS2:" + fps2);
-            }
+            //framecount++;
+            //if (Time.time >= nexttime)
+            //{
+            //    Debug.Log("FPS1:" + framecount);
+            //    framecount = 0;
+            //    nexttime += 1;
+                
+            //    Debug.Log("FPS2:" + fps2);
+            //}
 
+            fps2 = Mathf.Round(1f / Time.deltaTime);
 
             Mat item = new Mat();
             src.CopyTo(item); //srcをitemにコピー
@@ -165,21 +177,35 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 }
             }
 
-
             if (DelayCounter > 0)
             {
                 Mat newitem = new Mat();
                 newitem = list[DelayCounter - 1];
                 newitem.CopyTo(dst);
             }
-            UnityEngine.Debug.Log("NDC:" + NextDelayCounter);
 
-            UnityEngine.Debug.Log("DC:" + DelayCounter);
+            DelayTime = DelayCounter / fps2;
+
+            ////csv書き込み
+            //DelayTime = DelayCounter / fps2;
+            //StreamWriter sw = new StreamWriter(Application.dataPath + "/csvData/" + FileName + ".csv", true);
+            //sw.WriteLine(Time.time + "," + fps2 + "," + DelayCounter + "," + DelayTime);
+            //sw.Flush();
+            //sw.Close();
+            DataSave(Time.time + "," + fps2 + "," + DelayCounter + "," + DelayTime);
         }
 
         public override string ToString()
         {
             return "TanakaTest";
+        }
+
+        public void DataSave(string txt)
+        {
+            StreamWriter sw = new StreamWriter(Application.dataPath + "/csvData/" + FileName + ".csv", true);
+            sw.WriteLine(txt);
+            sw.Flush();
+            sw.Close();
         }
 
         //継承抽象メンバーgetImageProcesserType()
