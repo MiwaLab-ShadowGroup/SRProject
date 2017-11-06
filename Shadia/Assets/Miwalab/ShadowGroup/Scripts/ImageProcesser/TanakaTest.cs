@@ -11,6 +11,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 {
     public class TanakaTest : AShadowImageProcesser
     {
+        private float fps2;
+
         private int ListMax = 1000;
         private int DelayCounter;
         private int NextDelayCounter;
@@ -26,6 +28,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private bool DT_random;
         private bool jikken;
+        private bool DT_rand2;
 
         private int framecount;
         private float nexttime;
@@ -101,9 +104,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             framecount++;
             if (Time.time >= nexttime)
             {
-                Debug.Log("FPS:" + framecount);
+                Debug.Log("FPS1:" + framecount);
                 framecount = 0;
                 nexttime += 1;
+                fps2 = Mathf.Round(1f / Time.deltaTime);
+                Debug.Log("FPS2:" + fps2);
             }
 
 
@@ -131,21 +136,23 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             if (DT_random)
             {
-                if (NextDelayCounter - 10 <= DelayCounter && DelayCounter <= NextDelayCounter + 10)
-                {
-                    DelayCounter = NextDelayCounter;
-                }
-                else if (NextDelayCounter < DelayCounter)
-                {
-                    DelayCounter = DelayCounter - pitch;
-                }
-                else if (NextDelayCounter > DelayCounter)
-                {
-                    DelayCounter = DelayCounter + pitch;
-                }
-
                 RandCounter++;
 
+                if (RandCounter % 50 == 0)
+                {
+                    if (NextDelayCounter - 10 <= DelayCounter && DelayCounter <= NextDelayCounter + 10)
+                    {
+                        DelayCounter = NextDelayCounter;
+                    }
+                    else if (NextDelayCounter < DelayCounter)
+                    {
+                        DelayCounter = DelayCounter - pitch;
+                    }
+                    else if (NextDelayCounter > DelayCounter)
+                    {
+                        DelayCounter = DelayCounter + pitch;
+                    }
+                }
                 if (RandCounter / NextRandTime > 0) //一定時間たったら新しい遅れ時間を用意
                 {
                     pOldDelayCounter = DelayCounter;
@@ -158,14 +165,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 }
             }
 
+
             if (DelayCounter > 0)
             {
                 Mat newitem = new Mat();
-                newitem = list[DelayCounter - 1]; //ちらつかなくなった！
+                newitem = list[DelayCounter - 1];
                 newitem.CopyTo(dst);
             }
-            
-            UnityEngine.Debug.Log(DelayCounter);
+            UnityEngine.Debug.Log("NDC:" + NextDelayCounter);
+
+            UnityEngine.Debug.Log("DC:" + DelayCounter);
         }
 
         public override string ToString()
