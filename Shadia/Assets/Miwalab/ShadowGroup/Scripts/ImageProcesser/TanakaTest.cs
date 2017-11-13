@@ -12,7 +12,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 {
     public class TanakaTest : AShadowImageProcesser
     {
-        private float fps2;
+        private float fps;
 
         private int ListMax = 1000;
         private int DelayCounter;
@@ -47,7 +47,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.list = new List<Mat>();
 
             FileName = DateTime.Now.ToString("yy_MM_dd_HH_mm_ss");
-            DataSave("Time,fps,DelayCounter,DelayTime");
+            //DataSave("Time,fps,DelayCounter,DelayTime");
 
             (ShadowMediaUIHost.GetUI("TanakaTest_DelayTime") as ParameterSlider).ValueChanged += TanakaTest_DelayTime;
             (ShadowMediaUIHost.GetUI("TanakaTest_DelayTime") as ParameterSlider).ValueUpdate();
@@ -112,17 +112,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         private void Update(ref Mat src, ref Mat dst)
         {
-            //framecount++;
-            //if (Time.time >= nexttime)
-            //{
-            //    Debug.Log("FPS1:" + framecount);
-            //    framecount = 0;
-            //    nexttime += 1;
-                
-            //    Debug.Log("FPS2:" + fps2);
-            //}
-
-            fps2 = Mathf.Round(1f / Time.deltaTime);
+            framecount++;
+            if (Time.time >= nexttime)
+            {
+                fps = framecount;
+                framecount = 0;
+                nexttime += 1;
+            }
 
             Mat item = new Mat();
             src.CopyTo(item); //srcをitemにコピー
@@ -150,7 +146,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             {
                 RandCounter++;
 
-                if (RandCounter % 50 == 0)
+                if (RandCounter % 10 == 0)
                 {
                     if (NextDelayCounter - 10 <= DelayCounter && DelayCounter <= NextDelayCounter + 10)
                     {
@@ -158,13 +154,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     }
                     else if (NextDelayCounter < DelayCounter)
                     {
-                        DelayCounter = DelayCounter - pitch;
+                        DelayCounter = DelayCounter - pitchnum;
                     }
                     else if (NextDelayCounter > DelayCounter)
                     {
-                        DelayCounter = DelayCounter + pitch;
+                        DelayCounter = DelayCounter + pitchnum;
                     }
                 }
+
                 if (RandCounter / NextRandTime > 0) //一定時間たったら新しい遅れ時間を用意
                 {
                     pOldDelayCounter = DelayCounter;
@@ -173,7 +170,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     System.Random randNRT = new System.Random(); //NextRandTime用乱数
                     NextRandTime = randNRT.Next(RandMinNRT, RandMaxNRT);
                     RandCounter = 0;
-                    pitch = Math.Abs(NextDelayCounter - pOldDelayCounter) / pitchnum; //刻み．間に10枚くらい挟む
+                    //pitch = Math.Abs(NextDelayCounter - pOldDelayCounter) / pitchnum; //刻み．間に10枚くらい挟む
                 }
             }
 
@@ -184,15 +181,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 newitem.CopyTo(dst);
             }
 
-            DelayTime = DelayCounter / fps2;
-
-            ////csv書き込み
-            //DelayTime = DelayCounter / fps2;
-            //StreamWriter sw = new StreamWriter(Application.dataPath + "/csvData/" + FileName + ".csv", true);
-            //sw.WriteLine(Time.time + "," + fps2 + "," + DelayCounter + "," + DelayTime);
-            //sw.Flush();
-            //sw.Close();
-            DataSave(Time.time + "," + fps2 + "," + DelayCounter + "," + DelayTime);
+            DelayTime = DelayCounter / fps;
+            Debug.Log("DC"+DelayCounter);
+            Debug.Log("NDC" + NextDelayCounter);
+            Debug.Log("pitchnum"+pitchnum);
+            //DataSave(Time.time + "," + fps + "," + DelayCounter + "," + DelayTime);
         }
 
         public override string ToString()
@@ -202,7 +195,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         public void DataSave(string txt)
         {
-            StreamWriter sw = new StreamWriter(Application.dataPath + "/csvData/" + FileName + ".csv", true);
+            StreamWriter sw;
+            FileInfo fi;
+            fi = new FileInfo(Application.dataPath + "/tanaka/csvData/" + FileName + ".csv");
+            sw = fi.AppendText();
             sw.WriteLine(txt);
             sw.Flush();
             sw.Close();

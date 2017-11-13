@@ -1096,7 +1096,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "RandMax_NextDC", 1000, 0, 500);
         AddFloatUI(parent, "RandMin_NextRandTime", 1000, 0, 250);
         AddFloatUI(parent, "RandMax_NextRandTime", 1000, 0, 250);
-        AddFloatUI(parent, "pitchnum", 50, 1, 10);
+        AddFloatUI(parent, "pitchnum", 50, 1, 1);
 
 
 
