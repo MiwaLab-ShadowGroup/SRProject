@@ -1090,17 +1090,23 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "TanakaTest_DelayTime", 1000, 0, 0);
+
         m_lastUpdatedHeight += 10;
         //AddBooleanUI(parent, "Jikken", false);
         //m_lastUpdatedHeight += 10;
+        AddFloatUI(parent, "PitchTime", 20, 2, 2);
+        AddFloatUI(parent, "PitchFrame", 3, 1, 1);
+
+        m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "DelayTime_Random", false);
         AddFloatUI(parent, "RandMax_NextDC", 1000, 0, 500);
         AddFloatUI(parent, "RandMin_NextRandTime", 1000, 0, 250);
         AddFloatUI(parent, "RandMax_NextRandTime", 1000, 0, 250);
-        AddFloatUI(parent, "Rand_PitchTime", 20, 1, 5);
-        AddFloatUI(parent, "Rand_PitchFrame", 3, 1, 1);
+
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent,"DelayTime_Interactive", false);
+        AddFloatUI(parent, "Int_Thresh", 30, 5, 15);
+        AddFloatUI(parent, "Int_pitchDC", 50, 5, 20);
 
 
     }

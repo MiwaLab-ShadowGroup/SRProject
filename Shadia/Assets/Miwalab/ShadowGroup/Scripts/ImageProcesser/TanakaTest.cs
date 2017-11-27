@@ -40,11 +40,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private int CountWhite;
         private int CountWhiteNow;
         private int sumCW = 0;
-        private float AveCW;
+        private int AveCW;
         private int CWcount;
-        private int CWcountMax = 100;
+        private int CWcountMax = 90;
         private float WhitePercent;
-        private float OldWhitePercent = 0;
+        private float OldAveCW = 0;
+
+        private int Thresh;
+        private float pitchDC;
+        private float a;
         List<Mat> list;
        
         
@@ -58,7 +62,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             Application.targetFrameRate = 30;
 
             FileName = DateTime.Now.ToString("yy_MM_dd_HH_mm_ss");
-            //DataSave("Time,fps,PitchT,PitchF,DelayCounter,DelayTime");
+            //DataSave("Time, fps, PitchT, PitchF, AveCW, Threshold, NextDelayCounter, DelayCounter, DelayTime");
 
             (ShadowMediaUIHost.GetUI("DelayTime_Interactive") as ParameterCheckbox).ValueChanged += TanakaTest_Interactive;
             (ShadowMediaUIHost.GetUI("TanakaTest_DelayTime") as ParameterSlider).ValueChanged += TanakaTest_DelayTime;
@@ -68,15 +72,24 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("RandMax_NextDC") as ParameterSlider).ValueChanged += TanakaTest_RandMaxNDC;
             (ShadowMediaUIHost.GetUI("RandMin_NextRandTime") as ParameterSlider).ValueChanged += TanakaTest_RandMinNRT;
             (ShadowMediaUIHost.GetUI("RandMax_NextRandTime") as ParameterSlider).ValueChanged += TanakaTest_RandMaxNRT;
-            (ShadowMediaUIHost.GetUI("Rand_PitchFrame") as ParameterSlider).ValueChanged += TanakaTest_PitchF;
-            (ShadowMediaUIHost.GetUI("Rand_PitchTime") as ParameterSlider).ValueChanged += TanakaTest_PitchT;
+            (ShadowMediaUIHost.GetUI("PitchFrame") as ParameterSlider).ValueChanged += TanakaTest_PitchF;
+            (ShadowMediaUIHost.GetUI("PitchTime") as ParameterSlider).ValueChanged += TanakaTest_PitchT;
+            (ShadowMediaUIHost.GetUI("Int_Thresh") as ParameterSlider).ValueChanged += TanakaTest_Thresh;
+            (ShadowMediaUIHost.GetUI("Int_pitchDC") as ParameterSlider).ValueChanged += TanakaTest_pitchDC;
         }
-
-
-
 
         //UI関連
         #region
+        private void TanakaTest_pitchDC(object sender, EventArgs e)
+        {
+            pitchDC = (int)(e as ParameterSlider.ChangedValue).Value;
+        }
+
+        private void TanakaTest_Thresh(object sender, EventArgs e)
+        {
+            Thresh = (int)(e as ParameterSlider.ChangedValue).Value;
+        }
+
         private void TanakaTest_Interactive(object sender, EventArgs e)
         {
             this.DT_interactive = (e as ParameterCheckbox.ChangedValue).Value;
@@ -157,51 +170,22 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             if (DT_random) RandomDelayCounter();
 
             //身体に合わせるやつ
-            if (DT_interactive)
-            {
-                CWcount++;
-                CountWhiteNow = Cv2.CountNonZero(Cv2.Split(list[0])[0]); //現在画像の白の数
-                sumCW = sumCW + CountWhiteDiff(0, 1);
-
-                if (CWcount >= CWcountMax)
-                {
-                    OldWhitePercent = WhitePercent;
-                    AveCW = sumCW / CWcountMax;
-                    WhitePercent = (AveCW / CountWhiteNow) * 100;
-                    //Debug.Log("AveCW:" + AveCW);
-                    //Debug.Log("CWnow:" + CountWhiteNow);
-                    Debug.Log("OWP:" + OldWhitePercent);
-                    Debug.Log("WP:" + WhitePercent);
-                    sumCW = 0;
-                    CWcount = 0;
-                }
-
-                if (CWcount % PitchT == 0)
-                {
-                    if (WhitePercent <= OldWhitePercent)//前より減った
-                    {
-                        DelayCounter = DelayCounter - PitchF;
-                    }
-                    else if (WhitePercent > OldWhitePercent)//前より増えた
-                    {
-                        DelayCounter = DelayCounter + PitchF;
-                    }
-                } 
-            }
+            if (DT_interactive) InteractiveDelayCounter();
 
             if (DelayCounter > 0)
             {
-                Mat newitem = new Mat();
-                newitem = list[DelayCounter - 1];
-                newitem.CopyTo(dst);
-            }
+            Mat newitem = new Mat();
+            newitem = list[DelayCounter - 1];
+            newitem.CopyTo(dst);
+           }
 
             DelayTime = DelayCounter / fps;
 
+            //Debug.Log("aveCW:" + AveCW);
             //Debug.Log("DC:"+ DelayCounter);
             //Debug.Log("NDC:"+ NextDelayCounter);
             Debug.Log("FPS:"+ fps);
-            //DataSave(Time.time + "," + fps + "," + PitchT + "," + PitchF + "," + DelayCounter + "," + DelayTime);
+            //DataSave(Time.time + "," + fps + "," + PitchT + "," + PitchF + "," + AveCW + "," + Thresh + "," + NextDelayCounter + "," + DelayCounter + "," + DelayTime);
         }
 
         public override string ToString()
@@ -221,26 +205,32 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
         }
 
+        //インタラクティブなやつ
+        public void InteractiveDelayCounter()
+        {
+            CWcount++;
+            CountWhiteNow = Cv2.CountNonZero(Cv2.Split(list[0])[0]); //現在画像の白の数
+            sumCW = sumCW + CountWhiteDiff(0, 1);
+
+            if (CWcount >= CWcountMax)
+            {
+                OldAveCW = AveCW;
+                AveCW = sumCW / CWcountMax;
+                sumCW = 0;
+                CWcount = 0;
+
+                SolveNDC(AveCW);
+            }
+
+            ChangeDC(CWcount);
+        }
+
         //ランダム処理
         public void RandomDelayCounter()
         {
             RandCounter++;
 
-            if (RandCounter % PitchT == 0)
-            {
-                if (NextDelayCounter - 5 <= DelayCounter && DelayCounter <= NextDelayCounter + 5)
-                {
-                    DelayCounter = NextDelayCounter;
-                }
-                else if (NextDelayCounter < DelayCounter)
-                {
-                    DelayCounter = DelayCounter - PitchF;
-                }
-                else if (NextDelayCounter > DelayCounter)
-                {
-                    DelayCounter = DelayCounter + PitchF;
-                }
-            }
+            ChangeDC(RandCounter);
 
             if (RandCounter / NextRandTime > 0) //一定時間たったら新しい遅れ時間を用意
             {
@@ -266,6 +256,33 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
         }
         */
+
+        //DC変えるやつ．random，interactive共通
+        public void ChangeDC(int x)
+        {
+            if (x % PitchT == 0)
+            {
+                if (NextDelayCounter - 5 <= DelayCounter && DelayCounter <= NextDelayCounter + 5)
+                {
+                    DelayCounter = NextDelayCounter;
+                }
+                else if (NextDelayCounter < DelayCounter)
+                {
+                    DelayCounter = DelayCounter - (PitchF);
+                }
+                else if (NextDelayCounter > DelayCounter)
+                {
+                    DelayCounter = DelayCounter + PitchF;
+                }
+            }
+        }
+
+        //AveCWからNDCを求めるやつ.interactive
+        public void SolveNDC(int x)
+        {
+            a = pitchDC / 1000f;
+            NextDelayCounter =(int) Math.Round((a * x) - (a * Thresh * 1000));
+        }
 
         //list[x] とlist[x + 1]の差分
         public int CountWhiteDiff(int x, int y)
