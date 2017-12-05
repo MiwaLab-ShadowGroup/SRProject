@@ -1092,23 +1092,31 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "TanakaTest_DelayTime", 1000, 0, 0);
 
         m_lastUpdatedHeight += 10;
-        //AddBooleanUI(parent, "Jikken", false);
-        //m_lastUpdatedHeight += 10;
-        AddFloatUI(parent, "PitchTime", 20, 2, 2);
+        AddBooleanUI(parent, "Jikken", false);
+
+        m_lastUpdatedHeight += 10;
+        AddFloatUI(parent, "PitchTimePlus", 20, 2, 5);
+        AddFloatUI(parent, "PitchTimeMinus", 20, 1, 1);
         AddFloatUI(parent, "PitchFrame", 3, 1, 1);
 
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "DelayTime_Random", false);
-        AddFloatUI(parent, "RandMax_NextDC", 1000, 0, 500);
-        AddFloatUI(parent, "RandMin_NextRandTime", 1000, 0, 250);
-        AddFloatUI(parent, "RandMax_NextRandTime", 1000, 0, 250);
+        AddFloatUI(parent, "RandMax_NextDC", 1000, 0, 250);
+        AddFloatUI(parent, "RandMin_NextRandTime", 1000, 0, 90);
+        AddFloatUI(parent, "RandMax_NextRandTime", 1000, 0, 90);
 
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent,"DelayTime_Interactive", false);
+        AddBooleanUI(parent, "Int_Invert", false);
         AddFloatUI(parent, "Int_Thresh", 30, 5, 15);
         AddFloatUI(parent, "Int_pitchDC", 50, 5, 20);
 
-
+        m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "DataSave", false);
+        AddBooleanUI(parent, "LogAveCW", false);
+        AddBooleanUI(parent, "LogDC", false);
+        AddBooleanUI(parent, "LogNDC", false);
+        AddBooleanUI(parent, "LogFPS", false);
     }
 
     private void CreateUIsImageporcessingSecondDelay(GameObject parent)
