@@ -15,6 +15,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
     {
         private float fps;
 
+        private bool AddNow;
+        private bool DT_random;
+        private bool jikken;
+        private bool DT_interactive;
+
         private bool Save;
         private bool LogAveCW;
         private bool LogDC;
@@ -25,7 +30,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private int DelayCounter;
         private int NextDelayCounter;
         //private int OldDelayCounter;  //処理用
-        private int pOldDelayCounter; //ピッチ計算用
+        //private int pOldDelayCounter; //ピッチ計算用
         private int PitchTP;
         private int PitchTM;
         private int PitchF;
@@ -35,12 +40,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private int RandMaxNRT = 300;
         private int RandMinNRT = 50;
 
-        private bool DT_random;
-        private bool jikken;
-        private bool DT_interactive;
-
         private int framecount;
-        private float nexttime;
+        private float nexttimeFPS;
         private float DelayTime;
 
         private string FileName;
@@ -59,13 +60,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private float a;
         private bool Int_Invert;
         List<Mat> list;
-
         private JointType _jointtype;
-        
+
+
+        Mat diffimage = new Mat();
+
         public TanakaTest()
             :base()
         {
-            nexttime = Time.time + 1;
+
+           
+            nexttimeFPS = Time.time + 1;
             this.list = new List<Mat>();
 
             QualitySettings.vSyncCount = 0;
@@ -93,11 +98,18 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("LogDC") as ParameterCheckbox).ValueChanged += TanakaTest_LogCW;
             (ShadowMediaUIHost.GetUI("LogNDC") as ParameterCheckbox).ValueChanged += TanakaTest_LogNDC;
             (ShadowMediaUIHost.GetUI("LogFPS") as ParameterCheckbox).ValueChanged += TanakaTest_LogFPS;
+            (ShadowMediaUIHost.GetUI("TanakaTest_AddNow") as ParameterCheckbox).ValueChanged += TanakaTest_AddNow;
 
         }
 
+
+
         //UI関連
         #region
+        private void TanakaTest_AddNow(object sender, EventArgs e)
+        {
+            this.AddNow = (e as ParameterCheckbox.ChangedValue).Value;
+        }
         private void TanakaTest_LogCW(object sender, EventArgs e)
         {
             this.LogDC = (e as ParameterCheckbox.ChangedValue).Value;
@@ -146,6 +158,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private void TanakaTest_Interactive(object sender, EventArgs e)
         {
             this.DT_interactive = (e as ParameterCheckbox.ChangedValue).Value;
+            if (DT_random) Debug.Log("!Warning! DT_random_is_Checking"+Time.time);
         }
 
         private void TanakaTest_PitchTP(object sender, EventArgs e)
@@ -159,7 +172,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private void TanakaTest_Jikken(object sender, EventArgs e)
         {
             this.jikken = (e as ParameterCheckbox.ChangedValue).Value;
-
         }
 
         private void TanakaTest_RandMaxNDC(object sender, EventArgs e)
@@ -189,6 +201,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private void DelayTime_Random(object sender, EventArgs e)
         {
             this.DT_random = (e as ParameterCheckbox.ChangedValue).Value;
+            if (DT_interactive) Debug.Log("!Warning! DT_interactive_is_Checking" + Time.time);
         }
 
         private void TanakaTest_DelayTime(object sender, EventArgs e)
@@ -234,13 +247,16 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
             if (DelayCounter > 0)
             {
-            Mat newitem = new Mat();
-            newitem = list[DelayCounter - 1];
-            newitem.CopyTo(dst);
+                Mat newitem = new Mat();
+                if(AddNow) Cv2.Add(list[0], list[DelayCounter - 1], newitem);
+                if(!AddNow) newitem = list[DelayCounter - 1];
+                newitem.CopyTo(dst);
             }
 
             DelayTime = DelayCounter / fps;
 
+            //データ保存，表示系
+            #region
             if (LogAveCW) Debug.Log("aveCW:" + AveCW);
             if (LogDC) Debug.Log("DC:"+ DelayCounter);
             if (LogNDC) Debug.Log("NDC:"+ NextDelayCounter);
@@ -248,8 +264,9 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             if (Save)
             {
-                DataSave(Time.time + "," + fps + "," + PitchTP+","+PitchTM + "," + PitchF + "," + AveCW + "," + Thresh * 1000 + "," + NextDelayCounter + "," + DelayCounter + "," + DelayTime);
+                DataSave(Time.time + "," + fps + "," + PitchTP+","+PitchTM + "," + PitchF + "," + AveCW + "," + Thresh + "," + NextDelayCounter + "," + DelayCounter + "," + DelayTime);
             }
+            #endregion
         }
 
         public override string ToString()
@@ -261,11 +278,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         public void FrameRate()
         {
             framecount++;
-            if (Time.time >= nexttime)
+            if (Time.time >= nexttimeFPS)
             {
                 fps = framecount;
                 framecount = 0;
-                nexttime += 1;
+                nexttimeFPS += 1;
             }
         }
 
@@ -298,7 +315,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             if (RandCounter / NextRandTime > 0) //一定時間たったら新しい遅れ時間を用意
             {
-                pOldDelayCounter = DelayCounter;
+                //pOldDelayCounter = DelayCounter;
                 System.Random randNDC = new System.Random(); //NextRandCounter用乱数
                 NextDelayCounter = randNDC.Next(0, RandMaxNDC);
                 System.Random randNRT = new System.Random(); //NextRandTime用乱数
@@ -308,18 +325,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             }
         }
 
-        //実験
-        
+        //実験        
         public void Jikken()
         {
             RandCounter++;
             if (RandCounter >= PitchTP)
             {
-                DelayCounter = DelayCounter - PitchF;
+                DelayCounter = DelayCounter + PitchF;
                 RandCounter = 0;
             }
         }
-        
+
 
         //DC変えるやつ．random，interactive共通
         public void ChangeDC(int x)
@@ -350,15 +366,14 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         public void SolveNDC(int x)
         {
             a = pitchDC / 1000f;
-            if(!Int_Invert) NextDelayCounter =(int) Math.Round((a * x) - (a * Thresh * 1000)); //増えると増える(早いと遅く)
-            if(Int_Invert) NextDelayCounter = (int)Math.Round(-(a * x) + (a * Thresh * 1000)); //増えると減る(早いと等速)
-            //NextDelayCounter = (int)Math.Round(-(a * x) + (a * Thresh * 1000));
+            if(!Int_Invert) NextDelayCounter =(int) Math.Round((a * x) - (a * Thresh)); //増えると増える(早いと遅く)
+            if(Int_Invert) NextDelayCounter = (int)Math.Round(-(a * x) + (a * Thresh)); //増えると減る(早いと等速)
         }
 
         //list[x] とlist[x + 1]の差分
         public int CountWhiteDiff(int x, int y)
         {
-            Mat diffimage = new Mat();
+            //Mat diffimage = new Mat();
             Cv2.Absdiff(list[x], list[y], diffimage);
             CountWhite = Cv2.CountNonZero(Cv2.Split(diffimage)[0]); //差分画像
             return CountWhite;
