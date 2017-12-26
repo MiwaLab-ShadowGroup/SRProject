@@ -183,6 +183,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         TanakaTest,
 
         /// <summary>
+        /// 田中練習2
+        /// </summary>
+        TanakaTest2,
+
+        /// <summary>
         /// 個数を数えるためのもの．消したら処刑
         /// </summary>
         Count,

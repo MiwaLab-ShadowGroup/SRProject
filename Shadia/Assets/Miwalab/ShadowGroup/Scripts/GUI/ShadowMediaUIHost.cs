@@ -278,6 +278,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         this.CreateUIsImageporcessingParticle3D(m_PanelDictionary[ImageProcesserType.Particle3D.ToString()]);
 
         this.CreateUIsImageporcessingTanakaTest(m_PanelDictionary[ImageProcesserType.TanakaTest.ToString()]);
+        this.CreateUIsImageporcessingTanakaTest2(m_PanelDictionary[ImageProcesserType.TanakaTest2.ToString()]);
 
     }
 
@@ -422,6 +423,9 @@ public class ShadowMediaUIHost : MonoBehaviour
                 break;
             case ImageProcesserType.TanakaTest:
                 changeTo.Add(new TanakaTest());
+                break;
+            case ImageProcesserType.TanakaTest2:
+                changeTo.Add(new TanakaTest2());
                 break;
 
             case ImageProcesserType.CellAutomaton:
@@ -1093,6 +1097,7 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "TanakaTest_AddNow", false);
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "Jikken", false);
+        AddBooleanUI(parent, "Jikken_Invert", false);
         m_lastUpdatedHeight += 10;
         AddFloatUI(parent, "PitchTimePlus", 20, 2, 5);
         AddFloatUI(parent, "PitchTimeMinus", 20, 1, 5);
@@ -1114,6 +1119,35 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "LogFPS", false);
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "DataSave", false);
+    }
+
+    private void CreateUIsImageporcessingTanakaTest2(GameObject parent)
+    {
+        m_lastUpdatedHeight = 0;
+        AddFloatUI(parent, "TT2_DelayTime[s/10]", 100, 0, 0);
+        AddBooleanUI(parent, "TT2_AddNow", false);
+        m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "TT2_Jikken", false);
+        AddBooleanUI(parent, "TT2_Jikken_Invert", false);
+        AddFloatUI(parent, "TT2_PitchTimePlus", 20, 1, 5);
+        AddFloatUI(parent, "TT2_PitchTimeMinus", 20, 1, 5);
+        m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "TT2_DT_Random", false);
+        AddFloatUI(parent, "TT2_MaxTargetDT[s/10]", 100, 0, 50);
+        AddFloatUI(parent, "TT2_RandTime[s/10]", 100, 1, 50);
+        m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "TT2_DT_Interactive", false);
+        AddBooleanUI(parent, "TT2_DT_Int_Invert", false);
+        AddFloatUI(parent, "TT2_Int_Threshold", 30000, 5000, 15000);
+        AddFloatUI(parent, "TT2_Int_pitchDT", 10, 1, 3);
+        AddFloatUI(parent, "TT2_IntTime[s/10]", 100, 1, 10);
+        m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "TT2_LogFPS", false);
+        AddBooleanUI(parent, "TT2_LogAveCW", false);
+        AddBooleanUI(parent, "TT2_LogTDT", false);
+        AddBooleanUI(parent, "TT2_LogDC", false);
+        m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "TT2_DataSave", false);
     }
 
     private void CreateUIsImageporcessingSecondDelay(GameObject parent)

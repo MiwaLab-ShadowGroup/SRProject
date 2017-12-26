@@ -13,11 +13,13 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 {
     public class TanakaTest : AShadowImageProcesser
     {
+        #region//値宣言
         private float fps;
 
         private bool AddNow;
         private bool DT_random;
         private bool jikken;
+        private bool jikken_invert;
         private bool DT_interactive;
 
         private bool Save;
@@ -25,12 +27,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private bool LogDC;
         private bool LogNDC;
         private bool LogFPS;
+        private int intAddNow;
 
         private int ListMax = 1000;
         private int DelayCounter;
         private int NextDelayCounter;
-        //private int OldDelayCounter;  //処理用
-        //private int pOldDelayCounter; //ピッチ計算用
         private int PitchTP;
         private int PitchTM;
         private int PitchF;
@@ -60,30 +61,31 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private float a;
         private bool Int_Invert;
         List<Mat> list;
-        private JointType _jointtype;
 
+        //腰位置
+        List<Body> trackedBodyData; //body型を収納するリスト
+        private int Humannum;
+        private int j;
+        private string SpineData;
 
         Mat diffimage = new Mat();
+        #endregion
 
         public TanakaTest()
             :base()
-        {
-
-           
+        {           
             nexttimeFPS = Time.time + 1;
             this.list = new List<Mat>();
-
+            //目標フレームレート
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = 30;
-
-            FileName = DateTime.Now.ToString("yy_MM_dd_HH_mm_ss");
-            //DataSave("Time, fps, PitchT, PitchF, AveCW, Threshold, NextDelayCounter, DelayCounter, DelayTime");
-
+            #region//UI
             (ShadowMediaUIHost.GetUI("DelayTime_Interactive") as ParameterCheckbox).ValueChanged += TanakaTest_Interactive;
             (ShadowMediaUIHost.GetUI("TanakaTest_DelayTime") as ParameterSlider).ValueChanged += TanakaTest_DelayTime;
             (ShadowMediaUIHost.GetUI("TanakaTest_DelayTime") as ParameterSlider).ValueUpdate();
             (ShadowMediaUIHost.GetUI("DelayTime_Random") as ParameterCheckbox).ValueChanged += DelayTime_Random;
             (ShadowMediaUIHost.GetUI("Jikken") as ParameterCheckbox).ValueChanged += TanakaTest_Jikken;
+            (ShadowMediaUIHost.GetUI("Jikken_Invert") as ParameterCheckbox).ValueChanged += TanakaTest_Jikken_Invert;
             (ShadowMediaUIHost.GetUI("RandMax_NextDC") as ParameterSlider).ValueChanged += TanakaTest_RandMaxNDC;
             (ShadowMediaUIHost.GetUI("RandMin_NextRandTime") as ParameterSlider).ValueChanged += TanakaTest_RandMinNRT;
             (ShadowMediaUIHost.GetUI("RandMax_NextRandTime") as ParameterSlider).ValueChanged += TanakaTest_RandMaxNRT;
@@ -99,13 +101,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("LogNDC") as ParameterCheckbox).ValueChanged += TanakaTest_LogNDC;
             (ShadowMediaUIHost.GetUI("LogFPS") as ParameterCheckbox).ValueChanged += TanakaTest_LogFPS;
             (ShadowMediaUIHost.GetUI("TanakaTest_AddNow") as ParameterCheckbox).ValueChanged += TanakaTest_AddNow;
-
+            #endregion
         }
 
-
-
-        //UI関連
-        #region
+        #region//UI
         private void TanakaTest_AddNow(object sender, EventArgs e)
         {
             this.AddNow = (e as ParameterCheckbox.ChangedValue).Value;
@@ -114,53 +113,44 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             this.LogDC = (e as ParameterCheckbox.ChangedValue).Value;
         }
-
         private void TanakaTest_LogAveCw(object sender, EventArgs e)
         {
             this.LogAveCW = (e as ParameterCheckbox.ChangedValue).Value;
         }
-
         private void TanakaTest_LogNDC(object sender, EventArgs e)
         {
             this.LogNDC = (e as ParameterCheckbox.ChangedValue).Value;
         }
-
         private void TanakaTest_LogFPS(object sender, EventArgs e)
         {
             this.LogFPS = (e as ParameterCheckbox.ChangedValue).Value;
         }
-
         private void TanakaTest_DetaSave(object sender, EventArgs e)
         {
             this.Save = (e as ParameterCheckbox.ChangedValue).Value;
             if (Save)
             {
                 FileName = DateTime.Now.ToString("yy_MM_dd_HH_mm_ss");
-                DataSave("Time, fps, PitchTP, pichTM, PitchF, AveCW, Threshold, NextDelayCounter, DelayCounter, DelayTime");
+                DataSave("1Time,2FPS,3AddNow,4pitchTP,5pitchTM,6pitchF,7AveCW,8Threshold,9NextDelayCounter,10TargetDelayTime,11DelayCounter,12DelayTime(DC/fps),13DelayTime,14HumanNum,15SpineX,16SpineZ,17HumanNum,18SpineX,19SpineZ,20HumanNum,21SpineX,22SpineZ");
             }
         }
-
         private void TanakaTest_Int_Invert(object sender, EventArgs e)
         {
             this.Int_Invert = (e as ParameterCheckbox.ChangedValue).Value;
         }
-
         private void TanakaTest_pitchDC(object sender, EventArgs e)
         {
             pitchDC = (int)(e as ParameterSlider.ChangedValue).Value;
         }
-
         private void TanakaTest_Thresh(object sender, EventArgs e)
         {
             Thresh = (int)(e as ParameterSlider.ChangedValue).Value;
         }
-
         private void TanakaTest_Interactive(object sender, EventArgs e)
         {
             this.DT_interactive = (e as ParameterCheckbox.ChangedValue).Value;
             if (DT_random) Debug.Log("!Warning! DT_random_is_Checking"+Time.time);
         }
-
         private void TanakaTest_PitchTP(object sender, EventArgs e)
         {
             PitchTP = (int)(e as ParameterSlider.ChangedValue).Value;
@@ -173,48 +163,36 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             this.jikken = (e as ParameterCheckbox.ChangedValue).Value;
         }
-
+        private void TanakaTest_Jikken_Invert(object sender, EventArgs e)
+        {
+            this.jikken_invert = (e as ParameterCheckbox.ChangedValue).Value;
+        }
         private void TanakaTest_RandMaxNDC(object sender, EventArgs e)
         {
             RandMaxNDC = (int)(e as ParameterSlider.ChangedValue).Value;
-
         }
-
         private void TanakaTest_RandMinNRT(object sender, EventArgs e)
         {
             RandMinNRT = (int)(e as ParameterSlider.ChangedValue).Value;
-
         }
-
         private void TanakaTest_RandMaxNRT(object sender, EventArgs e)
         {
             RandMaxNRT = (int)(e as ParameterSlider.ChangedValue).Value;
-
         }
-
         private void TanakaTest_PitchF(object sender, EventArgs e)
         {
             PitchF = (int)(e as ParameterSlider.ChangedValue).Value;
-
         }
-
         private void DelayTime_Random(object sender, EventArgs e)
         {
             this.DT_random = (e as ParameterCheckbox.ChangedValue).Value;
             if (DT_interactive) Debug.Log("!Warning! DT_interactive_is_Checking" + Time.time);
         }
-
         private void TanakaTest_DelayTime(object sender, EventArgs e)
         {
             DelayCounter = (int)(e as ParameterSlider.ChangedValue).Value;
         }
         #endregion
-
-        //継承抽象メンバーImageProcess(ref Mat src, ref Mat dst)
-        public override void ImageProcess(ref Mat src, ref Mat dst)
-        {
-            this.Update(ref src, ref dst);
-        }
 
         private void Update(ref Mat src, ref Mat dst)
         {
@@ -241,6 +219,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             //身体に合わせるやつ
             if (DT_interactive) InteractiveDelayCounter();
 
+            //表示
             if (DelayCounter <= 0)
             {
                 DelayCounter = 0;
@@ -255,6 +234,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             DelayTime = DelayCounter / fps;
 
+            GetSpine();
             //データ保存，表示系
             #region
             if (LogAveCW) Debug.Log("aveCW:" + AveCW);
@@ -264,16 +244,32 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             if (Save)
             {
-                DataSave(Time.time + "," + fps + "," + PitchTP+","+PitchTM + "," + PitchF + "," + AveCW + "," + Thresh + "," + NextDelayCounter + "," + DelayCounter + "," + DelayTime);
+                if (AddNow) intAddNow = 1;
+                if (!AddNow) intAddNow = 0;
+                DataSave(Time.time + "," + fps + "," + intAddNow + "," + PitchTP + "," + PitchTM + "," + PitchF + "," + AveCW + "," + Thresh + "," + NextDelayCounter + ",0," + DelayCounter + "," + DelayTime +",0"+ SpineData);
             }
             #endregion
         }
 
-        public override string ToString()
+        //腰位置とる
+        public void GetSpine()
         {
-            return "TanakaTest";
+            if (BodyData != null)
+            {
+                SpineData = ("");
+                trackedBodyData = new List<Body>();
+                for (j = 0; j < BodyData.Length; j++)
+                {
+                    if (BodyData[j].Joints[JointType.SpineBase].Position.Z != 0)
+                    {
+                        trackedBodyData.Add(BodyData[j]);
+                        SpineData = SpineData + ("," + j + "," + BodyData[j].Joints[JointType.SpineBase].Position.X + "," + BodyData[j].Joints[JointType.SpineBase].Position.Z);
+                    }
+                }
+                Humannum = trackedBodyData.Count;
+                if (Humannum == 0) return;
+            }
         }
-
         //フレームレート
         public void FrameRate()
         {
@@ -285,7 +281,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 nexttimeFPS += 1;
             }
         }
-
         //インタラクティブなやつ
         public void InteractiveDelayCounter()
         {
@@ -305,7 +300,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             ChangeDC(CWcount);
         }
-
         //ランダム処理
         public void RandomDelayCounter()
         {
@@ -324,19 +318,27 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 //pitch = Math.Abs(NextDelayCounter - pOldDelayCounter) / Pitchnum; //刻み．間に10枚くらい挟む
             }
         }
-
         //実験        
         public void Jikken()
         {
             RandCounter++;
-            if (RandCounter >= PitchTP)
+            if (!jikken_invert)
             {
-                DelayCounter = DelayCounter + PitchF;
-                RandCounter = 0;
+                if (RandCounter >= PitchTP)
+                {
+                    DelayCounter = DelayCounter + PitchF;
+                    RandCounter = 0;
+                }
+            }
+            if (jikken_invert)
+            {
+                if (RandCounter >= PitchTM)
+                {
+                    DelayCounter = DelayCounter - PitchF;
+                    RandCounter = 0;
+                }
             }
         }
-
-
         //DC変えるやつ．random，interactive共通
         public void ChangeDC(int x)
         {
@@ -361,7 +363,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 }
             }
         }
-
         //AveCWからNDCを求めるやつ.interactive
         public void SolveNDC(int x)
         {
@@ -369,7 +370,6 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             if(!Int_Invert) NextDelayCounter =(int) Math.Round((a * x) - (a * Thresh)); //増えると増える(早いと遅く)
             if(Int_Invert) NextDelayCounter = (int)Math.Round(-(a * x) + (a * Thresh)); //増えると減る(早いと等速)
         }
-
         //list[x] とlist[x + 1]の差分
         public int CountWhiteDiff(int x, int y)
         {
@@ -378,7 +378,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             CountWhite = Cv2.CountNonZero(Cv2.Split(diffimage)[0]); //差分画像
             return CountWhite;
         }
-
+        //csv保存
         public void DataSave(string txt)
         {
             StreamWriter sw;
@@ -390,12 +390,20 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             sw.Close();
         }
 
+        public override string ToString()
+        {
+            return "TanakaTest";
+        }
+        //継承抽象メンバーImageProcess(ref Mat src, ref Mat dst)
+        public override void ImageProcess(ref Mat src, ref Mat dst)
+        {
+            this.Update(ref src, ref dst);
+        }
         //継承抽象メンバーgetImageProcesserType()
         public override ImageProcesserType getImageProcesserType()
         {
             return ImageProcesserType.TanakaTest;
         }
-
         public bool IsFirstFrame { get; private set; }
     }
 }
