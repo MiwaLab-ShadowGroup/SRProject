@@ -1124,8 +1124,11 @@ public class ShadowMediaUIHost : MonoBehaviour
     private void CreateUIsImageporcessingTanakaTest2(GameObject parent)
     {
         m_lastUpdatedHeight = 0;
-        AddFloatUI(parent, "TT2_DelayTime[s/10]", 100, 0, 0);
+        AddFloatUI(parent, "TT2_DelayTime[s/100]", 1000, 0, 0);
         AddBooleanUI(parent, "TT2_AddNow", false);
+        m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "TT2_Gradually", false);
+        AddFloatUI(parent, "TT2_TargetDelayTime[s/100]", 1000, 0, 0);
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "TT2_Jikken", false);
         AddBooleanUI(parent, "TT2_Jikken_Invert", false);
@@ -1133,14 +1136,14 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "TT2_PitchTimeMinus", 20, 1, 5);
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "TT2_DT_Random", false);
-        AddFloatUI(parent, "TT2_MaxTargetDT[s/10]", 100, 0, 50);
-        AddFloatUI(parent, "TT2_RandTime[s/10]", 100, 1, 50);
+        AddFloatUI(parent, "TT2_MaxTargetDT[s/100]", 1000, 0, 500);
+        AddFloatUI(parent, "TT2_RandTime[s/100]", 1000, 1, 500);
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "TT2_DT_Interactive", false);
         AddBooleanUI(parent, "TT2_DT_Int_Invert", false);
         AddFloatUI(parent, "TT2_Int_Threshold", 30000, 5000, 15000);
         AddFloatUI(parent, "TT2_Int_pitchDT", 10, 1, 3);
-        AddFloatUI(parent, "TT2_IntTime[s/10]", 100, 1, 10);
+        AddFloatUI(parent, "TT2_IntTime[s/100]", 1000, 1, 100);
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "TT2_LogFPS", false);
         AddBooleanUI(parent, "TT2_LogAveCW", false);

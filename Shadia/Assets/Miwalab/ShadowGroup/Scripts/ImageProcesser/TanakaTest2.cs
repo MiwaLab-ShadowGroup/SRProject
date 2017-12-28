@@ -30,6 +30,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
         //表示
         private bool AddNow;
+        private bool Gradually;
         private bool Jikken;
         private bool jikken_Invert;
 
@@ -97,22 +98,22 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             #region //UI関連
             //(ShadowMediaUIHost.GetUI("TT2_DelayCounter") as ParameterSlider).ValueChanged += TT2_DelayCounter;
-            (ShadowMediaUIHost.GetUI("TT2_DelayTime[s/10]") as ParameterSlider).ValueChanged += TT2_DelayTime;
+            (ShadowMediaUIHost.GetUI("TT2_DelayTime[s/100]") as ParameterSlider).ValueChanged += TT2_DelayTime;
             (ShadowMediaUIHost.GetUI("TT2_AddNow") as ParameterCheckbox).ValueChanged += TT2_AddNow;
+            (ShadowMediaUIHost.GetUI("TT2_Gradually") as ParameterCheckbox).ValueChanged += TT2_Gradually;
+            (ShadowMediaUIHost.GetUI("TT2_TargetDelayTime[s/100]") as ParameterSlider).ValueChanged += TT2_TargetDelayTime;
             (ShadowMediaUIHost.GetUI("TT2_Jikken") as ParameterCheckbox).ValueChanged += TT2_Jikken;
             (ShadowMediaUIHost.GetUI("TT2_Jikken_Invert") as ParameterCheckbox).ValueChanged += TT2_Jikken_Invert;
             (ShadowMediaUIHost.GetUI("TT2_PitchTimePlus") as ParameterSlider).ValueChanged += TT2_PitchTP;
             (ShadowMediaUIHost.GetUI("TT2_PitchTimeMinus") as ParameterSlider).ValueChanged += TT2_PitchTM;
             (ShadowMediaUIHost.GetUI("TT2_DT_Random") as ParameterCheckbox).ValueChanged += TT2_DT_Random;
-            (ShadowMediaUIHost.GetUI("TT2_MaxTargetDT[s/10]") as ParameterSlider).ValueChanged += TT2_MaxTargetDT;
-            (ShadowMediaUIHost.GetUI("TT2_RandTime[s/10]") as ParameterSlider).ValueChanged += TT2_RandTime;
+            (ShadowMediaUIHost.GetUI("TT2_MaxTargetDT[s/100]") as ParameterSlider).ValueChanged += TT2_MaxTargetDT;
+            (ShadowMediaUIHost.GetUI("TT2_RandTime[s/100]") as ParameterSlider).ValueChanged += TT2_RandTime;
             (ShadowMediaUIHost.GetUI("TT2_DT_Interactive") as ParameterCheckbox).ValueChanged += TT2_DT_Interactive;
             (ShadowMediaUIHost.GetUI("TT2_DT_Int_Invert") as ParameterCheckbox).ValueChanged += TT2_DT_Int_Invert;
-
             (ShadowMediaUIHost.GetUI("TT2_Int_Threshold") as ParameterSlider).ValueChanged += TT2_Int_Threshold;
             (ShadowMediaUIHost.GetUI("TT2_Int_pitchDT") as ParameterSlider).ValueChanged += TT2_Int_pitchDT;
-            (ShadowMediaUIHost.GetUI("TT2_IntTime[s/10]") as ParameterSlider).ValueChanged += TT2_IntTime;
-
+            (ShadowMediaUIHost.GetUI("TT2_IntTime[s/100]") as ParameterSlider).ValueChanged += TT2_IntTime;
             (ShadowMediaUIHost.GetUI("TT2_LogFPS") as ParameterCheckbox).ValueChanged += TT2_LogFPS;
             (ShadowMediaUIHost.GetUI("TT2_LogAveCW") as ParameterCheckbox).ValueChanged += TT2_LogAveCW;
             (ShadowMediaUIHost.GetUI("TT2_LogTDT") as ParameterCheckbox).ValueChanged += TT2_LogTDT;
@@ -123,11 +124,22 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             #endregion
         }
 
+        private void TT2_TargetDelayTime(object sender, EventArgs e)
+        {
+            TargetDelayTime = (int)(e as ParameterSlider.ChangedValue).Value;
+
+        }
+
+        private void TT2_Gradually(object sender, EventArgs e)
+        {
+            this.Gradually = (e as ParameterCheckbox.ChangedValue).Value;
+        }
+
         #region //UI関連
         private void TT2_DelayTime(object sender, EventArgs e)
         {
             DelayTime = (int)(e as ParameterSlider.ChangedValue).Value;
-            DelayTime = DelayTime / 10;
+            DelayTime = DelayTime / 100;
         }
         private void TT2_AddNow(object sender, EventArgs e)
         {
@@ -162,7 +174,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private void TT2_RandTime(object sender, EventArgs e)
         {
             RandTime = (int)(e as ParameterSlider.ChangedValue).Value;
-            RandTime = RandTime / 10;
+            RandTime = RandTime / 100;
         }
         private void TT2_DT_Interactive(object sender, EventArgs e)
         {
@@ -186,7 +198,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private void TT2_IntTime(object sender, EventArgs e)
         {
             IntTime = (int)(e as ParameterSlider.ChangedValue).Value;
-            IntTime = IntTime / 10;
+            IntTime = IntTime / 100;
         }
         private void TT2_LogFPS(object sender, EventArgs e)
         {
@@ -230,6 +242,11 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.ListTime.Insert(0, Time.time); //リストの先頭にTime.timeを追加
             if (ListTime.Count > ListMax) this.ListTime.RemoveAt(ListMax - 1); //リストがListMaxを超えたら古いもの(末尾)から削除
 
+
+            //徐々に
+            if (Gradually) ChangeDT();
+
+            //実験
             if (Jikken) JikkenDelayTime(); 
 
             //ランダム
@@ -299,7 +316,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     DelayTime = DelayTime - 0.04f;
                 }
             }
-            else if (Counter % pitchTP == 0)
+            if (Counter % pitchTP == 0)
             {
                 if (TargetDelayTime > DelayTime)
                 {
@@ -335,7 +352,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             if (ListTime[0] - PreTimeRand > x) //一定時間たったら新しい遅れ時間を用意
             {
                 System.Random randTDT = new System.Random(); //NextRandCounter用乱数
-                TargetDelayTime = randTDT.Next(0, RandMaxTDT) / 10f;
+                TargetDelayTime = randTDT.Next(0, RandMaxTDT) / 100f;
                 //System.Random randNRT = new System.Random(); //NextRandTime用乱数
                 //NextRandTime = randNRT.Next(RandMinNRT, RandMaxNRT);
                 PreTimeRand = ListTime[0];             
