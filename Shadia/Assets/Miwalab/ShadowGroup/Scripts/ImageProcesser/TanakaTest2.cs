@@ -94,6 +94,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private int intAddNow;
         private int intAddDelay2;
         private string FileName;
+
+        Mat newitem = new Mat();
         #endregion
 
         public TanakaTest2()
@@ -343,23 +345,25 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 {
                     DelayTime = 0;
                     DelayCounter = 0;
+                    dst.CopyTo(newitem);
                 }
+
+                for (i = 0; ListTime[0] - ListTime[i] <= DelayTime; i++)
                 {
-                    for (i = 0; ListTime[0] - ListTime[i] <= DelayTime; i++)
-                    {
-                        DelayCounter = i;
-                    }
+                    DelayCounter = i;
                 }
+                
                 if (DelayCounter > 0)
                 {
-                    Mat newitem = new Mat();
+                    
                     if (AddNow) Cv2.Add(ListMat[0], ListMat[DelayCounter - 1], newitem);
                     if (!AddNow) newitem = ListMat[i - 1];
-                    newitem.CopyTo(dst);
+                    //newitem.CopyTo(dst);
                 }
-                if (AddDelay2) funcAddDelay(dst, dst);
-                if (flip) Cv2.Flip(dst, dst, FlipMode.Y);
-                if (ColorInvert) dst = ~dst;
+                if (AddDelay2) funcAddDelay(newitem, newitem);
+                if (flip) Cv2.Flip(newitem, newitem, FlipMode.Y);
+                if (ColorInvert) newitem = ~newitem;
+                newitem.CopyTo(dst);
                 dst.CopyTo(stopitem);
             }
             TrueDT = DelayCounter / fps;
