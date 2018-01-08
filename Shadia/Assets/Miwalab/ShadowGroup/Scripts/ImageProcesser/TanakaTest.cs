@@ -62,6 +62,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private bool Int_Invert;
         List<Mat> list;
 
+        //AddDelay2
+        private bool AddDelay2 = false;
+        private int DelayCounter2;
+
         //腰位置
         List<Body> trackedBodyData; //body型を収納するリスト
         private int Humannum;
@@ -231,6 +235,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 if(!AddNow) newitem = list[DelayCounter - 1];
                 newitem.CopyTo(dst);
             }
+            if (AddDelay2) AddDelay(dst, dst);
 
             DelayTime = DelayCounter / fps;
 
@@ -377,6 +382,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             Cv2.Absdiff(list[x], list[y], diffimage);
             CountWhite = Cv2.CountNonZero(Cv2.Split(diffimage)[0]); //差分画像
             return CountWhite;
+        }
+        //二種類の遅れを重ねる
+        public Mat AddDelay(Mat src2, Mat dst2)
+        {
+            Cv2.Add(src2, list[DelayCounter2 - 1], dst2);
+            return dst2;
         }
         //csv保存
         public void DataSave(string txt)

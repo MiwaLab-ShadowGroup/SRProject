@@ -1125,8 +1125,13 @@ public class ShadowMediaUIHost : MonoBehaviour
     {
         m_lastUpdatedHeight = 0;
         AddFloatUI(parent, "TT2_DelayTime[s/100]", 1000, 0, 0);
+        AddBooleanUI(parent, "TT2_ColorInvert", false);
+        AddBooleanUI(parent, "TT2_Flip", false);
         AddBooleanUI(parent, "TT2_AddNow", false);
+        AddBooleanUI(parent, "TT2_AddDelay2", false);
+        AddFloatUI(parent, "TT2_DelayTime2[s/100]", 1000, 0, 100);
         m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "TT2_Stop", false);
         AddBooleanUI(parent, "TT2_Gradually", false);
         AddFloatUI(parent, "TT2_TargetDelayTime[s/100]", 1000, 0, 0);
         m_lastUpdatedHeight += 10;
@@ -1134,6 +1139,23 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "TT2_Jikken_Invert", false);
         AddFloatUI(parent, "TT2_PitchTimePlus", 20, 1, 5);
         AddFloatUI(parent, "TT2_PitchTimeMinus", 20, 1, 5);
+        m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "TT2_LogFPS", false);
+        AddBooleanUI(parent, "TT2_LogAveCW", false);
+        AddBooleanUI(parent, "TT2_LogTDT", false);
+        AddBooleanUI(parent, "TT2_LogDC", false);
+        m_lastUpdatedHeight += 10;
+        AddBooleanUI(parent, "TT2_GetSpine", false);
+        AddBooleanUI(parent, "TT2_DataSave", false);
+        m_lastUpdatedHeight += 10;
+        AddButtonUI(parent, "TT2_0.3");
+        AddButtonUI(parent, "TT2_0.5");
+        AddButtonUI(parent, "TT2_1.0");
+        AddButtonUI(parent, "TT2_3.0");
+        AddButtonUI(parent, "TT2_5.0");
+        AddButtonUI(parent, "TT2_10.0");
+        AddButtonUI(parent, "TT2_20.0");
+        AddButtonUI(parent, "TT2_30.0");
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "TT2_DT_Random", false);
         AddFloatUI(parent, "TT2_MaxTargetDT[s/100]", 1000, 0, 500);
@@ -1144,13 +1166,6 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddFloatUI(parent, "TT2_Int_Threshold", 30000, 5000, 15000);
         AddFloatUI(parent, "TT2_Int_pitchDT", 10, 1, 3);
         AddFloatUI(parent, "TT2_IntTime[s/100]", 1000, 1, 100);
-        m_lastUpdatedHeight += 10;
-        AddBooleanUI(parent, "TT2_LogFPS", false);
-        AddBooleanUI(parent, "TT2_LogAveCW", false);
-        AddBooleanUI(parent, "TT2_LogTDT", false);
-        AddBooleanUI(parent, "TT2_LogDC", false);
-        m_lastUpdatedHeight += 10;
-        AddBooleanUI(parent, "TT2_DataSave", false);
     }
 
     private void CreateUIsImageporcessingSecondDelay(GameObject parent)
