@@ -29,6 +29,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private int framecount = 0;
 
         //表示
+        Mat newitem = new Mat();
         private bool AddNow;
         private bool Gradually;
         private bool Jikken;
@@ -94,17 +95,19 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private int intAddNow;
         private int intAddDelay2;
         private string FileName;
+        List<String> ListData;
 
-        Mat newitem = new Mat();
         #endregion
 
         public TanakaTest2()
                 : base()
         {
+            //Debug.Log(Application.persistentDataPath);
             //フレームレート計算の初期設定
             NextTimeFPS = Time.time + 1;
             this.ListMat = new List<Mat>();
             this.ListTime = new List<float>();
+            this.ListData = new List<string>();
             //目標フレームレートの設定
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = 30;
@@ -137,7 +140,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             (ShadowMediaUIHost.GetUI("TT2_LogTDT") as ParameterCheckbox).ValueChanged += TT2_LogTDT;
             (ShadowMediaUIHost.GetUI("TT2_LogDC") as ParameterCheckbox).ValueChanged += TT2_LogDC;
             (ShadowMediaUIHost.GetUI("TT2_GetSpine") as ParameterCheckbox).ValueChanged += TT2_GetSpine;
-            (ShadowMediaUIHost.GetUI("TT2_DataSave") as ParameterCheckbox).ValueChanged += TT2_DataSave;
+            //(ShadowMediaUIHost.GetUI("TT2_DataSave") as ParameterCheckbox).ValueChanged += TT2_DataSave;
+            (ShadowMediaUIHost.GetUI("TT2_DataSaveStart") as ParameterButton).Clicked += TT2_DataSaveStart;
+            (ShadowMediaUIHost.GetUI("TT2_DataSaveFinish") as ParameterButton).Clicked += TT2_DataSaveFinish;
+            (ShadowMediaUIHost.GetUI("TT2_0.1") as ParameterButton).Clicked += TT2_010;
             (ShadowMediaUIHost.GetUI("TT2_0.3") as ParameterButton).Clicked += TT2_030;
             (ShadowMediaUIHost.GetUI("TT2_0.5") as ParameterButton).Clicked += TT2_050;
             (ShadowMediaUIHost.GetUI("TT2_1.0") as ParameterButton).Clicked += TT2_100;
@@ -265,14 +271,29 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             this.boolGetSpine = (e as ParameterCheckbox.ChangedValue).Value;
             if (!boolGetSpine) SpineData = ("");
         }
-        private void TT2_DataSave(object sender, EventArgs e)
+        //private void TT2_DataSave(object sender, EventArgs e)
+        //{
+        //    this.Save = (e as ParameterCheckbox.ChangedValue).Value;
+        //    if (Save)
+        //    {
+        //        FileName = DateTime.Now.ToString("yy_MM_dd_HH_mm_ss");
+        //        DataSave("Time, fps, DT, TrueDT");
+        //        //DataSave("1Time,2FPS,3AddNow,4AddDelay2,5DelayTime2,6pitchTP,7pitchTM,8pitchF,9AveCW,10Threshold,11NextDelayCounter,12TargetDelayTime,13DelayCounter,14DelayTime(DC/fps),15DelayTime,16HumanNum,17SpineX,18SpineZ,19HumanNum,20SpineX,21SpineZ,22HumanNum,23SpineX,24SpineZ");
+        //    }
+        //}
+        private void TT2_DataSaveStart(object sender, EventArgs e)
         {
-            this.Save = (e as ParameterCheckbox.ChangedValue).Value;
-            if (Save)
+            FileName = DateTime.Now.ToString("yy_MM_dd_HH_mm_ss");
+            this.Save = true;
+        }
+        private void TT2_DataSaveFinish(object sender, EventArgs e)
+        {
+            DataSave("Time, fps, DT, TrueDT");
+            for (int l = 0; l <= ListData.Count - 1; l++)
             {
-                FileName = DateTime.Now.ToString("yy_MM_dd_HH_mm_ss");
-                DataSave("1Time,2FPS,3AddNow,4AddDelay2,5DelayTime2,6pitchTP,7pitchTM,8pitchF,9AveCW,10Threshold,11NextDelayCounter,12TargetDelayTime,13DelayCounter,14DelayTime(DC/fps),15DelayTime,16HumanNum,17SpineX,18SpineZ,19HumanNum,20SpineX,21SpineZ,22HumanNum,23SpineX,24SpineZ");
+                DataSave(ListData[l]);
             }
+            this.Save = false;
         }
         private void TT2_3000(object sender, EventArgs e)
         {
@@ -306,14 +327,15 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         {
             DelayTime = 0.30f;
         }
+        private void TT2_010(object sender, EventArgs e)
+        {
+            DelayTime = 0.10f;
+        }
         #endregion
 
         // Update is called once per frame
         private void Update(ref Mat src, ref Mat dst)
-        {
-            //フレームレート
-            FrameRate();
-                        
+        {               
             //リスト
             Mat item = new Mat();
             src.CopyTo(item); //srcをitemにコピー
@@ -345,10 +367,10 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 {
                     DelayTime = 0;
                     DelayCounter = 0;
-                    dst.CopyTo(newitem);
+                    //dst.CopyTo(newitem);
                 }
 
-                for (i = 0; ListTime[0] - ListTime[i] <= DelayTime; i++)
+                for (i = 0; ListTime[0] - ListTime[i] <= DelayTime; ++i)
                 {
                     DelayCounter = i;
                 }
@@ -358,16 +380,17 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                     
                     if (AddNow) Cv2.Add(ListMat[0], ListMat[DelayCounter - 1], newitem);
                     if (!AddNow) newitem = ListMat[i - 1];
-                    //newitem.CopyTo(dst);
+                    newitem.CopyTo(dst);
                 }
-                if (AddDelay2) funcAddDelay(newitem, newitem);
-                if (flip) Cv2.Flip(newitem, newitem, FlipMode.Y);
-                if (ColorInvert) newitem = ~newitem;
-                newitem.CopyTo(dst);
+                if (AddDelay2) funcAddDelay(dst, dst);
+                if (flip) Cv2.Flip(dst, dst, FlipMode.Y);
+                if (ColorInvert) dst = ~dst;
                 dst.CopyTo(stopitem);
             }
             TrueDT = DelayCounter / fps;
             if(boolGetSpine) GetSpine();
+            //フレームレート
+            FrameRate();
             LogAndSave();
 
         }
@@ -496,11 +519,12 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         public void FrameRate()
         {
             framecount++;
-            if (Time.time >= NextTimeFPS)
+            if (ListTime[0] >= NextTimeFPS)
             {
-                fps = framecount;
+                fps = framecount*2;
                 framecount = 0;
-                NextTimeFPS += 1;
+                NextTimeFPS += 0.5f;
+                if(Save) this.ListData.Add(ListTime[0] + "," + fps + "," + DelayTime + "," + TrueDT);
             }
         }
         //UI表示&保存用
@@ -510,21 +534,30 @@ namespace Miwalab.ShadowGroup.ImageProcesser
             if (LogAveCW) Debug.Log("AveCW:" + AveCW);
             if (LogTDT) Debug.Log("TDT:" + TargetDelayTime);
             if (LogDC) Debug.Log("DC:" + DelayCounter);
-            if (Save)
-            {
-                if (AddNow) intAddNow = 1;
-                if (!AddNow) intAddNow = 0;
-                if (AddDelay2) intAddDelay2 = 1;
-                if (!AddDelay2) intAddDelay2 = 0;
-                DataSave(ListTime[0] + "," + fps + "," +intAddNow + ","+intAddDelay2+","+DelayTime2+"," + pitchTP + "," + pitchTM + ",0," + AveCW + "," + Threshold + ",0," + TargetDelayTime + "," + DelayCounter + "," + TrueDT +","+ DelayTime+SpineData);
-            }
+            //if (Save)
+            //{
+            //    this.ListData.Add(ListTime[0] + "," + fps + "," + DelayTime + "," + TrueDT);
+            //    //if (AddNow) intAddNow = 1;
+            //    //if (!AddNow) intAddNow = 0;
+            //    //if (AddDelay2) intAddDelay2 = 1;
+            //    //if (!AddDelay2) intAddDelay2 = 0;
+
+            //    //for(int l = 0; l > ListData.Count; l++)
+            //    //{
+            //    //    DataSave(ListData[i]);
+            //    //}
+            //    //DataSave(ListTime[0] + "," + fps + "," + DelayTime + "," + TrueDT);
+            //    //DataSave(ListTime[0] + "," + fps + "," +intAddNow + ","+intAddDelay2+","+DelayTime2+"," + pitchTP + "," + pitchTM + ",0," + AveCW + "," + Threshold + ",0," + TargetDelayTime + "," + DelayCounter + "," + TrueDT +","+ DelayTime+SpineData);
+            //}
         }
         //csv保存用
         public void DataSave(string txt)
         {
             StreamWriter sw;
             FileInfo fi;
-            fi = new FileInfo(Application.dataPath + "/tanaka/csvData/" + FileName + ".csv");
+            //fi = new FileInfo(Application.dataPath +"/" + FileName + ".csv");
+            fi = new FileInfo(Application.persistentDataPath + "/Unity/" + FileName + ".csv");
+
             sw = fi.AppendText();
             sw.WriteLine(txt);
             sw.Flush();

@@ -1146,8 +1146,11 @@ public class ShadowMediaUIHost : MonoBehaviour
         AddBooleanUI(parent, "TT2_LogDC", false);
         m_lastUpdatedHeight += 10;
         AddBooleanUI(parent, "TT2_GetSpine", false);
-        AddBooleanUI(parent, "TT2_DataSave", false);
+        //AddBooleanUI(parent, "TT2_DataSave", false);
+        AddButtonUI(parent, "TT2_DataSaveStart");
+        AddButtonUI(parent, "TT2_DataSaveFinish");
         m_lastUpdatedHeight += 10;
+        AddButtonUI(parent, "TT2_0.1");
         AddButtonUI(parent, "TT2_0.3");
         AddButtonUI(parent, "TT2_0.5");
         AddButtonUI(parent, "TT2_1.0");
