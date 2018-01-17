@@ -69,8 +69,8 @@ Material:
     - _VertXMax: 5
     - _VertXMin: -5
     - _VertYMax: 4
-    - _VertYMin: -0.7618488
-    - _VertZMax: 4.2898555
+    - _VertYMin: -0.76811576
+    - _VertZMax: 4.3671494
     - _VertZMin: 0
     - _ZWrite: 1
     m_Colors:
