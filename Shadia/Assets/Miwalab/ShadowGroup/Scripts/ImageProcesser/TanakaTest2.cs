@@ -100,6 +100,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         private string FileName;
         List<String> ListData;
         private float diffDT;
+        private float errorDT;
         private float PreSaveTime;
         private float SaveTime = 0.5f;
 
@@ -306,7 +307,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         }
         private void TT2_DataSaveFinish(object sender, EventArgs e)
         {
-            DataSave("Time, fps,DelayCounter,NDC, SetDT,TargetDT, TrueDT");
+            DataSave("Time, fps,DelayCounter,SetDT,TrueDT,diffDT,errorDT");
             for (int l = 0; l <= ListData.Count - 1; l++)
             {
                 DataSave(ListData[l]);
@@ -396,8 +397,8 @@ namespace Miwalab.ShadowGroup.ImageProcesser
                 }
                 if (DelayCounter > 0)
                 {
-                    if (AddNow) Cv2.Add(ListMat[0], ListMat[DelayCounter - 1], newitem);
-                    if (!AddNow) newitem = ListMat[DelayCounter - 1];
+                    if (AddNow) Cv2.Add(ListMat[0], ListMat[DelayCounter], newitem);
+                    if (!AddNow) newitem = ListMat[DelayCounter];
                     newitem.CopyTo(dst);
                 }
                 if (AddDelay2) funcAddDelay(dst, dst);
@@ -586,20 +587,22 @@ namespace Miwalab.ShadowGroup.ImageProcesser
 
             if (Save)
             {
-                ////毎フレーム保存するとデータ膨大．
-                //TrueDT = DelayCounter / tFPS;
-                //diffDT = TrueDT - DelayTime;
-                //this.ListData.Add(ListTime[0] + "," + fps + "," + DelayCounter + "," + NextDelayCounter + "," + DelayTime + "," + TargetDelayTime + "," + TrueDT + "," + diffDT + "," + Seni);
+                //毎フレーム保存するとデータ膨大．
+                TrueDT = ListTime[0] - ListTime[DelayCounter];
+                diffDT = Math.Abs(TrueDT - DelayTime);
+                errorDT = (diffDT * 100 / DelayTime);
+                //Debug.Log(TrueDT);
+                this.ListData.Add(ListTime[0] + "," + fps + "," + DelayCounter +  "," + DelayTime + "," + TrueDT + "," + diffDT+","+errorDT);
 
-                //数秒毎保存
-                PreSaveTime = ListTime[0];
-                if (ListTime[0] - PreSaveTime > SaveTime)
-                {
-                    TrueDT = DelayCounter / tFPS;
-                    diffDT = TrueDT - DelayTime;
-                    this.ListData.Add(ListTime[0] + "," + fps + "," + DelayCounter + "," + NextDelayCounter + "," + DelayTime + "," + TargetDelayTime + "," + TrueDT + "," + diffDT);
-                    PreSaveTime = ListTime[0];
-                }
+                ////数秒毎保存
+                //PreSaveTime = ListTime[0];
+                //if (ListTime[0] - PreSaveTime > SaveTime)
+                //{
+                //    TrueDT = DelayCounter / tFPS;
+                //    diffDT = TrueDT - DelayTime;
+                //    this.ListData.Add(ListTime[0] + "," + fps + "," + DelayCounter + "," + NextDelayCounter + "," + DelayTime + "," + TargetDelayTime + "," + TrueDT + "," + diffDT);
+                //    PreSaveTime = ListTime[0];
+                //}
 
                 //this.ListData.Add(ListTime[0] + "," + fps + "," + DelayTime + "," + TrueDT);
                 //if (AddNow) intAddNow = 1;
