@@ -113,7 +113,7 @@ namespace Miwalab.ShadowGroup.ImageProcesser
         public TanakaTest2()
                 : base()
         {
-            //Debug.Log(Application.persistentDataPath);
+            Debug.Log(Application.persistentDataPath);
             //フレームレート計算の初期設定
             NextTimeFPS = Time.time + 1;
             this.ListMat = new List<Mat>();
